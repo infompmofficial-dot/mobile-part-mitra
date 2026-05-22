@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mobile Part Mitra — MPM</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0A0A0A;
+      --card: #111111;
+      --border: rgba(255,255,255,0.07);
+      --accent: #F47B20;
+      --accent2: #FFB347;
+      --text: #F2EDE8;
+      --muted: #7A7370;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      overflow: hidden;
+    }
+
+    /* Background grid */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(244,123,32,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(244,123,32,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+
+    /* Glow */
+    body::after {
+      content: '';
+      position: fixed;
+      top: -200px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 400px;
+      background: radial-gradient(ellipse, rgba(244,123,32,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 480px;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Logo */
+    .logo {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .logo-icon {
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 18px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      margin-bottom: 14px;
+      box-shadow: 0 0 40px rgba(244,123,32,0.3);
+    }
+
+    .logo-name {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .logo-sub {
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    /* Cards */
+    .cards {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .card {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px 22px;
+      text-decoration: none;
+      color: var(--text);
+      transition: all 0.2s ease;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(244,123,32,0.05), transparent);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .card:hover {
+      border-color: rgba(244,123,32,0.35);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(244,123,32,0.12);
+    }
+
+    .card:hover::before { opacity: 1; }
+
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .card-icon.retailer  { background: rgba(61,187,120,0.12); border: 1px solid rgba(61,187,120,0.2); }
+    .card-icon.wholesaler { background: rgba(99,160,255,0.12); border: 1px solid rgba(99,160,255,0.2); }
+    .card-icon.admin     { background: rgba(244,123,32,0.12); border: 1px solid rgba(244,123,32,0.2); }
+
+    .card-info { flex: 1; }
+
+    .card-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+
+    .card-desc {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    .card-arrow {
+      font-size: 18px;
+      color: var(--muted);
+      transition: transform 0.2s, color 0.2s;
+    }
+
+    .card:hover .card-arrow {
+      transform: translateX(4px);
+      color: var(--accent);
+    }
+
+    /* Tag */
+    .tag {
+      display: inline-block;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border-radius: 4px;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    .tag.admin-tag { background: rgba(244,123,32,0.15); color: var(--accent); }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      margin-top: 32px;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <div class="logo">
+      <div class="logo-icon">⚙️</div>
+      <div class="logo-name">Mobile Part Mitra</div>
+      <div class="logo-sub">MPM Platform — Select Your Panel</div>
+    </div>
+
+    <div class="cards">
+
+      <a class="card" href="retailer/catalog.html">
+        <div class="card-icon retailer">🔧</div>
+        <div class="card-info">
+          <div class="card-title">Retailer Panel</div>
+          <div class="card-desc">Parts catalog browse karo, orders place karo</div>
+        </div>
+        <div class="card-arrow">→</div>
+      </a>
+
+      <a class="card" href="wholesaler/">
+        <div class="card-icon wholesaler">🏪</div>
+        <div class="card-info">
+          <div class="card-title">Wholesaler Panel</div>
+          <div class="card-desc">Inventory manage karo, orders fulfill karo</div>
+        </div>
+        <div class="card-arrow">→</div>
+      </a>
+
+      <a class="card" href="admin/">
+        <div class="card-icon admin">📋</div>
+        <div class="card-info">
+          <div class="card-title">Admin Panel <span class="tag admin-tag">Private</span></div>
+          <div class="card-desc">Users, parts aur platform manage karo</div>
+        </div>
+        <div class="card-arrow">→</div>
+      </a>
+
+    </div>
+
+    <div class="footer">Mobile Part Mitra © 2025 — Prayagraj / UP</div>
+
+  </div>
+</body>
+</html>
