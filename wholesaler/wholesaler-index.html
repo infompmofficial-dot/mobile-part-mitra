@@ -117,78 +117,84 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--tx);min-h
 
     <!-- ── LOGIN FORM ── -->
     <div id="form-login">
-      <div id="login-password-section">
-        <div class="form-group">
-          <label class="form-label">Email ya Phone</label>
-          <input class="form-input" id="login-email" type="text" placeholder="email@domain.com">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Password</label>
-          <input class="form-input" id="login-pass" type="password" placeholder="••••••••">
-        </div>
-        <button class="btn-primary" onclick="loginWithPassword()">Login</button>
-        <div class="divider">ya</div>
-        <button class="btn-ghost" onclick="showOTPLogin()">📱 OTP se Login (Phone)</button>
-      </div>
 
-      <div id="login-otp-section" style="display:none;">
+      <!-- Step 1: Phone -->
+      <div id="login-step-phone">
         <div class="form-group">
           <label class="form-label">Phone Number</label>
           <div class="phone-row">
             <div class="country-code">+91</div>
-            <input class="form-input" id="login-phone" type="tel" placeholder="9876543210" maxlength="10">
+            <input class="form-input" id="login-phone" type="tel" placeholder="9999999992" maxlength="10" onkeydown="if(event.key==='Enter')sendLoginOTP()">
           </div>
         </div>
-        <button class="btn-primary" onclick="sendLoginOTP()">OTP Bhejo</button>
-
-        <div id="login-otp-verify" style="display:none;margin-top:20px;">
-          <div class="form-label" style="text-align:center;margin-bottom:12px;">6-digit OTP daalo</div>
-          <div class="otp-row">
-            <input class="otp-input" id="o1" maxlength="1" oninput="otpNext(this,'o2')">
-            <input class="otp-input" id="o2" maxlength="1" oninput="otpNext(this,'o3')">
-            <input class="otp-input" id="o3" maxlength="1" oninput="otpNext(this,'o4')">
-            <input class="otp-input" id="o4" maxlength="1" oninput="otpNext(this,'o5')">
-            <input class="otp-input" id="o5" maxlength="1" oninput="otpNext(this,'o6')">
-            <input class="otp-input" id="o6" maxlength="1" oninput="otpNext(this,null)">
-          </div>
-          <div class="otp-timer">OTP nahi aaya? <span onclick="sendLoginOTP()">Dobara Bhejo</span></div>
-          <button class="btn-primary" style="margin-top:16px;" onclick="verifyLoginOTP()">Verify & Login</button>
+        <button class="btn-primary" onclick="sendLoginOTP()">📱 OTP Bhejo</button>
+        <div style="margin-top:12px;background:rgba(244,123,32,0.08);border:1px solid rgba(244,123,32,0.2);border-radius:10px;padding:10px 13px;font-size:10px;color:var(--or);">
+          🧪 Test: <strong>9999999992</strong> → OTP: <strong>123456</strong>
         </div>
+      </div>
 
-        <button class="btn-ghost" onclick="showPasswordLogin()">🔑 Password se Login</button>
+      <!-- Step 2: OTP verify -->
+      <div id="login-step-otp" style="display:none;">
+        <div style="font-size:12px;color:var(--tx2);text-align:center;margin-bottom:14px;">OTP bheja gaya <strong id="login-phone-display" style="color:var(--or);"></strong> pe</div>
+        <div class="otp-row">
+          <input class="otp-input" id="o1" maxlength="1" oninput="otpNext(this,'o2')" onkeydown="otpBack(event,this,null)">
+          <input class="otp-input" id="o2" maxlength="1" oninput="otpNext(this,'o3')" onkeydown="otpBack(event,this,'o1')">
+          <input class="otp-input" id="o3" maxlength="1" oninput="otpNext(this,'o4')" onkeydown="otpBack(event,this,'o2')">
+          <input class="otp-input" id="o4" maxlength="1" oninput="otpNext(this,'o5')" onkeydown="otpBack(event,this,'o3')">
+          <input class="otp-input" id="o5" maxlength="1" oninput="otpNext(this,'o6')" onkeydown="otpBack(event,this,'o4')">
+          <input class="otp-input" id="o6" maxlength="1" oninput="otpNext(this,null)"  onkeydown="otpBack(event,this,'o5')">
+        </div>
+        <div class="otp-timer">OTP nahi aaya? <span onclick="sendLoginOTP()">Dobara Bhejo</span></div>
+        <button class="btn-primary" style="margin-top:16px;" onclick="verifyLoginOTP()">✅ Verify & Login</button>
+        <button class="btn-ghost" onclick="resetLoginStep()">← Phone badlo</button>
       </div>
     </div>
 
     <!-- ── REGISTER FORM ── -->
     <div id="form-register" style="display:none;">
-      <div class="form-group">
-        <label class="form-label">Aapka Naam</label>
-        <input class="form-input" id="reg-name" type="text" placeholder="Ramesh Sharma">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Dukan ka Naam</label>
-        <input class="form-input" id="reg-shop" type="text" placeholder="Sharma Mobile Parts">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Sheher / City</label>
-        <input class="form-input" id="reg-city" type="text" placeholder="Prayagraj">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Phone Number</label>
-        <div class="phone-row">
-          <div class="country-code">+91</div>
-          <input class="form-input" id="reg-phone" type="tel" placeholder="9876543210" maxlength="10">
+
+      <!-- Register Step 1: Details -->
+      <div id="reg-step-details">
+        <div class="form-group">
+          <label class="form-label">Aapka Naam</label>
+          <input class="form-input" id="reg-name" type="text" placeholder="Ramesh Sharma">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Dukan ka Naam</label>
+          <input class="form-input" id="reg-shop" type="text" placeholder="Sharma Mobile Parts">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Sheher / City</label>
+          <input class="form-input" id="reg-city" type="text" placeholder="Prayagraj">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone Number</label>
+          <div class="phone-row">
+            <div class="country-code">+91</div>
+            <input class="form-input" id="reg-phone" type="tel" placeholder="9999999992" maxlength="10">
+          </div>
+        </div>
+        <button class="btn-primary" onclick="sendRegisterOTP()">📱 OTP Bhejo & Register Karo</button>
+        <div style="margin-top:12px;background:rgba(244,123,32,0.08);border:1px solid rgba(244,123,32,0.2);border-radius:10px;padding:10px 13px;font-size:10px;color:var(--or);">
+          🧪 Test: <strong>9999999992</strong> → OTP: <strong>123456</strong>
         </div>
       </div>
-      <div class="form-group">
-        <label class="form-label">Email</label>
-        <input class="form-input" id="reg-email" type="email" placeholder="aapka@email.com">
+
+      <!-- Register Step 2: OTP -->
+      <div id="reg-step-otp" style="display:none;">
+        <div style="font-size:12px;color:var(--tx2);text-align:center;margin-bottom:14px;">OTP bheja gaya <strong id="reg-phone-display" style="color:var(--or);"></strong> pe</div>
+        <div class="otp-row">
+          <input class="otp-input" id="r1" maxlength="1" oninput="otpNext(this,'r2')" onkeydown="otpBack(event,this,null)">
+          <input class="otp-input" id="r2" maxlength="1" oninput="otpNext(this,'r3')" onkeydown="otpBack(event,this,'r1')">
+          <input class="otp-input" id="r3" maxlength="1" oninput="otpNext(this,'r4')" onkeydown="otpBack(event,this,'r2')">
+          <input class="otp-input" id="r4" maxlength="1" oninput="otpNext(this,'r5')" onkeydown="otpBack(event,this,'r3')">
+          <input class="otp-input" id="r5" maxlength="1" oninput="otpNext(this,'r6')" onkeydown="otpBack(event,this,'r4')">
+          <input class="otp-input" id="r6" maxlength="1" oninput="otpNext(this,null)"  onkeydown="otpBack(event,this,'r5')">
+        </div>
+        <div class="otp-timer">OTP nahi aaya? <span onclick="sendRegisterOTP()">Dobara Bhejo</span></div>
+        <button class="btn-primary" style="margin-top:16px;" onclick="verifyRegisterOTP()">✅ Confirm & Register</button>
+        <button class="btn-ghost" onclick="resetRegisterStep()">← Wapas jao</button>
       </div>
-      <div class="form-group">
-        <label class="form-label">Password (kam se kam 6 akshar)</label>
-        <input class="form-input" id="reg-pass" type="password" placeholder="••••••••">
-      </div>
-      <button class="btn-primary" onclick="registerWholesaler()">Register Karo</button>
     </div>
 
   </div>
@@ -253,28 +259,23 @@ var sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
 let currentUser = null;
 
+// ── TEST PHONE NUMBERS (Wholesaler only) ──────────────
+const WS_TEST_PHONES = { '9999999992': '123456' };
+
 // ── TOAST ──
 function toast(msg, dur=3000) {
   const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
+  t.textContent = msg; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), dur);
 }
 
-function showErr(msg) {
-  const e = document.getElementById('err-box');
-  e.textContent = msg; e.style.display = 'block';
-  document.getElementById('info-box').style.display = 'none';
-}
-function showInfo(msg) {
-  const e = document.getElementById('info-box');
-  e.textContent = msg; e.style.display = 'block';
-  document.getElementById('err-box').style.display = 'none';
-}
-function clearMsgs() {
-  document.getElementById('err-box').style.display = 'none';
-  document.getElementById('info-box').style.display = 'none';
-}
+function showErr(msg) { const e=document.getElementById('err-box'); e.textContent=msg; e.style.display='block'; document.getElementById('info-box').style.display='none'; }
+function showInfo(msg) { const e=document.getElementById('info-box'); e.textContent=msg; e.style.display='block'; document.getElementById('err-box').style.display='none'; }
+function clearMsgs() { document.getElementById('err-box').style.display='none'; document.getElementById('info-box').style.display='none'; }
+
+// ── OTP INPUT HELPERS ──
+function otpNext(el, nextId) { if(el.value && nextId) document.getElementById(nextId).focus(); }
+function otpBack(e, el, prevId) { if(e.key==='Backspace' && !el.value && prevId) document.getElementById(prevId).focus(); }
 
 // ── TABS ──
 function switchTab(tab) {
@@ -286,156 +287,222 @@ function switchTab(tab) {
   document.getElementById('form-register').style.display = tab==='register' ? 'block' : 'none';
 }
 
-function showOTPLogin() {
+// ── RESET STEPS ──
+function resetLoginStep() {
   clearMsgs();
-  document.getElementById('login-password-section').style.display = 'none';
-  document.getElementById('login-otp-section').style.display = 'block';
+  document.getElementById('login-step-otp').style.display='none';
+  document.getElementById('login-step-phone').style.display='block';
+  ['o1','o2','o3','o4','o5','o6'].forEach(id=>document.getElementById(id).value='');
 }
-function showPasswordLogin() {
+function resetRegisterStep() {
   clearMsgs();
-  document.getElementById('login-password-section').style.display = 'block';
-  document.getElementById('login-otp-section').style.display = 'none';
-  document.getElementById('login-otp-verify').style.display = 'none';
+  document.getElementById('reg-step-otp').style.display='none';
+  document.getElementById('reg-step-details').style.display='block';
+  ['r1','r2','r3','r4','r5','r6'].forEach(id=>document.getElementById(id).value='');
 }
 
-// ── OTP INPUT HELPER ──
-function otpNext(el, nextId) {
-  if (el.value && nextId) document.getElementById(nextId).focus();
-}
-
-// ── PASSWORD LOGIN ──
-async function loginWithPassword() {
-  clearMsgs();
-  const email = document.getElementById('login-email').value.trim();
-  const pass  = document.getElementById('login-pass').value;
-  if (!email || !pass) { showErr('Email aur password daalo'); return; }
-
-  const btn = document.querySelector('#login-password-section .btn-primary');
-  btn.disabled = true; btn.textContent = 'Login ho raha hai...';
-
-  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
-  btn.disabled = false; btn.textContent = 'Login';
-
-  if (error) { showErr('❌ ' + (error.message === 'Invalid login credentials' ? 'Email ya password galat hai' : error.message)); return; }
-  await loadDashboard(data.user);
-}
-
-// ── OTP LOGIN ──
+// ── LOGIN: SEND OTP ──
 async function sendLoginOTP() {
   clearMsgs();
   const phone = document.getElementById('login-phone').value.trim();
-  if (phone.length !== 10) { showErr('10 digit phone number daalo'); return; }
+  if(phone.length !== 10) { showErr('10 digit phone number daalo'); return; }
 
-  const btn = document.querySelector('#login-otp-section .btn-primary');
-  btn.disabled = true; btn.textContent = 'Bhej raha hai...';
+  // Role guard — sirf wholesaler numbers allowed
+  if(!WS_TEST_PHONES[phone]) {
+    // Real Supabase flow ke liye role check baad mein hoga
+    // Test mode mein sirf registered numbers allow
+    if(Object.keys(WS_TEST_PHONES).length > 0) {
+      showErr('❌ Yeh number wholesaler ke liye registered nahi hai');
+      return;
+    }
+  }
 
-  const { error } = await sb.auth.signInWithOtp({ phone: '+91' + phone });
-  btn.disabled = false; btn.textContent = 'OTP Bhejo';
+  const btn = document.querySelector('#login-step-phone .btn-primary');
+  btn.disabled=true; btn.textContent='Bhej raha hai...';
 
-  if (error) { showErr('❌ ' + error.message); return; }
+  // Test number — bypass Supabase
+  if(WS_TEST_PHONES[phone]) {
+    btn.disabled=false; btn.textContent='📱 OTP Bhejo';
+    document.getElementById('login-phone-display').textContent = '+91 '+phone;
+    document.getElementById('login-step-phone').style.display='none';
+    document.getElementById('login-step-otp').style.display='block';
+    showInfo('✅ Test OTP: ' + WS_TEST_PHONES[phone]);
+    document.getElementById('o1').focus();
+    return;
+  }
 
-  showInfo('✅ OTP bhej diya +91' + phone + ' pe');
-  document.getElementById('login-otp-verify').style.display = 'block';
+  const {error} = await sb.auth.signInWithOtp({ phone: '+91'+phone });
+  btn.disabled=false; btn.textContent='📱 OTP Bhejo';
+  if(error) { showErr('❌ '+error.message); return; }
+  document.getElementById('login-phone-display').textContent = '+91 '+phone;
+  document.getElementById('login-step-phone').style.display='none';
+  document.getElementById('login-step-otp').style.display='block';
+  showInfo('✅ OTP bheja gaya +91'+phone+' pe');
+  document.getElementById('o1').focus();
 }
 
+// ── LOGIN: VERIFY OTP ──
 async function verifyLoginOTP() {
   clearMsgs();
   const phone = document.getElementById('login-phone').value.trim();
-  const otp = ['o1','o2','o3','o4','o5','o6'].map(id => document.getElementById(id).value).join('');
-  if (otp.length !== 6) { showErr('6-digit OTP daalo'); return; }
+  const otp = ['o1','o2','o3','o4','o5','o6'].map(id=>document.getElementById(id).value).join('');
+  if(otp.length !== 6) { showErr('6-digit OTP daalo'); return; }
 
-  const btn = document.querySelector('#login-otp-verify .btn-primary');
-  btn.disabled = true; btn.textContent = 'Verify ho raha hai...';
+  const btn = document.querySelector('#login-step-otp .btn-primary');
+  btn.disabled=true; btn.textContent='Verify ho raha hai...';
 
-  const { data, error } = await sb.auth.verifyOtp({ phone: '+91' + phone, token: otp, type: 'sms' });
-  btn.disabled = false; btn.textContent = 'Verify & Login';
+  // Test number
+  if(WS_TEST_PHONES[phone]) {
+    if(otp !== WS_TEST_PHONES[phone]) {
+      btn.disabled=false; btn.textContent='✅ Verify & Login';
+      showErr('❌ OTP galat hai. Test OTP: '+WS_TEST_PHONES[phone]);
+      return;
+    }
+    btn.disabled=false; btn.textContent='✅ Verify & Login';
+    // Mock test user profile
+    await loadDashboard({ id:'test-ws-'+phone, phone:'+91'+phone }, {
+      shop_name:'Test Wholesaler Shop', city:'Test City',
+      phone:'+91'+phone, email:'test@wholesaler.com', is_verified:true
+    });
+    return;
+  }
 
-  if (error) { showErr('❌ OTP galat hai ya expire ho gaya'); return; }
-  await loadDashboard(data.user);
+  const {data,error} = await sb.auth.verifyOtp({phone:'+91'+phone, token:otp, type:'sms'});
+  btn.disabled=false; btn.textContent='✅ Verify & Login';
+  if(error) { showErr('❌ OTP galat hai ya expire ho gaya'); return; }
+
+  const {data:profile} = await sb.from('mpm_users').select('*').eq('id',data.user.id).single();
+  if(profile && profile.role !== 'wholesaler') {
+    await sb.auth.signOut();
+    showErr('❌ Yeh number wholesaler ke liye registered nahi hai');
+    return;
+  }
+  await loadDashboard(data.user, profile);
 }
 
-// ── REGISTER ──
-async function registerWholesaler() {
+// ── REGISTER: SEND OTP ──
+async function sendRegisterOTP() {
   clearMsgs();
   const name  = document.getElementById('reg-name').value.trim();
   const shop  = document.getElementById('reg-shop').value.trim();
   const city  = document.getElementById('reg-city').value.trim();
   const phone = document.getElementById('reg-phone').value.trim();
-  const email = document.getElementById('reg-email').value.trim();
-  const pass  = document.getElementById('reg-pass').value;
 
-  if (!name||!shop||!city||!phone||!email||!pass) { showErr('Saari details bharni zaroori hain'); return; }
-  if (phone.length !== 10) { showErr('10 digit phone number daalo'); return; }
-  if (pass.length < 6) { showErr('Password kam se kam 6 akshar ka hona chahiye'); return; }
+  if(!name||!shop||!city||!phone) { showErr('Saari details bharni zaroori hain'); return; }
+  if(phone.length !== 10) { showErr('10 digit phone number daalo'); return; }
 
-  const btn = document.querySelector('#form-register .btn-primary');
-  btn.disabled = true; btn.textContent = 'Register ho raha hai...';
+  const btn = document.querySelector('#reg-step-details .btn-primary');
+  btn.disabled=true; btn.textContent='Bhej raha hai...';
 
-  const { data, error } = await sb.auth.signUp({
-    email, password: pass,
-    options: { data: { full_name: name, shop_name: shop, city, phone: '+91'+phone, role: 'wholesaler' } }
-  });
-
-  btn.disabled = false; btn.textContent = 'Register Karo';
-
-  if (error) { showErr('❌ ' + error.message); return; }
-
-  // mpm_users table mein bhi save karo
-  if (data.user) {
-    await sb.from('mpm_users').insert({
-      id: data.user.id,
-      email, full_name: name, shop_name: shop,
-      city, phone: '+91'+phone, role: 'wholesaler',
-      is_verified: false, is_suspended: false, strikes: 0
-    });
+  // Test number
+  if(WS_TEST_PHONES[phone]) {
+    btn.disabled=false; btn.textContent='📱 OTP Bhejo & Register Karo';
+    document.getElementById('reg-phone-display').textContent = '+91 '+phone;
+    document.getElementById('reg-step-details').style.display='none';
+    document.getElementById('reg-step-otp').style.display='block';
+    showInfo('✅ Test OTP: '+WS_TEST_PHONES[phone]);
+    document.getElementById('r1').focus();
+    return;
   }
 
-  showInfo('✅ Registration ho gaya! Email verify karo phir login karo. Admin approval ka wait karo.');
-  toast('🎉 Welcome! Email check karo verification ke liye');
+  const {error} = await sb.auth.signInWithOtp({ phone: '+91'+phone });
+  btn.disabled=false; btn.textContent='📱 OTP Bhejo & Register Karo';
+  if(error) { showErr('❌ '+error.message); return; }
+  document.getElementById('reg-phone-display').textContent = '+91 '+phone;
+  document.getElementById('reg-step-details').style.display='none';
+  document.getElementById('reg-step-otp').style.display='block';
+  showInfo('✅ OTP bheja gaya +91'+phone+' pe');
+  document.getElementById('r1').focus();
+}
+
+// ── REGISTER: VERIFY OTP ──
+async function verifyRegisterOTP() {
+  clearMsgs();
+  const phone = document.getElementById('reg-phone').value.trim();
+  const name  = document.getElementById('reg-name').value.trim();
+  const shop  = document.getElementById('reg-shop').value.trim();
+  const city  = document.getElementById('reg-city').value.trim();
+  const otp   = ['r1','r2','r3','r4','r5','r6'].map(id=>document.getElementById(id).value).join('');
+  if(otp.length !== 6) { showErr('6-digit OTP daalo'); return; }
+
+  const btn = document.querySelector('#reg-step-otp .btn-primary');
+  btn.disabled=true; btn.textContent='Register ho raha hai...';
+
+  // Test number
+  if(WS_TEST_PHONES[phone]) {
+    if(otp !== WS_TEST_PHONES[phone]) {
+      btn.disabled=false; btn.textContent='✅ Confirm & Register';
+      showErr('❌ OTP galat hai. Test OTP: '+WS_TEST_PHONES[phone]);
+      return;
+    }
+    btn.disabled=false; btn.textContent='✅ Confirm & Register';
+    toast('🎉 Registration ho gaya! Admin approval ka wait karo.');
+    showInfo('✅ Registered! Pending approval — admin se contact karo.');
+    await loadDashboard({ id:'test-ws-'+phone, phone:'+91'+phone }, {
+      shop_name: shop, city, phone:'+91'+phone, email:'', is_verified:false
+    });
+    return;
+  }
+
+  const {data,error} = await sb.auth.verifyOtp({phone:'+91'+phone, token:otp, type:'sms'});
+  btn.disabled=false; btn.textContent='✅ Confirm & Register';
+  if(error) { showErr('❌ OTP galat hai ya expire ho gaya'); return; }
+
+  if(data.user) {
+    await sb.from('mpm_users').upsert({
+      id: data.user.id, full_name:name, shop_name:shop,
+      city, phone:'+91'+phone, role:'wholesaler',
+      is_verified:false, is_suspended:false, strikes:0
+    });
+  }
+  toast('🎉 Registration ho gaya!');
+  const {data:profile} = await sb.from('mpm_users').select('*').eq('id',data.user.id).single();
+  await loadDashboard(data.user, profile);
 }
 
 // ── LOAD DASHBOARD ──
-async function loadDashboard(user) {
+async function loadDashboard(user, profile) {
   currentUser = user;
-
-  const { data: profile } = await sb.from('mpm_users').select('*').eq('id', user.id).single();
-
   document.getElementById('screen-auth').style.display = 'none';
   document.getElementById('screen-main').style.display = 'block';
 
-  if (profile) {
-    document.getElementById('dash-shop-name').textContent = profile.shop_name || user.email;
+  if(!profile) {
+    const {data:p} = await sb.from('mpm_users').select('*').eq('id',user.id).single();
+    profile = p;
+  }
+
+  if(profile) {
+    document.getElementById('dash-shop-name').textContent = profile.shop_name || profile.full_name || 'Wholesaler';
     document.getElementById('dash-city').textContent = profile.city || 'Mobile Part Mitra';
     document.getElementById('info-email').textContent = profile.email || '—';
-    document.getElementById('info-phone').textContent = profile.phone || '—';
+    document.getElementById('info-phone').textContent = profile.phone || user.phone || '—';
     document.getElementById('info-city').textContent = profile.city || '—';
 
     const badge = document.getElementById('dash-status-badge');
-    if (profile.is_verified) {
-      badge.textContent = '✅ Verified';
-      badge.className = 'badge badge-verified';
-      document.getElementById('pending-notice').style.display = 'none';
+    if(profile.is_verified) {
+      badge.textContent='✅ Verified'; badge.className='badge badge-verified';
+      document.getElementById('pending-notice').style.display='none';
     }
   } else {
-    document.getElementById('dash-shop-name').textContent = user.email;
+    document.getElementById('dash-shop-name').textContent = user.phone || 'Wholesaler';
   }
-
   toast('✅ Login ho gaya!');
 }
 
 // ── LOGOUT ──
 async function logout() {
   await sb.auth.signOut();
-  document.getElementById('screen-main').style.display = 'none';
-  document.getElementById('screen-auth').style.display = 'flex';
-  currentUser = null;
+  document.getElementById('screen-main').style.display='none';
+  document.getElementById('screen-auth').style.display='flex';
+  currentUser=null;
+  resetLoginStep(); resetRegisterStep();
   toast('Logout ho gaya');
 }
 
 // ── AUTO LOGIN CHECK ──
 (async () => {
-  const { data: { session } } = await sb.auth.getSession();
-  if (session?.user) await loadDashboard(session.user);
+  const {data:{session}} = await sb.auth.getSession();
+  if(session?.user) await loadDashboard(session.user);
 })();
 </script>
 </body>

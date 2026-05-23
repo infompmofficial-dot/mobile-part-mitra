@@ -184,23 +184,39 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--tx);min-h
       <div class="sb-icon"><img src="../shared/images/MPM_Logo.png" style="width:28px;height:28px;border-radius:6px;object-fit:cover;" alt="MPM"></div>
       <div>
         <div style="font-size:16px;font-weight:900;">MPM Admin</div>
-        <div style="font-size:10px;color:var(--tx3);">Restricted Access Only</div>
+        <div style="font-size:10px;color:var(--tx3);">Restricted Access — Admin Only</div>
       </div>
     </div>
-    <div style="margin-bottom:12px;">
-      <div style="font-size:10px;color:var(--tx3);margin-bottom:5px;">Admin Email</div>
-      <input id="a-email" class="input" type="email" placeholder="admin@mpm.app">
+
+    <div id="a-err" style="display:none;background:rgba(224,85,85,0.1);border:1px solid rgba(224,85,85,0.25);border-radius:8px;padding:10px 12px;font-size:12px;color:#E05555;margin-bottom:12px;"></div>
+    <div id="a-info" style="display:none;background:rgba(61,187,120,0.1);border:1px solid rgba(61,187,120,0.25);border-radius:8px;padding:10px 12px;font-size:12px;color:#3DBB78;margin-bottom:12px;"></div>
+
+    <!-- Step 1: Phone -->
+    <div id="a-step-phone">
+      <div style="font-size:10px;color:var(--tx3);margin-bottom:5px;">Admin Phone Number</div>
+      <div style="display:flex;gap:8px;margin-bottom:16px;">
+        <div style="width:60px;background:var(--bg3);border:1px solid var(--bd2);border-radius:11px;padding:10px;text-align:center;font-weight:700;font-size:13px;color:var(--tx2);">+91</div>
+        <input id="a-phone" class="input" type="tel" placeholder="9999999991" maxlength="10" onkeydown="if(event.key==='Enter')sendAdminOTP()">
+      </div>
+      <button class="btn" style="width:100%;" onclick="sendAdminOTP()">📱 OTP Bhejo →</button>
+      <div style="margin-top:14px;background:var(--or2);border:1px solid var(--orB);border-radius:10px;padding:10px 13px;font-size:10px;color:var(--or);">
+        🧪 Test: <strong>9999999991</strong> → OTP: <strong>123456</strong>
+      </div>
     </div>
-    <div style="margin-bottom:20px;">
-      <div style="font-size:10px;color:var(--tx3);margin-bottom:5px;">Password</div>
-      <input id="a-pass" class="input" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doAdminLogin()">
-    </div>
-    <button class="btn" style="width:100%;" onclick="doAdminLogin()">🔐 Admin Login →</button>
-    <div style="margin-top:16px;background:var(--bg3);border:1px solid var(--bd);border-radius:10px;padding:10px 13px;font-size:10px;color:var(--tx3);line-height:1.6;">
-      ⚠️ <strong style="color:var(--tx2);">Sirf authorized admin ke liye.</strong> Galat password enter karne pe account lock ho sakta hai.
-    </div>
-    <div style="margin-top:12px;background:var(--or2);border:1px solid var(--orB);border-radius:10px;padding:10px 13px;font-size:10px;color:var(--or);">
-      🧪 Demo: admin@mpm.app / admin123
+
+    <!-- Step 2: OTP -->
+    <div id="a-step-otp" style="display:none;">
+      <div style="font-size:11px;color:var(--tx2);margin-bottom:14px;text-align:center;">OTP bheja gaya <strong id="a-phone-display" style="color:var(--or);"></strong> pe</div>
+      <div style="display:flex;gap:8px;justify-content:center;margin-bottom:16px;">
+        <input class="otp-input" id="a1" maxlength="1" oninput="aOtpNext(this,'a2')" onkeydown="aOtpBack(event,this,null)" style="width:44px;height:50px;background:var(--bg3);border:1px solid var(--bd2);border-radius:10px;text-align:center;font-size:20px;font-weight:700;color:var(--tx);outline:none;">
+        <input class="otp-input" id="a2" maxlength="1" oninput="aOtpNext(this,'a3')" onkeydown="aOtpBack(event,this,'a1')" style="width:44px;height:50px;background:var(--bg3);border:1px solid var(--bd2);border-radius:10px;text-align:center;font-size:20px;font-weight:700;color:var(--tx);outline:none;">
+        <input class="otp-input" id="a3" maxlength="1" oninput="aOtpNext(this,'a4')" onkeydown="aOtpBack(event,this,'a2')" style="width:44px;height:50px;background:var(--bg3);border:1px solid var(--bd2);border-radius:10px;text-align:center;font-size:20px;font-weight:700;color:var(--tx);outline:none;">
+        <input class="otp-input" id="a4" maxlength="1" oninput="aOtpNext(this,'a5')" onkeydown="aOtpBack(event,this,'a3')" style="width:44px;height:50px;background:var(--bg3);border:1px solid var(--bd2);border-radius:10px;text-align:center;font-size:20px;font-weight:700;color:var(--tx);outline:none;">
+        <input class="otp-input" id="a5" maxlength="1" oninput="aOtpNext(this,'a6')" onkeydown="aOtpBack(event,this,'a4')" style="width:44px;height:50px;background:var(--bg3);border:1px solid var(--bd2);border-radius:10px;text-align:center;font-size:20px;font-weight:700;color:var(--tx);outline:none;">
+        <input class="otp-input" id="a6" maxlength="1" oninput="aOtpNext(this,null)" onkeydown="aOtpBack(event,this,'a5')" style="width:44px;height:50px;background:var(--bg3);border:1px solid var(--bd2);border-radius:10px;text-align:center;font-size:20px;font-weight:700;color:var(--tx);outline:none;">
+      </div>
+      <button class="btn" style="width:100%;margin-bottom:10px;" onclick="verifyAdminOTP()">✅ Verify & Login</button>
+      <button class="btn-ghost" style="width:100%;" onclick="resetAdminLogin()">← Phone badlo</button>
     </div>
   </div>
 </div>
@@ -544,36 +560,104 @@ const demoOrders = [
   {id:'MPM-005',part_name:'Redmi Note 12 Battery',retailer_name:'Rajesh Kumar',wholesaler_name:'Sharma Electronics',price:320,status:'ready',created_at:'2026-05-10T13:00:00Z'},
 ];
 
-// ── LOGIN ──────────────────────────────────────────────
-async function doAdminLogin(){
-  const email = document.getElementById('a-email').value.trim();
-  const pass  = document.getElementById('a-pass').value.trim();
+// ── ADMIN PHONE OTP LOGIN ──────────────────────────────
+// Test number: 9999999991 = 123456 (Admin only)
+const ADMIN_TEST_PHONES = { '9999999991': '123456' };
 
-  if(DEMO_MODE){
-    if(email==='admin@mpm.app' && pass==='admin123'){
-      document.getElementById('app-login').style.display='none';
-      document.getElementById('app-main').style.display='block';
-      document.getElementById('sb-admin-name').textContent='Admin';
-      initDashboard();
-    } else { toast('❌ Demo: admin@mpm.app / admin123'); }
+function aShowErr(msg){ const e=document.getElementById('a-err'); e.textContent=msg; e.style.display='block'; document.getElementById('a-info').style.display='none'; }
+function aShowInfo(msg){ const e=document.getElementById('a-info'); e.textContent=msg; e.style.display='block'; document.getElementById('a-err').style.display='none'; }
+function aClearMsgs(){ document.getElementById('a-err').style.display='none'; document.getElementById('a-info').style.display='none'; }
+
+function aOtpNext(el, nextId){ if(el.value && nextId) document.getElementById(nextId).focus(); }
+function aOtpBack(e, el, prevId){ if(e.key==='Backspace' && !el.value && prevId) document.getElementById(prevId).focus(); }
+
+async function sendAdminOTP(){
+  aClearMsgs();
+  const phone = document.getElementById('a-phone').value.trim();
+  if(phone.length !== 10){ aShowErr('10 digit phone number daalo'); return; }
+
+  // Role check — sirf admin number allow hai
+  if(!ADMIN_TEST_PHONES[phone]){
+    aShowErr('❌ Yeh number admin ke liye registered nahi hai');
     return;
   }
-  const {data,error} = await sb.auth.signInWithPassword({email,password:pass});
-  if(error){ toast('❌ '+error.message); return; }
-  // Check admin role
+
+  const btn = document.querySelector('#a-step-phone .btn');
+  btn.disabled=true; btn.textContent='Bhej raha hai...';
+
+  // Test number: bypass Supabase OTP
+  if(ADMIN_TEST_PHONES[phone]){
+    btn.disabled=false; btn.textContent='📱 OTP Bhejo →';
+    document.getElementById('a-phone-display').textContent = '+91 ' + phone;
+    document.getElementById('a-step-phone').style.display='none';
+    document.getElementById('a-step-otp').style.display='block';
+    aShowInfo('✅ Test OTP: ' + ADMIN_TEST_PHONES[phone]);
+    document.getElementById('a1').focus();
+    return;
+  }
+
+  const {error} = await sb.auth.signInWithOtp({ phone: '+91'+phone });
+  btn.disabled=false; btn.textContent='📱 OTP Bhejo →';
+  if(error){ aShowErr('❌ '+error.message); return; }
+  document.getElementById('a-phone-display').textContent = '+91 '+phone;
+  document.getElementById('a-step-phone').style.display='none';
+  document.getElementById('a-step-otp').style.display='block';
+  aShowInfo('✅ OTP bheja gaya +91'+phone+' pe');
+  document.getElementById('a1').focus();
+}
+
+async function verifyAdminOTP(){
+  aClearMsgs();
+  const phone = document.getElementById('a-phone').value.trim();
+  const otp = ['a1','a2','a3','a4','a5','a6'].map(id=>document.getElementById(id).value).join('');
+  if(otp.length!==6){ aShowErr('6-digit OTP daalo'); return; }
+
+  const btn = document.querySelector('#a-step-otp .btn');
+  btn.disabled=true; btn.textContent='Verify ho raha hai...';
+
+  // Test number check
+  if(ADMIN_TEST_PHONES[phone]){
+    if(otp !== ADMIN_TEST_PHONES[phone]){
+      btn.disabled=false; btn.textContent='✅ Verify & Login';
+      aShowErr('❌ OTP galat hai. Test OTP: '+ADMIN_TEST_PHONES[phone]);
+      return;
+    }
+    btn.disabled=false; btn.textContent='✅ Verify & Login';
+    document.getElementById('app-login').style.display='none';
+    document.getElementById('app-main').style.display='block';
+    document.getElementById('sb-admin-name').textContent='Admin';
+    initDashboard();
+    toast('✅ Admin login ho gaya!');
+    return;
+  }
+
+  const {data,error} = await sb.auth.verifyOtp({phone:'+91'+phone, token:otp, type:'sms'});
+  btn.disabled=false; btn.textContent='✅ Verify & Login';
+  if(error){ aShowErr('❌ OTP galat hai ya expire ho gaya'); return; }
+
+  // Role verify
   const {data:profile} = await sb.from('mpm_users').select('*').eq('id',data.user.id).maybeSingle();
-  if(!profile||profile.role!=='admin'){ await sb.auth.signOut(); toast('❌ Admin access nahi hai'); return; }
-  adminUser = profile;
+  if(!profile||profile.role!=='admin'){ await sb.auth.signOut(); aShowErr('❌ Yeh number admin ke liye registered nahi hai'); return; }
+  adminUser=profile;
   document.getElementById('app-login').style.display='none';
   document.getElementById('app-main').style.display='block';
   document.getElementById('sb-admin-name').textContent=profile.name||'Admin';
   initDashboard();
+  toast('✅ Admin login ho gaya!');
+}
+
+function resetAdminLogin(){
+  aClearMsgs();
+  document.getElementById('a-step-otp').style.display='none';
+  document.getElementById('a-step-phone').style.display='block';
+  ['a1','a2','a3','a4','a5','a6'].forEach(id=>document.getElementById(id).value='');
 }
 
 function doLogout(){
   sb.auth.signOut();
   document.getElementById('app-main').style.display='none';
   document.getElementById('app-login').style.display='flex';
+  resetAdminLogin();
 }
 
 // ── NAVIGATION ────────────────────────────────────────
