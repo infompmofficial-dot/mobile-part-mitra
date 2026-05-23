@@ -175,12 +175,13 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--tx);min-h
 </style>
 </head>
 <body>
+<div style="background:#111;border-bottom:1px solid rgba(244,123,32,0.2);padding:6px 16px;font-size:11px;font-weight:700;color:#F47B20;letter-spacing:0.08em;text-align:center;font-family:'DM Sans',sans-serif;">📁 admin-index.html — Admin Panel — Mobile Part Mitra</div>
 
 <!-- ══ LOGIN ══ -->
 <div id="app-login">
   <div class="login-box">
     <div style="display:flex;align-items:center;gap:11px;margin-bottom:24px;">
-      <div class="sb-icon">🛡</div>
+      <div class="sb-icon"><img src="../shared/images/MPM_Logo.png" style="width:28px;height:28px;border-radius:6px;object-fit:cover;" alt="MPM"></div>
       <div>
         <div style="font-size:16px;font-weight:900;">MPM Admin</div>
         <div style="font-size:10px;color:var(--tx3);">Restricted Access Only</div>
@@ -211,7 +212,7 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--tx);min-h
 <!-- SIDEBAR -->
 <div class="sidebar">
   <div class="sb-logo">
-    <div class="sb-icon">🛡</div>
+    <div class="sb-icon"><img src="../shared/images/MPM_Logo.png" style="width:28px;height:28px;border-radius:6px;object-fit:cover;" alt="MPM"></div>
     <div>
       <div class="sb-title">MPM — Admin Panel</div>
       <div class="sb-badge">Super Admin</div>
@@ -507,8 +508,8 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--tx);min-h
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 // ── CONFIG ────────────────────────────────────────────
-const SUPABASE_URL  = 'https://YOUR_PROJECT.supabase.co';
-const SUPABASE_ANON = 'YOUR_ANON_KEY';
+const SUPABASE_URL  = 'https://etcvgvxqrtcgbjvkqobt.supabase.co';
+const SUPABASE_ANON = 'sb_publishable_38tz5qsQgDs75Q6lBqd8uQ_89R1NDfP';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
 // ── STATE ──────────────────────────────────────────────

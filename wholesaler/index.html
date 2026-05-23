@@ -3,699 +3,440 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🏪 WHOLESALER PANEL — Mobile Part Mitra (MPM)</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
+<title>🏪 Wholesaler Panel — Mobile Part Mitra</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 :root{
-  --or:#F47B20;--or2:rgba(244,123,32,0.13);--or3:rgba(244,123,32,0.07);--orB:rgba(244,123,32,0.28);
+  --or:#F47B20;--or2:rgba(244,123,32,0.13);--orB:rgba(244,123,32,0.28);
   --bg:#0A0A0A;--bg2:#111111;--bg3:#181818;--bg4:#202020;
-  --bd:rgba(255,255,255,0.06);--bd2:rgba(255,255,255,0.10);
+  --bd:rgba(255,255,255,0.06);--bd2:rgba(255,255,255,0.12);
   --tx:#F2EDE8;--tx2:#A89E96;--tx3:#5A534E;
   --gr:#3DBB78;--re:#E05555;--am:#F4B420;
 }
-body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--tx);min-height:100vh;padding:28px 20px 60px;display:flex;flex-direction:column;align-items:center;gap:32px;}
+body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--tx);min-height:100vh;}
 
-/* ── HEADER ── */
-.hdr{width:100%;max-width:900px;display:flex;align-items:center;justify-content:space-between;gap:16px;}
+/* ── AUTH SCREENS ── */
+#screen-auth{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;}
+#screen-main{display:none;min-height:100vh;padding:24px 20px 60px;}
+
+.auth-box{width:100%;max-width:400px;}
+.auth-logo{text-align:center;margin-bottom:32px;}
+.auth-logo img{width:72px;height:72px;border-radius:20px;object-fit:cover;}
+.auth-logo-name{font-size:22px;font-weight:800;margin-top:12px;letter-spacing:-0.3px;}
+.auth-logo-sub{font-size:12px;color:var(--tx3);margin-top:4px;}
+
+.tab-row{display:flex;background:var(--bg2);border:1px solid var(--bd);border-radius:12px;padding:4px;margin-bottom:24px;}
+.tab-btn{flex:1;padding:10px;border:none;background:transparent;color:var(--tx2);font-size:13px;font-weight:600;border-radius:9px;cursor:pointer;transition:all 0.2s;}
+.tab-btn.active{background:var(--or);color:#fff;}
+
+.form-group{margin-bottom:16px;}
+.form-label{font-size:12px;color:var(--tx2);font-weight:600;margin-bottom:6px;display:block;}
+.form-input{width:100%;background:var(--bg2);border:1px solid var(--bd2);border-radius:10px;padding:12px 14px;color:var(--tx);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;transition:border 0.2s;}
+.form-input:focus{border-color:var(--or);}
+.form-input::placeholder{color:var(--tx3);}
+
+.phone-row{display:flex;gap:8px;}
+.country-code{width:80px;background:var(--bg2);border:1px solid var(--bd2);border-radius:10px;padding:12px 10px;color:var(--tx);font-size:14px;text-align:center;font-weight:700;}
+
+.otp-row{display:flex;gap:8px;justify-content:center;margin:8px 0;}
+.otp-input{width:48px;height:52px;background:var(--bg2);border:1px solid var(--bd2);border-radius:10px;text-align:center;font-size:20px;font-weight:700;color:var(--tx);outline:none;transition:border 0.2s;}
+.otp-input:focus{border-color:var(--or);}
+
+.btn-primary{width:100%;padding:14px;background:var(--or);border:none;border-radius:12px;color:#fff;font-size:15px;font-weight:700;cursor:pointer;transition:opacity 0.2s;font-family:'DM Sans',sans-serif;}
+.btn-primary:hover{opacity:0.9;}
+.btn-primary:disabled{opacity:0.5;cursor:not-allowed;}
+
+.btn-ghost{width:100%;padding:12px;background:transparent;border:1px solid var(--bd2);border-radius:12px;color:var(--tx2);font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;font-family:'DM Sans',sans-serif;margin-top:8px;}
+.btn-ghost:hover{border-color:var(--or);color:var(--or);}
+
+.divider{text-align:center;color:var(--tx3);font-size:12px;margin:16px 0;position:relative;}
+.divider::before,.divider::after{content:'';position:absolute;top:50%;width:42%;height:1px;background:var(--bd2);}
+.divider::before{left:0;}.divider::after{right:0;}
+
+.err-msg{background:rgba(224,85,85,0.1);border:1px solid rgba(224,85,85,0.25);border-radius:8px;padding:10px 12px;font-size:12px;color:#E05555;margin-bottom:12px;display:none;}
+.info-msg{background:rgba(61,187,120,0.1);border:1px solid rgba(61,187,120,0.25);border-radius:8px;padding:10px 12px;font-size:12px;color:#3DBB78;margin-bottom:12px;display:none;}
+
+.otp-timer{text-align:center;font-size:12px;color:var(--tx3);margin-top:8px;}
+.otp-timer span{color:var(--or);cursor:pointer;font-weight:600;}
+
+/* ── MAIN DASHBOARD ── */
+.wrap{max-width:900px;margin:0 auto;}
+.hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px;}
 .hdr-left{display:flex;align-items:center;gap:12px;}
-.logo{width:42px;height:42px;background:var(--or2);border:1.5px solid var(--orB);border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
-.hdr-title{font-size:18px;font-weight:800;letter-spacing:-0.3px;}
-.hdr-sub{font-size:11px;color:var(--tx3);margin-top:1px;}
+.logo-box{width:42px;height:42px;border-radius:12px;overflow:hidden;}
+.logo-box img{width:100%;height:100%;object-fit:cover;}
+.hdr-title{font-size:18px;font-weight:800;}
+.hdr-sub{font-size:11px;color:var(--tx3);margin-top:2px;}
+
 .badge{background:var(--or2);border:1px solid var(--orB);color:var(--or);font-size:9px;font-weight:700;padding:4px 10px;border-radius:20px;letter-spacing:0.05em;text-transform:uppercase;}
+.badge-pending{background:rgba(244,180,32,0.12);border:1px solid rgba(244,180,32,0.25);color:var(--am);}
+.badge-verified{background:rgba(61,187,120,0.12);border:1px solid rgba(61,187,120,0.25);color:var(--gr);}
 
-/* ── PROGRESS RAIL ── */
-.progress-wrap{width:100%;max-width:900px;}
-.progress-rail{display:flex;align-items:center;gap:0;position:relative;}
-.step-node{display:flex;flex-direction:column;align-items:center;flex:1;position:relative;cursor:pointer;}
-.step-node:last-child{flex:0;}
-.node-circle{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;transition:all .3s;position:relative;z-index:2;flex-shrink:0;}
-.node-circle.done{background:var(--or);color:#fff;box-shadow:0 0 16px rgba(244,123,32,0.4);}
-.node-circle.active{background:var(--or2);border:2px solid var(--or);color:var(--or);}
-.node-circle.idle{background:var(--bg3);border:1.5px solid var(--bd2);color:var(--tx3);}
-.node-label{font-size:8.5px;color:var(--tx3);margin-top:6px;text-align:center;max-width:64px;line-height:1.3;font-weight:500;}
-.node-label.active-lbl{color:var(--or);font-weight:700;}
-.step-line{flex:1;height:2px;background:var(--bd2);margin-top:-18px;position:relative;z-index:1;transition:background .4s;}
-.step-line.filled{background:var(--or);}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px;}
+.stat-card{background:var(--bg2);border:1px solid var(--bd);border-radius:14px;padding:16px;text-align:center;}
+.stat-num{font-size:28px;font-weight:900;color:var(--or);}
+.stat-lbl{font-size:11px;color:var(--tx3);margin-top:2px;}
 
-/* ── MAIN LAYOUT ── */
-.main{width:100%;max-width:900px;display:grid;grid-template-columns:1fr 360px;gap:20px;align-items:start;}
-@media(max-width:700px){.main{grid-template-columns:1fr;}}
+.section-title{font-size:13px;font-weight:700;color:var(--tx2);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;}
 
-/* ── STEP CARD ── */
-.step-card{background:var(--bg2);border:1px solid var(--bd2);border-radius:20px;overflow:hidden;}
-.step-card-top{padding:20px 22px 16px;border-bottom:1px solid var(--bd);}
-.step-num{font-size:10px;color:var(--or);font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;}
-.step-title{font-size:20px;font-weight:900;letter-spacing:-0.4px;margin-bottom:4px;}
-.step-desc{font-size:12px;color:var(--tx2);line-height:1.5;}
-.step-body{padding:20px 22px;}
+.pending-box{background:rgba(244,180,32,0.06);border:1px solid rgba(244,180,32,0.2);border-radius:14px;padding:18px;margin-bottom:24px;}
+.pending-title{font-size:14px;font-weight:700;color:var(--am);margin-bottom:6px;}
+.pending-sub{font-size:12px;color:var(--tx2);}
 
-/* ── PHONE ── */
-.phone-wrap{position:sticky;top:20px;}
-.phone{background:var(--bg);border-radius:40px;border:2px solid rgba(255,255,255,0.07);overflow:hidden;box-shadow:0 0 0 5px rgba(0,0,0,0.5),0 0 0 6px rgba(255,255,255,0.03),0 30px 80px rgba(244,123,32,0.12),0 0 50px rgba(244,123,32,0.05);}
-.notch{width:80px;height:22px;background:var(--bg);border:1.5px solid rgba(255,255,255,0.04);border-top:none;border-radius:0 0 14px 14px;margin:0 auto;}
-.status-bar{display:flex;justify-content:space-between;align-items:center;padding:5px 18px;font-size:9px;font-weight:600;color:var(--tx3);}
-.screen-content{padding:14px 13px 20px;min-height:520px;}
+.logout-btn{background:transparent;border:1px solid var(--bd2);border-radius:10px;padding:8px 16px;color:var(--tx2);font-size:12px;font-weight:600;cursor:pointer;transition:all 0.2s;}
+.logout-btn:hover{border-color:var(--re);color:var(--re);}
 
-/* ── FORM ELEMENTS ── */
-.form-group{margin-bottom:14px;}
-.form-label{font-size:10px;color:var(--tx3);font-weight:600;margin-bottom:5px;display:flex;align-items:center;gap:5px;}
-.req{color:var(--or);}
-.mock-input{background:var(--bg3);border:1px solid var(--bd2);border-radius:11px;padding:10px 12px;font-size:12px;color:var(--tx);display:flex;align-items:center;gap:8px;transition:border-color .25s;}
-.mock-input.filled{border-color:rgba(244,123,32,0.35);background:rgba(244,123,32,0.05);}
-.mock-input.active-field{border-color:var(--or);box-shadow:0 0 0 3px rgba(244,123,32,0.1);animation:pulse-border 1.5s ease-in-out infinite;}
-@keyframes pulse-border{0%,100%{box-shadow:0 0 0 3px rgba(244,123,32,0.1);}50%{box-shadow:0 0 0 5px rgba(244,123,32,0.18);}}
-.mock-val{color:var(--or);font-weight:600;}
-.mock-ph{color:var(--tx3);}
-.mock-select{display:flex;justify-content:space-between;align-items:center;}
-.cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:4px;}
-.cat-opt{background:var(--bg3);border:1.5px solid var(--bd);border-radius:10px;padding:9px 10px;text-align:center;cursor:pointer;transition:all .2s;}
-.cat-opt.chosen{background:var(--or2);border-color:var(--or);}
-.cat-opt-icon{font-size:18px;margin-bottom:3px;}
-.cat-opt-name{font-size:9px;font-weight:700;color:var(--tx2);}
-.cat-opt.chosen .cat-opt-name{color:var(--or);}
-.price-stock-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.mock-btn{background:var(--or);border-radius:12px;padding:12px;text-align:center;color:#fff;font-size:12px;font-weight:700;margin-top:4px;}
-.mock-btn.disabled{background:var(--bg4);color:var(--tx3);}
-.success-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:460px;text-align:center;gap:10px;}
-.success-icon{width:68px;height:68px;background:rgba(61,187,120,0.12);border:2px solid rgba(61,187,120,0.3);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;margin-bottom:4px;}
-
-/* ── STEP CONTENT ── */
-.info-row{display:flex;gap:10px;margin-bottom:10px;align-items:flex-start;}
-.info-icon{width:32px;height:32px;background:var(--bg3);border:1px solid var(--bd);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
-.info-text{font-size:12px;color:var(--tx2);line-height:1.5;}
-.info-text strong{color:var(--tx);font-weight:600;}
-.tag{display:inline-flex;align-items:center;background:var(--bg3);border:1px solid var(--bd2);color:var(--tx2);font-size:10px;padding:3px 9px;border-radius:20px;font-weight:500;}
-.tag-or{background:var(--or2);border-color:var(--orB);color:var(--or);}
-.tip-box{background:var(--bg3);border:1px solid var(--bd);border-radius:12px;padding:13px 14px;margin-top:12px;}
-.tip-title{font-size:10px;font-weight:700;color:var(--or);margin-bottom:7px;display:flex;align-items:center;gap:5px;}
-.tip-item{font-size:11px;color:var(--tx2);margin-bottom:5px;padding-left:12px;border-left:2px solid var(--orB);line-height:1.45;}
-
-/* ── NAV BTNS ── */
-.nav-btns{display:flex;gap:10px;margin-top:20px;}
-.btn-prev{flex:1;background:var(--bg3);border:1px solid var(--bd2);color:var(--tx2);padding:12px;border-radius:13px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans';transition:all .2s;}
-.btn-next{flex:2;background:var(--or);border:none;color:#fff;padding:12px;border-radius:13px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans';transition:opacity .2s;}
-.btn-next:disabled{opacity:0.35;cursor:not-allowed;}
-.btn-prev:hover{border-color:var(--bd2);}
-
-/* ── CHECKLIST ── */
-.checklist{display:flex;flex-direction:column;gap:8px;margin-top:4px;}
-.check-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg3);border:1px solid var(--bd);border-radius:11px;transition:all .3s;}
-.check-item.checked{background:rgba(61,187,120,0.06);border-color:rgba(61,187,120,0.2);}
-.check-box{width:20px;height:20px;border-radius:6px;background:var(--bg4);border:1.5px solid var(--bd2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;transition:all .3s;}
-.check-item.checked .check-box{background:rgba(61,187,120,0.15);border-color:rgba(61,187,120,0.4);color:#3DBB78;}
-.check-label{font-size:12px;color:var(--tx2);}
-.check-item.checked .check-label{color:var(--tx);}
-
-/* ── INVENTORY PREVIEW ── */
-.inv-card{background:var(--bg3);border:1px solid var(--bd);border-radius:12px;padding:11px 13px;display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;}
-.inv-card.new-glow{border-color:var(--orB);background:var(--or3);animation:glow-in .5s ease;}
-@keyframes glow-in{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);}}
-.inv-name{font-size:11px;font-weight:700;}
-.inv-meta{font-size:9px;color:var(--tx3);margin-top:2px;}
-.pill{display:inline-flex;align-items:center;padding:3px 8px;border-radius:20px;font-size:9px;font-weight:700;}
-.pill-gr{background:rgba(61,187,120,0.12);color:#3DBB78;border:1px solid rgba(61,187,120,0.25);}
-.pill-or{background:var(--or2);color:var(--or);border:1px solid var(--orB);}
-
-/* ── STEP INDICATOR TIMELINE ── */
-.timeline{display:flex;flex-direction:column;gap:0;}
-.tl-item{display:flex;gap:12px;}
-.tl-left{display:flex;flex-direction:column;align-items:center;}
-.tl-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;transition:all .3s;}
-.tl-dot.done{background:var(--or);color:#fff;}
-.tl-dot.cur{background:var(--or2);border:2px solid var(--or);color:var(--or);}
-.tl-dot.up{background:var(--bg3);border:1.5px solid var(--bd);color:var(--tx3);}
-.tl-line{width:2px;flex:1;min-height:18px;background:var(--bd);}
-.tl-line.done{background:var(--or);}
-.tl-right{padding-bottom:18px;}
-.tl-title{font-size:12px;font-weight:600;margin-bottom:2px;}
-.tl-sub{font-size:10px;color:var(--tx3);}
-
-/* ── ANIM ── */
-.fade-in{animation:fadeIn .35s ease;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+/* Toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#1C1C1C;border:1px solid var(--bd2);border-radius:12px;padding:12px 20px;font-size:13px;font-weight:600;color:var(--tx);z-index:9999;transition:transform 0.3s ease;white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);}
 </style>
 </head>
 <body>
+<div style="background:#111;border-bottom:1px solid rgba(244,123,32,0.2);padding:6px 16px;font-size:11px;font-weight:700;color:#F47B20;letter-spacing:0.08em;text-align:center;font-family:'DM Sans',sans-serif;">📁 wholesaler-index.html — Wholesaler Panel — Mobile Part Mitra</div>
 
-<!-- HEADER -->
-<div class="hdr">
-  <div class="hdr-left">
-    <div class="logo">⚙️</div>
-    <div>
-      <div class="hdr-title">Wholesaler Panel — Product Add</div>
-      <div class="hdr-sub">Step-by-step workflow guide</div>
+<!-- ── AUTH SCREEN ── -->
+<div id="screen-auth">
+  <div class="auth-box">
+
+    <div class="auth-logo">
+      <img src="../shared/images/MPM_Logo.png" alt="MPM">
+      <div class="auth-logo-name">Mobile Part Mitra</div>
+      <div class="auth-logo-sub">🏪 Wholesaler Panel</div>
     </div>
-  </div>
-  <div class="badge">🏪 Wholesaler View</div>
-</div>
 
-<!-- PROGRESS RAIL -->
-<div class="progress-wrap">
-  <div class="progress-rail" id="progress-rail">
-    <!-- Injected by JS -->
-  </div>
-</div>
+    <!-- Login / Register Tabs -->
+    <div class="tab-row">
+      <button class="tab-btn active" onclick="switchTab('login')">Login</button>
+      <button class="tab-btn" onclick="switchTab('register')">Register</button>
+    </div>
 
-<!-- MAIN -->
-<div class="main">
+    <div id="err-box" class="err-msg"></div>
+    <div id="info-box" class="info-msg"></div>
 
-  <!-- LEFT: Step Content -->
-  <div class="step-card" id="step-card">
-    <!-- Injected by JS -->
-  </div>
+    <!-- ── LOGIN FORM ── -->
+    <div id="form-login">
+      <div id="login-password-section">
+        <div class="form-group">
+          <label class="form-label">Email ya Phone</label>
+          <input class="form-input" id="login-email" type="text" placeholder="email@domain.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input class="form-input" id="login-pass" type="password" placeholder="••••••••">
+        </div>
+        <button class="btn-primary" onclick="loginWithPassword()">Login</button>
+        <div class="divider">ya</div>
+        <button class="btn-ghost" onclick="showOTPLogin()">📱 OTP se Login (Phone)</button>
+      </div>
 
-  <!-- RIGHT: Phone Preview -->
-  <div class="phone-wrap">
-    <div style="font-size:9px;color:var(--tx3);text-align:center;margin-bottom:8px;letter-spacing:0.08em;text-transform:uppercase;">📱 App Screen Preview</div>
-    <div class="phone">
-      <div class="notch"></div>
-      <div class="status-bar">
-        <span>9:41</span>
-        <div style="display:flex;align-items:center;gap:4px;">
-          <svg width="13" height="9" viewBox="0 0 14 10" fill="#5A534E"><path d="M7 1.5C9.4 1.5 11.5 2.7 12.8 4.5L14 3.2C12.3 1.2 9.8 0 7 0S1.7 1.2 0 3.2L1.2 4.5C2.5 2.7 4.6 1.5 7 1.5Z"/><path d="M7 4C8.6 4 10 4.7 11 5.8L12.2 4.5C10.9 3.1 9 2.3 7 2.3S3.1 3.1 1.8 4.5L3 5.8C4 4.7 5.4 4 7 4Z"/><circle cx="7" cy="8" r="1.5"/></svg>
-          <svg width="20" height="9" viewBox="0 0 22 10" fill="none"><rect x="0" y="1" width="18" height="8" rx="2" stroke="#5A534E" stroke-width="1"/><rect x="19" y="3" width="2" height="4" rx="1" fill="#5A534E"/><rect x="1.5" y="2.5" width="11" height="5" rx="1" fill="#F47B20"/></svg>
+      <div id="login-otp-section" style="display:none;">
+        <div class="form-group">
+          <label class="form-label">Phone Number</label>
+          <div class="phone-row">
+            <div class="country-code">+91</div>
+            <input class="form-input" id="login-phone" type="tel" placeholder="9876543210" maxlength="10">
+          </div>
+        </div>
+        <button class="btn-primary" onclick="sendLoginOTP()">OTP Bhejo</button>
+
+        <div id="login-otp-verify" style="display:none;margin-top:20px;">
+          <div class="form-label" style="text-align:center;margin-bottom:12px;">6-digit OTP daalo</div>
+          <div class="otp-row">
+            <input class="otp-input" id="o1" maxlength="1" oninput="otpNext(this,'o2')">
+            <input class="otp-input" id="o2" maxlength="1" oninput="otpNext(this,'o3')">
+            <input class="otp-input" id="o3" maxlength="1" oninput="otpNext(this,'o4')">
+            <input class="otp-input" id="o4" maxlength="1" oninput="otpNext(this,'o5')">
+            <input class="otp-input" id="o5" maxlength="1" oninput="otpNext(this,'o6')">
+            <input class="otp-input" id="o6" maxlength="1" oninput="otpNext(this,null)">
+          </div>
+          <div class="otp-timer">OTP nahi aaya? <span onclick="sendLoginOTP()">Dobara Bhejo</span></div>
+          <button class="btn-primary" style="margin-top:16px;" onclick="verifyLoginOTP()">Verify & Login</button>
+        </div>
+
+        <button class="btn-ghost" onclick="showPasswordLogin()">🔑 Password se Login</button>
+      </div>
+    </div>
+
+    <!-- ── REGISTER FORM ── -->
+    <div id="form-register" style="display:none;">
+      <div class="form-group">
+        <label class="form-label">Aapka Naam</label>
+        <input class="form-input" id="reg-name" type="text" placeholder="Ramesh Sharma">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Dukan ka Naam</label>
+        <input class="form-input" id="reg-shop" type="text" placeholder="Sharma Mobile Parts">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Sheher / City</label>
+        <input class="form-input" id="reg-city" type="text" placeholder="Prayagraj">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Phone Number</label>
+        <div class="phone-row">
+          <div class="country-code">+91</div>
+          <input class="form-input" id="reg-phone" type="tel" placeholder="9876543210" maxlength="10">
         </div>
       </div>
-      <div class="screen-content" id="phone-screen">
-        <!-- Injected by JS -->
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" id="reg-email" type="email" placeholder="aapka@email.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password (kam se kam 6 akshar)</label>
+        <input class="form-input" id="reg-pass" type="password" placeholder="••••••••">
+      </div>
+      <button class="btn-primary" onclick="registerWholesaler()">Register Karo</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── MAIN DASHBOARD ── -->
+<div id="screen-main">
+  <div class="wrap">
+    <div class="hdr">
+      <div class="hdr-left">
+        <div class="logo-box"><img src="../shared/images/MPM_Logo.png" alt="MPM"></div>
+        <div>
+          <div class="hdr-title" id="dash-shop-name">Wholesaler Dashboard</div>
+          <div class="hdr-sub" id="dash-city">Mobile Part Mitra</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span id="dash-status-badge" class="badge badge-pending">⏳ Pending Approval</span>
+        <button class="logout-btn" onclick="logout()">Logout</button>
       </div>
     </div>
-  </div>
 
+    <!-- Pending approval notice -->
+    <div id="pending-notice" class="pending-box">
+      <div class="pending-title">⏳ Approval Pending</div>
+      <div class="pending-sub">Aapka account admin ke paas review ke liye hai. Approve hone ke baad aap parts add kar sakte hain. Admin usually 24 ghante mein approve karta hai.</div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-num" id="stat-parts">0</div>
+        <div class="stat-lbl">Parts</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="stat-pending">0</div>
+        <div class="stat-lbl">Pending Orders</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="stat-done">0</div>
+        <div class="stat-lbl">Completed</div>
+      </div>
+    </div>
+
+    <div class="section-title">Aapka Account</div>
+    <div style="background:var(--bg2);border:1px solid var(--bd);border-radius:14px;padding:18px;">
+      <div style="font-size:13px;color:var(--tx2);line-height:2;">
+        <div>📧 <span id="info-email">—</span></div>
+        <div>📱 <span id="info-phone">—</span></div>
+        <div>🏙️ <span id="info-city">—</span></div>
+      </div>
+    </div>
+
+  </div>
 </div>
+
+<div id="toast" class="toast"></div>
 
 <script>
-const steps = [
-  {
-    id: 'dashboard',
-    label: 'Dashboard',
-    emoji: '🏠',
-    title: 'Wholesaler Dashboard Kholo',
-    desc: 'Login karne ke baad seedha wholesaler dashboard dikhega — yahan se saari cheezein manage hoti hain.',
-    phone: phoneDashboard,
-    content: contentDashboard
-  },
-  {
-    id: 'tap-add',
-    label: '+ Add Part',
-    emoji: '➕',
-    title: '"+ Add Part" Button Dabao',
-    desc: 'Dashboard ke top right corner mein orange "Add Part" button hai. Usse tap karo.',
-    phone: phoneTapAdd,
-    content: contentTapAdd
-  },
-  {
-    id: 'basic',
-    label: 'Basic Info',
-    emoji: '📝',
-    title: 'Basic Information Bharo',
-    desc: 'Part ka naam, brand aur mobile model number fill karo. Jitna detail utna better search result.',
-    phone: phoneBasicInfo,
-    content: contentBasicInfo
-  },
-  {
-    id: 'category',
-    label: 'Category',
-    emoji: '📦',
-    title: 'Category Select Karo',
-    desc: 'Part ki sahi category chunna zaroori hai — isse retailer ka search filter kaam karta hai.',
-    phone: phoneCategory,
-    content: contentCategory
-  },
-  {
-    id: 'price',
-    label: 'Price & Stock',
-    emoji: '💰',
-    title: 'Price aur Stock Set Karo',
-    desc: 'Price (₹) aur kitne pieces available hain woh daalo. Stock 0 hone pe part auto-hide ho jaata hai.',
-    phone: phonePrice,
-    content: contentPrice
-  },
-  {
-    id: 'review',
-    label: 'Review',
-    emoji: '👁',
-    title: 'Review karke Submit Karo',
-    desc: 'Sab kuch ek baar check karo — phir "Part Add Karo" press karne pe live ho jaata hai.',
-    phone: phoneReview,
-    content: contentReview
-  },
-  {
-    id: 'live',
-    label: 'Live! ✅',
-    emoji: '🚀',
-    title: 'Part Live Ho Gaya!',
-    desc: 'Aapka part ab sabhi retailers ko search mein dikhai dega. Inventory mein bhi add ho gaya.',
-    phone: phoneLive,
-    content: contentLive
-  }
-];
+const SUPABASE_URL  = 'https://etcvgvxqrtcgbjvkqobt.supabase.co';
+const SUPABASE_ANON = 'sb_publishable_38tz5qsQgDs75Q6lBqd8uQ_89R1NDfP';
+var sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
-let cur = 0;
+let currentUser = null;
 
-// ──────────── PHONE SCREENS ────────────
-
-function phoneDashboard() {
-  return `
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-      <div><div style="font-size:10px;color:var(--tx3);">🏪 Wholesaler</div><div style="font-size:14px;font-weight:800;">Sharma Electronics</div></div>
-      <div style="width:30px;height:30px;background:var(--bg3);border:1px solid var(--bd);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:13px;">🚪</div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:16px;">
-      <div style="background:var(--bg3);border:1px solid var(--bd);border-radius:11px;padding:9px;text-align:center;"><div style="font-size:16px;font-weight:800;color:var(--or);">12</div><div style="font-size:8px;color:var(--tx3);">Parts</div></div>
-      <div style="background:var(--bg3);border:1px solid var(--bd);border-radius:11px;padding:9px;text-align:center;"><div style="font-size:16px;font-weight:800;color:#F4B420;">3</div><div style="font-size:8px;color:var(--tx3);">Pending</div></div>
-      <div style="background:var(--bg3);border:1px solid var(--bd);border-radius:11px;padding:9px;text-align:center;"><div style="font-size:16px;font-weight:800;color:var(--gr);">47</div><div style="font-size:8px;color:var(--tx3);">Done</div></div>
-    </div>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-      <div style="font-size:11px;font-weight:700;">Meri Inventory</div>
-      <div style="font-size:10px;color:var(--or);font-weight:600;">+ Add Part</div>
-    </div>
-    ${['Samsung A54 Screen','Redmi 12 Battery','iPhone 14 Charging Port'].map(n=>`
-    <div style="background:var(--bg3);border:1px solid var(--bd);border-radius:10px;padding:9px 11px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;">
-      <div><div style="font-size:10px;font-weight:600;">${n}</div><div style="font-size:8px;color:var(--tx3);">Active · Stock: ${Math.floor(Math.random()*15+2)}</div></div>
-      <span style="background:rgba(61,187,120,0.1);color:#3DBB78;border:1px solid rgba(61,187,120,0.2);font-size:7.5px;font-weight:700;padding:2px 6px;border-radius:10px;">👁 Live</span>
-    </div>`).join('')}`;
+// ── TOAST ──
+function toast(msg, dur=3000) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), dur);
 }
 
-function phoneTapAdd() {
-  return `
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-      <div><div style="font-size:10px;color:var(--tx3);">🏪 Wholesaler</div><div style="font-size:14px;font-weight:800;">Sharma Electronics</div></div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:16px;">
-      <div style="background:var(--bg3);border:1px solid var(--bd);border-radius:11px;padding:9px;text-align:center;"><div style="font-size:16px;font-weight:800;color:var(--or);">12</div><div style="font-size:8px;color:var(--tx3);">Parts</div></div>
-      <div style="background:var(--bg3);border:1px solid var(--bd);border-radius:11px;padding:9px;text-align:center;"><div style="font-size:16px;font-weight:800;color:#F4B420;">3</div><div style="font-size:8px;color:var(--tx3);">Pending</div></div>
-      <div style="background:var(--bg3);border:1px solid var(--bd);border-radius:11px;padding:9px;text-align:center;"><div style="font-size:16px;font-weight:800;color:var(--gr);">47</div><div style="font-size:8px;color:var(--tx3);">Done</div></div>
-    </div>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-      <div style="font-size:11px;font-weight:700;">Meri Inventory</div>
-      <div style="background:var(--or);color:#fff;font-size:10px;font-weight:700;padding:6px 12px;border-radius:20px;animation:pulse-btn 1s ease-in-out infinite;box-shadow:0 0 16px rgba(244,123,32,0.5);">✚ Add Part</div>
-    </div>
-    <div style="background:rgba(244,123,32,0.05);border:1.5px dashed var(--orB);border-radius:12px;padding:20px;text-align:center;margin-top:8px;">
-      <div style="font-size:24px;margin-bottom:6px;">👆</div>
-      <div style="font-size:11px;color:var(--or);font-weight:600;">Yahan tap karo</div>
-      <div style="font-size:9px;color:var(--tx3);margin-top:3px;">Add Part button dabao</div>
-    </div>
-    <style>@keyframes pulse-btn{0%,100%{box-shadow:0 0 16px rgba(244,123,32,0.4);}50%{box-shadow:0 0 24px rgba(244,123,32,0.7);}}</style>`;
+function showErr(msg) {
+  const e = document.getElementById('err-box');
+  e.textContent = msg; e.style.display = 'block';
+  document.getElementById('info-box').style.display = 'none';
+}
+function showInfo(msg) {
+  const e = document.getElementById('info-box');
+  e.textContent = msg; e.style.display = 'block';
+  document.getElementById('err-box').style.display = 'none';
+}
+function clearMsgs() {
+  document.getElementById('err-box').style.display = 'none';
+  document.getElementById('info-box').style.display = 'none';
 }
 
-function phoneBasicInfo() {
-  return `
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--bd);">
-      <div style="width:26px;height:26px;background:var(--bg3);border:1px solid var(--bd);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;">←</div>
-      <div style="font-size:13px;font-weight:700;">Naya Part Add Karo</div>
-    </div>
-    <div class="form-group">
-      <div class="form-label">Part Name <span class="req">*</span></div>
-      <div class="mock-input active-field"><span class="mock-val">Samsung A54 Screen OLED|</span></div>
-    </div>
-    <div class="form-group">
-      <div class="form-label">Brand</div>
-      <div class="mock-input filled"><span class="mock-val">Samsung</span></div>
-    </div>
-    <div class="form-group">
-      <div class="form-label">Mobile Model</div>
-      <div class="mock-input"><span class="mock-ph">A54, Note 12, C55...</span></div>
-    </div>`;
-}
-
-function phoneCategory() {
-  return `
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--bd);">
-      <div style="width:26px;height:26px;background:var(--bg3);border:1px solid var(--bd);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;">←</div>
-      <div style="font-size:13px;font-weight:700;">Naya Part Add Karo</div>
-    </div>
-    <div class="form-group">
-      <div class="form-label">Category <span class="req">*</span></div>
-      <div class="cat-grid">
-        <div class="cat-opt chosen"><div class="cat-opt-icon">📱</div><div class="cat-opt-name">Screen/Display</div></div>
-        <div class="cat-opt"><div class="cat-opt-icon">🔋</div><div class="cat-opt-name">Battery</div></div>
-        <div class="cat-opt"><div class="cat-opt-icon">⚡</div><div class="cat-opt-name">Charging</div></div>
-        <div class="cat-opt"><div class="cat-opt-icon">📷</div><div class="cat-opt-name">Camera</div></div>
-        <div class="cat-opt"><div class="cat-opt-icon">🔌</div><div class="cat-opt-name">Board/IC</div></div>
-        <div class="cat-opt"><div class="cat-opt-icon">📦</div><div class="cat-opt-name">Other</div></div>
-      </div>
-    </div>`;
-}
-
-function phonePrice() {
-  return `
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--bd);">
-      <div style="width:26px;height:26px;background:var(--bg3);border:1px solid var(--bd);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;">←</div>
-      <div style="font-size:13px;font-weight:700;">Naya Part Add Karo</div>
-    </div>
-    <div class="price-stock-row" style="margin-bottom:12px;">
-      <div>
-        <div class="form-label">Price (₹) <span class="req">*</span></div>
-        <div class="mock-input active-field"><span style="color:var(--tx3);font-size:10px;margin-right:2px;">₹</span><span class="mock-val">850|</span></div>
-      </div>
-      <div>
-        <div class="form-label">Stock <span class="req">*</span></div>
-        <div class="mock-input filled"><span class="mock-val">15</span></div>
-      </div>
-    </div>
-    <div class="form-group">
-      <div class="form-label">Description</div>
-      <div class="mock-input" style="min-height:60px;align-items:flex-start;padding-top:9px;"><span class="mock-ph">Original OLED, warranty 30 days...</span></div>
-    </div>
-    <div style="background:var(--or3);border:1px solid var(--orB);border-radius:10px;padding:9px 11px;margin-top:4px;font-size:9px;color:var(--tx2);">
-      ⚡ Stock 0 hone pe part auto-hide ho jaata hai retailers se.
-    </div>`;
-}
-
-function phoneReview() {
-  return `
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--bd);">
-      <div style="width:26px;height:26px;background:var(--bg3);border:1px solid var(--bd);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;">←</div>
-      <div style="font-size:13px;font-weight:700;">Review karo</div>
-    </div>
-    <div style="background:var(--bg3);border:1px solid var(--bd);border-radius:12px;padding:13px;margin-bottom:12px;">
-      <div style="font-size:14px;font-weight:800;margin-bottom:3px;">Samsung A54 Screen OLED</div>
-      <div style="font-size:10px;color:var(--tx3);margin-bottom:10px;">Screen / Display · Samsung · A54</div>
-      <div style="font-size:20px;font-weight:900;color:var(--or);margin-bottom:8px;">₹850</div>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;">
-        <span class="pill pill-gr" style="font-size:8px;">📦 Stock: 15</span>
-        <span style="background:var(--bg4);color:var(--tx3);font-size:8px;font-weight:600;padding:3px 8px;border-radius:10px;border:1px solid var(--bd);">Samsung</span>
-        <span style="background:var(--bg4);color:var(--tx3);font-size:8px;font-weight:600;padding:3px 8px;border-radius:10px;border:1px solid var(--bd);">A54</span>
-      </div>
-    </div>
-    <div class="mock-btn">✅ Part Add Karo</div>`;
-}
-
-function phoneLive() {
-  return `
-    <div class="success-screen">
-      <div class="success-icon">✅</div>
-      <div style="font-size:16px;font-weight:800;">Part Live Ho Gaya!</div>
-      <div style="font-size:11px;color:var(--tx3);max-width:200px;line-height:1.5;">Samsung A54 Screen OLED ab sabhi retailers ko dikhega</div>
-      <div style="margin-top:12px;width:100%;background:var(--bg3);border:1.5px solid var(--orB);border-radius:12px;padding:12px 14px;">
-        <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
-          <span style="font-size:10px;font-weight:700;">Samsung A54 Screen OLED</span>
-          <span class="pill pill-or" style="font-size:7.5px;">🟠 Live</span>
-        </div>
-        <div style="font-size:9px;color:var(--tx3);">₹850 · Stock: 15 · Screen/Display</div>
-      </div>
-      <div style="display:flex;gap:8px;width:100%;margin-top:6px;">
-        <div style="flex:1;background:var(--bg3);border:1px solid var(--bd);border-radius:11px;padding:10px;text-align:center;font-size:9px;color:var(--tx2);">+ Aur Part Add karo</div>
-        <div style="flex:1;background:var(--or);border-radius:11px;padding:10px;text-align:center;font-size:9px;color:#fff;font-weight:700;">Dashboard →</div>
-      </div>
-    </div>`;
-}
-
-// ──────────── STEP CONTENTS ────────────
-
-function contentDashboard() {
-  return `
-    <div class="step-card-top">
-      <div class="step-num">Step 1 of 7</div>
-      <div class="step-title">Wholesaler Dashboard</div>
-      <div class="step-desc">Login karne ke baad yeh screen dikhegi. Yahan se saari cheezein manage hoti hain.</div>
-    </div>
-    <div class="step-body">
-      <div class="timeline">
-        ${tlItem('cur','1','Dashboard Khola','Yahan aapki inventory, orders aur stats dikhte hain','',false)}
-        ${tlItem('up','2','Add Part Tab','Inventory section mein + Add Part button','','',false)}
-        ${tlItem('up','3','Form Fill','Part ki details bharo','','',false)}
-        ${tlItem('up','4','Submit','Live ho jaata hai part','','',true)}
-      </div>
-      <div class="tip-box">
-        <div class="tip-title">💡 Dashboard mein kya milta hai?</div>
-        <div class="tip-item"><strong>Stats:</strong> Total parts, pending orders, completed orders</div>
-        <div class="tip-item"><strong>Incoming Orders:</strong> Retailer ka order aane pe yahan dikhega</div>
-        <div class="tip-item"><strong>Inventory:</strong> Aapke saare listed parts — active/hidden toggle ke saath</div>
-      </div>
-      <div class="nav-btns"><button class="btn-next" onclick="next()">Aage → Step 2</button></div>
-    </div>`;
-}
-
-function contentTapAdd() {
-  return `
-    <div class="step-card-top">
-      <div class="step-num">Step 2 of 7</div>
-      <div class="step-title">"Add Part" Button Tap Karo</div>
-      <div class="step-desc">Inventory section ke right side mein orange <strong>"+ Add Part"</strong> link hai. Usse tap karo — Add Part form khul jaayega.</div>
-    </div>
-    <div class="step-body">
-      <div class="info-row"><div class="info-icon">📍</div><div class="info-text"><strong>Kahan milega?</strong><br>Dashboard → Scroll thoda neeche → "Meri Inventory" heading ke right side mein</div></div>
-      <div class="info-row"><div class="info-icon">📲</div><div class="info-text"><strong>Bottom Nav bhi available hai:</strong><br>Screen ke neeche "Add Part" tab bhi hai — woh bhi kaam karega</div></div>
-      <div class="info-row"><div class="info-icon">⚠️</div><div class="info-text"><strong>Note:</strong> Sirf Wholesaler role wale users ko yeh button dikhta hai. Retailer ka account hai to nahi dikhega.</div></div>
-      <div class="tip-box">
-        <div class="tip-title">🔑 Wholesaler Access</div>
-        <div class="tip-item">Register karte waqt "Wholesaler" role select karna zaroori hai</div>
-        <div class="tip-item">Retailer account se part add nahi ho sakta</div>
-      </div>
-      <div class="nav-btns">
-        <button class="btn-prev" onclick="prev()">← Back</button>
-        <button class="btn-next" onclick="next()">Aage → Step 3</button>
-      </div>
-    </div>`;
-}
-
-function contentBasicInfo() {
-  return `
-    <div class="step-card-top">
-      <div class="step-num">Step 3 of 7</div>
-      <div class="step-title">Basic Information Bharo</div>
-      <div class="step-desc">Part ka naam, brand aur mobile model — yeh teen cheezein search mein directly use hoti hain.</div>
-    </div>
-    <div class="step-body">
-      <div class="checklist" id="basic-checks">
-        <div class="check-item checked" id="ck-name">
-          <div class="check-box">✓</div>
-          <div>
-            <div class="check-label"><strong>Part Name</strong> <span style="color:var(--re);font-size:9px;">Required</span></div>
-            <div style="font-size:9px;color:var(--tx3);">e.g. "Samsung A54 Screen OLED" — jitna specific utna better</div>
-          </div>
-        </div>
-        <div class="check-item" id="ck-brand">
-          <div class="check-box"></div>
-          <div>
-            <div class="check-label"><strong>Brand</strong> <span style="font-size:9px;color:var(--tx3);">Optional</span></div>
-            <div style="font-size:9px;color:var(--tx3);">Samsung, Xiaomi, Realme, OnePlus...</div>
-          </div>
-        </div>
-        <div class="check-item" id="ck-model">
-          <div class="check-box"></div>
-          <div>
-            <div class="check-label"><strong>Mobile Model</strong> <span style="font-size:9px;color:var(--tx3);">Optional lekin useful</span></div>
-            <div style="font-size:9px;color:var(--tx3);">A54, Note 12, C55 — retailer model se search karta hai</div>
-          </div>
-        </div>
-      </div>
-      <div class="tip-box" style="margin-top:14px;">
-        <div class="tip-title">✍️ Part Name tips</div>
-        <div class="tip-item"><strong>Achha:</strong> "Samsung Galaxy A54 Screen OLED Original"</div>
-        <div class="tip-item"><strong>Bura:</strong> "Screen" (bahut generic — search mein nahi dikhega)</div>
-        <div class="tip-item">Brand + Model + Part type — yeh formula kaam karta hai</div>
-      </div>
-      <div class="nav-btns">
-        <button class="btn-prev" onclick="prev()">← Back</button>
-        <button class="btn-next" onclick="next()">Aage → Category</button>
-      </div>
-    </div>`;
-}
-
-function contentCategory() {
-  return `
-    <div class="step-card-top">
-      <div class="step-num">Step 4 of 7</div>
-      <div class="step-title">Sahi Category Chunno</div>
-      <div class="step-desc">Category se retailers apne liye filter kar sakte hain — galat category choose karna visibility kam karta hai.</div>
-    </div>
-    <div class="step-body">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
-        ${[
-          {icon:'📱',name:'Screen / Display',desc:'LCD, OLED, AMOLED, Glass, Touch'},
-          {icon:'🔋',name:'Battery',desc:'Original, Compatible, Hi-cap'},
-          {icon:'⚡',name:'Charging',desc:'Port, IC, Flex, Charger'},
-          {icon:'📷',name:'Camera',desc:'Front, Back, Lens, Module'},
-          {icon:'🔌',name:'Board / IC',desc:'Motherboard, Power IC'},
-          {icon:'📦',name:'Other',desc:'Speaker, Mic, Vibrator...'}
-        ].map(c=>`
-          <div style="background:var(--bg3);border:1px solid var(--bd);border-radius:11px;padding:10px 11px;">
-            <div style="font-size:16px;margin-bottom:3px;">${c.icon}</div>
-            <div style="font-size:11px;font-weight:700;margin-bottom:2px;">${c.name}</div>
-            <div style="font-size:9px;color:var(--tx3);">${c.desc}</div>
-          </div>`).join('')}
-      </div>
-      <div class="tip-box">
-        <div class="tip-title">⚠️ Common Mistakes</div>
-        <div class="tip-item">Screen ko "Other" mein mat daalo — retailers filter karte hain</div>
-        <div class="tip-item">Charging IC → "Charging" category, Motherboard → "Board/IC"</div>
-      </div>
-      <div class="nav-btns">
-        <button class="btn-prev" onclick="prev()">← Back</button>
-        <button class="btn-next" onclick="next()">Aage → Price</button>
-      </div>
-    </div>`;
-}
-
-function contentPrice() {
-  return `
-    <div class="step-card-top">
-      <div class="step-num">Step 5 of 7</div>
-      <div class="step-title">Price aur Stock Set Karo</div>
-      <div class="step-desc">Sahi price aur accurate stock — isse orders ka confusion nahi hota aur system auto-manage karta hai.</div>
-    </div>
-    <div class="step-body">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
-        <div style="background:var(--bg3);border:1px solid var(--bd);border-radius:12px;padding:13px;">
-          <div style="font-size:16px;margin-bottom:4px;">💰</div>
-          <div style="font-size:12px;font-weight:700;margin-bottom:4px;">Price (₹)</div>
-          <div style="font-size:10px;color:var(--tx2);">Sirf numbers — ₹ sign mat daalein</div>
-          <div style="margin-top:8px;background:var(--bg4);border-radius:8px;padding:8px 10px;font-size:13px;font-weight:800;color:var(--or);">850</div>
-        </div>
-        <div style="background:var(--bg3);border:1px solid var(--bd);border-radius:12px;padding:13px;">
-          <div style="font-size:16px;margin-bottom:4px;">📦</div>
-          <div style="font-size:12px;font-weight:700;margin-bottom:4px;">Stock Qty</div>
-          <div style="font-size:10px;color:var(--tx2);">Kitne pieces available hain</div>
-          <div style="margin-top:8px;background:var(--bg4);border-radius:8px;padding:8px 10px;font-size:13px;font-weight:800;color:var(--gr);">15</div>
-        </div>
-      </div>
-      <div style="background:rgba(244,123,32,0.07);border:1px solid var(--orB);border-radius:12px;padding:12px 14px;margin-bottom:12px;">
-        <div style="font-size:10px;color:var(--or);font-weight:700;margin-bottom:6px;">⚡ Auto Stock System</div>
-        <div style="font-size:11px;color:var(--tx2);line-height:1.6;">Har reserve ke baad stock automatically <strong style="color:var(--tx);">-1</strong> hota hai.<br>Stock <strong style="color:var(--re);">0</strong> hone pe part auto-hide ho jaata hai — retailers ko nahi dikhta.</div>
-      </div>
-      <div class="tip-box">
-        <div class="tip-title">📝 Description (Optional)</div>
-        <div class="tip-item">Original / Compatible / Refurbished — clearly likhein</div>
-        <div class="tip-item">Warranty info: "30 days replacement warranty"</div>
-        <div class="tip-item">Yeh retailer ko part detail page pe dikhta hai</div>
-      </div>
-      <div class="nav-btns">
-        <button class="btn-prev" onclick="prev()">← Back</button>
-        <button class="btn-next" onclick="next()">Aage → Review</button>
-      </div>
-    </div>`;
-}
-
-function contentReview() {
-  return `
-    <div class="step-card-top">
-      <div class="step-num">Step 6 of 7</div>
-      <div class="step-title">Review karke Submit Karo</div>
-      <div class="step-desc">Sab details ek baar dekho — name, category, price, stock. Phir "Part Add Karo" press karo.</div>
-    </div>
-    <div class="step-body">
-      <div style="background:var(--bg3);border:1.5px solid var(--orB);border-radius:14px;padding:14px;margin-bottom:14px;">
-        <div style="font-size:11px;color:var(--or);font-weight:700;margin-bottom:10px;">📋 Preview — Jo Submit hoga</div>
-        ${[
-          ['Part Name','Samsung A54 Screen OLED'],
-          ['Brand','Samsung'],
-          ['Model','A54'],
-          ['Category','Screen / Display'],
-          ['Price','₹850'],
-          ['Stock','15 pieces'],
-        ].map(([k,v])=>`
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--bd);">
-            <span style="font-size:10px;color:var(--tx3);">${k}</span>
-            <span style="font-size:11px;font-weight:600;color:var(--tx);">${v}</span>
-          </div>`).join('')}
-      </div>
-      <div style="background:rgba(61,187,120,0.07);border:1px solid rgba(61,187,120,0.2);border-radius:11px;padding:11px 13px;margin-bottom:12px;font-size:11px;color:#3DBB78;">
-        ✅ Submit hone ke baad yeh part <strong>turant live</strong> ho jaata hai — koi approval wait nahi.
-      </div>
-      <div class="tip-box">
-        <div class="tip-title">✏️ Baad mein Edit kar sakte ho?</div>
-        <div class="tip-item">Dashboard → Inventory → Part ke saamne 👁 icon — active/hide toggle</div>
-        <div class="tip-item">Stock manually update karna ho to — abhi direct edit nahi, next update mein aayega</div>
-      </div>
-      <div class="nav-btns">
-        <button class="btn-prev" onclick="prev()">← Back</button>
-        <button class="btn-next" onclick="next()">Submit → Live! 🚀</button>
-      </div>
-    </div>`;
-}
-
-function contentLive() {
-  return `
-    <div class="step-card-top">
-      <div class="step-num">Step 7 of 7 ✅</div>
-      <div class="step-title">Part Live Ho Gaya! 🎉</div>
-      <div class="step-desc">Badhaai ho! Aapka part ab MPM marketplace pe visible hai. Ab retailers isko search mein dekh sakte hain aur reserve kar sakte hain.</div>
-    </div>
-    <div class="step-body">
-      <div style="background:rgba(61,187,120,0.07);border:1px solid rgba(61,187,120,0.25);border-radius:14px;padding:14px;margin-bottom:14px;">
-        <div style="font-size:11px;color:#3DBB78;font-weight:700;margin-bottom:10px;">✅ Kya kya hua abhi?</div>
-        ${[
-          '📦 Part database mein save ho gaya',
-          '🔍 Search results mein dikhne lagega',
-          '📊 Dashboard stats update ho gayi',
-          '📲 Retailer ab reserve kar sakta hai'
-        ].map(t=>`<div style="font-size:11px;color:var(--tx2);margin-bottom:6px;">${t}</div>`).join('')}
-      </div>
-      <div style="font-size:11px;font-weight:700;margin-bottom:8px;color:var(--tx2);">Ab aage kya karein:</div>
-      <div class="checklist">
-        <div class="check-item checked"><div class="check-box">✓</div><div class="check-label">Aur parts add karo — zyada parts = zyada orders</div></div>
-        <div class="check-item"><div class="check-box"></div><div class="check-label">Dashboard pe nazar rakho — orders aane pe notification aayega</div></div>
-        <div class="check-item"><div class="check-box"></div><div class="check-label">Order aane pe <strong>Accept</strong> karo → pack karo → <strong>Ready</strong> mark karo</div></div>
-        <div class="check-item"><div class="check-box"></div><div class="check-label">Retailer aaye, cash le lo → <strong>Complete</strong> mark karo</div></div>
-      </div>
-      <div class="nav-btns">
-        <button class="btn-prev" onclick="prev()">← Back</button>
-        <button class="btn-next" onclick="restart()">🔄 Dobara Dekho</button>
-      </div>
-    </div>`;
-}
-
-// ──────────── HELPERS ────────────
-
-function tlItem(state, num, title, sub, extra='', isLast=false) {
-  return `
-    <div class="tl-item">
-      <div class="tl-left">
-        <div class="tl-dot ${state}">${state==='done'?'✓':num}</div>
-        ${!isLast?`<div class="tl-line ${state==='done'?'done':''}"></div>`:''}
-      </div>
-      <div class="tl-right">
-        <div class="tl-title">${title}</div>
-        <div class="tl-sub">${sub}</div>
-      </div>
-    </div>`;
-}
-
-function buildProgressRail() {
-  const rail = document.getElementById('progress-rail');
-  let html = '';
-  steps.forEach((s, i) => {
-    const state = i < cur ? 'done' : i === cur ? 'active' : 'idle';
-    html += `<div class="step-node" onclick="goTo(${i})">
-      <div class="node-circle ${state}">${state==='done'?'✓':s.emoji}</div>
-      <div class="node-label ${i===cur?'active-lbl':''}">${s.label}</div>
-    </div>`;
-    if (i < steps.length - 1) {
-      html += `<div class="step-line ${i < cur ? 'filled' : ''}"></div>`;
-    }
+// ── TABS ──
+function switchTab(tab) {
+  clearMsgs();
+  document.querySelectorAll('.tab-btn').forEach((b,i) => {
+    b.classList.toggle('active', (tab==='login'&&i===0)||(tab==='register'&&i===1));
   });
-  rail.innerHTML = html;
+  document.getElementById('form-login').style.display = tab==='login' ? 'block' : 'none';
+  document.getElementById('form-register').style.display = tab==='register' ? 'block' : 'none';
 }
 
-function render() {
-  buildProgressRail();
-  const s = steps[cur];
-  document.getElementById('step-card').innerHTML = s.content();
-  document.getElementById('phone-screen').innerHTML = s.phone();
-  document.getElementById('step-card').classList.remove('fade-in');
-  void document.getElementById('step-card').offsetWidth;
-  document.getElementById('step-card').classList.add('fade-in');
-  document.getElementById('phone-screen').classList.remove('fade-in');
-  void document.getElementById('phone-screen').offsetWidth;
-  document.getElementById('phone-screen').classList.add('fade-in');
+function showOTPLogin() {
+  clearMsgs();
+  document.getElementById('login-password-section').style.display = 'none';
+  document.getElementById('login-otp-section').style.display = 'block';
+}
+function showPasswordLogin() {
+  clearMsgs();
+  document.getElementById('login-password-section').style.display = 'block';
+  document.getElementById('login-otp-section').style.display = 'none';
+  document.getElementById('login-otp-verify').style.display = 'none';
 }
 
-function next() { if (cur < steps.length - 1) { cur++; render(); window.scrollTo({top:0,behavior:'smooth'}); } }
-function prev() { if (cur > 0) { cur--; render(); window.scrollTo({top:0,behavior:'smooth'}); } }
-function goTo(i) { cur = i; render(); window.scrollTo({top:0,behavior:'smooth'}); }
-function restart() { cur = 0; render(); window.scrollTo({top:0,behavior:'smooth'}); }
+// ── OTP INPUT HELPER ──
+function otpNext(el, nextId) {
+  if (el.value && nextId) document.getElementById(nextId).focus();
+}
 
-render();
+// ── PASSWORD LOGIN ──
+async function loginWithPassword() {
+  clearMsgs();
+  const email = document.getElementById('login-email').value.trim();
+  const pass  = document.getElementById('login-pass').value;
+  if (!email || !pass) { showErr('Email aur password daalo'); return; }
 
-// Keyboard nav
-document.addEventListener('keydown', e => {
-  if (e.key === 'ArrowRight') next();
-  if (e.key === 'ArrowLeft') prev();
-});
+  const btn = document.querySelector('#login-password-section .btn-primary');
+  btn.disabled = true; btn.textContent = 'Login ho raha hai...';
+
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+  btn.disabled = false; btn.textContent = 'Login';
+
+  if (error) { showErr('❌ ' + (error.message === 'Invalid login credentials' ? 'Email ya password galat hai' : error.message)); return; }
+  await loadDashboard(data.user);
+}
+
+// ── OTP LOGIN ──
+async function sendLoginOTP() {
+  clearMsgs();
+  const phone = document.getElementById('login-phone').value.trim();
+  if (phone.length !== 10) { showErr('10 digit phone number daalo'); return; }
+
+  const btn = document.querySelector('#login-otp-section .btn-primary');
+  btn.disabled = true; btn.textContent = 'Bhej raha hai...';
+
+  const { error } = await sb.auth.signInWithOtp({ phone: '+91' + phone });
+  btn.disabled = false; btn.textContent = 'OTP Bhejo';
+
+  if (error) { showErr('❌ ' + error.message); return; }
+
+  showInfo('✅ OTP bhej diya +91' + phone + ' pe');
+  document.getElementById('login-otp-verify').style.display = 'block';
+}
+
+async function verifyLoginOTP() {
+  clearMsgs();
+  const phone = document.getElementById('login-phone').value.trim();
+  const otp = ['o1','o2','o3','o4','o5','o6'].map(id => document.getElementById(id).value).join('');
+  if (otp.length !== 6) { showErr('6-digit OTP daalo'); return; }
+
+  const btn = document.querySelector('#login-otp-verify .btn-primary');
+  btn.disabled = true; btn.textContent = 'Verify ho raha hai...';
+
+  const { data, error } = await sb.auth.verifyOtp({ phone: '+91' + phone, token: otp, type: 'sms' });
+  btn.disabled = false; btn.textContent = 'Verify & Login';
+
+  if (error) { showErr('❌ OTP galat hai ya expire ho gaya'); return; }
+  await loadDashboard(data.user);
+}
+
+// ── REGISTER ──
+async function registerWholesaler() {
+  clearMsgs();
+  const name  = document.getElementById('reg-name').value.trim();
+  const shop  = document.getElementById('reg-shop').value.trim();
+  const city  = document.getElementById('reg-city').value.trim();
+  const phone = document.getElementById('reg-phone').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const pass  = document.getElementById('reg-pass').value;
+
+  if (!name||!shop||!city||!phone||!email||!pass) { showErr('Saari details bharni zaroori hain'); return; }
+  if (phone.length !== 10) { showErr('10 digit phone number daalo'); return; }
+  if (pass.length < 6) { showErr('Password kam se kam 6 akshar ka hona chahiye'); return; }
+
+  const btn = document.querySelector('#form-register .btn-primary');
+  btn.disabled = true; btn.textContent = 'Register ho raha hai...';
+
+  const { data, error } = await sb.auth.signUp({
+    email, password: pass,
+    options: { data: { full_name: name, shop_name: shop, city, phone: '+91'+phone, role: 'wholesaler' } }
+  });
+
+  btn.disabled = false; btn.textContent = 'Register Karo';
+
+  if (error) { showErr('❌ ' + error.message); return; }
+
+  // mpm_users table mein bhi save karo
+  if (data.user) {
+    await sb.from('mpm_users').insert({
+      id: data.user.id,
+      email, full_name: name, shop_name: shop,
+      city, phone: '+91'+phone, role: 'wholesaler',
+      is_verified: false, is_suspended: false, strikes: 0
+    });
+  }
+
+  showInfo('✅ Registration ho gaya! Email verify karo phir login karo. Admin approval ka wait karo.');
+  toast('🎉 Welcome! Email check karo verification ke liye');
+}
+
+// ── LOAD DASHBOARD ──
+async function loadDashboard(user) {
+  currentUser = user;
+
+  const { data: profile } = await sb.from('mpm_users').select('*').eq('id', user.id).single();
+
+  document.getElementById('screen-auth').style.display = 'none';
+  document.getElementById('screen-main').style.display = 'block';
+
+  if (profile) {
+    document.getElementById('dash-shop-name').textContent = profile.shop_name || user.email;
+    document.getElementById('dash-city').textContent = profile.city || 'Mobile Part Mitra';
+    document.getElementById('info-email').textContent = profile.email || '—';
+    document.getElementById('info-phone').textContent = profile.phone || '—';
+    document.getElementById('info-city').textContent = profile.city || '—';
+
+    const badge = document.getElementById('dash-status-badge');
+    if (profile.is_verified) {
+      badge.textContent = '✅ Verified';
+      badge.className = 'badge badge-verified';
+      document.getElementById('pending-notice').style.display = 'none';
+    }
+  } else {
+    document.getElementById('dash-shop-name').textContent = user.email;
+  }
+
+  toast('✅ Login ho gaya!');
+}
+
+// ── LOGOUT ──
+async function logout() {
+  await sb.auth.signOut();
+  document.getElementById('screen-main').style.display = 'none';
+  document.getElementById('screen-auth').style.display = 'flex';
+  currentUser = null;
+  toast('Logout ho gaya');
+}
+
+// ── AUTO LOGIN CHECK ──
+(async () => {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session?.user) await loadDashboard(session.user);
+})();
 </script>
 </body>
 </html>
