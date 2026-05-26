@@ -6,6 +6,8 @@
 <title>🛒 Retailer Panel — Mobile Part Mitra</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 :root{
@@ -205,7 +207,7 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--tx);min-h
       <button class="map-toggle-btn active" id="map-toggle-btn" onclick="toggleMapTab()">
         📍 <span id="map-btn-text">Map Live</span>
       </button>
-      <button class="hdr-logout" onclick="logout()">Logout</button>
+      <button class="hdr-logout" onclick="switchTab('account')" title="Settings / Account">⚙️</button>
     </div>
   </div>
 
@@ -218,13 +220,21 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--tx);min-h
 
   <!-- ── MAP TAB ── -->
   <div id="map-screen">
+    <!-- SEARCH BAR -->
+    <div style="padding:10px 14px;background:var(--bg2);border-bottom:1px solid var(--bd);">
+      <div style="display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--bd2);border-radius:10px;padding:8px 12px;">
+        <span style="font-size:14px;">🔍</span>
+        <input id="ws-search" type="text" placeholder="Wholesaler ya city search karo..." oninput="filterWholesalers(this.value)"
+          style="flex:1;background:transparent;border:none;outline:none;color:var(--tx);font-size:13px;font-family:'DM Sans';">
+      </div>
+    </div>
     <div class="map-loading" id="map-loading">
       <div class="map-loading-icon">📍</div>
       <div class="map-loading-text">Aapki location dhundh raha hai...</div>
       <div class="map-loading-sub">Nearby wholesalers dikhaye jayenge</div>
     </div>
     <div class="map-err-box" id="map-err-box"></div>
-    <iframe id="retailer-map" style="width:100%;height:calc(100vh - 110px);border:none;display:none;" allowfullscreen loading="lazy"></iframe>
+    <div id="retailer-map" style="width:100%;height:calc(100vh - 160px);"></div>
 
     <!-- WHOLESALERS BOTTOM SHEET -->
     <div class="ws-sheet" id="ws-sheet">
@@ -259,6 +269,34 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--tx);min-h
       <div>📱 <span id="acc-phone">—</span></div>
       <div>📧 <span id="acc-email">—</span></div>
       <div>📍 <span id="acc-addr">—</span></div>
+    </div>
+
+    <!-- ADDRESS EDIT -->
+    <div class="section-title" style="margin-top:20px;">📍 Address Change Karo</div>
+    <div style="background:var(--bg2);border:1px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:16px;">
+      <div style="display:grid;gap:10px;">
+        <input class="form-input" id="edit-room" type="text" placeholder="Room / Shop No.">
+        <input class="form-input" id="edit-road" type="text" placeholder="Road / Mohalla">
+        <input class="form-input" id="edit-city" type="text" placeholder="City">
+        <input class="form-input" id="edit-district" type="text" placeholder="District">
+        <input class="form-input" id="edit-state" type="text" placeholder="State">
+        <button class="btn-primary" onclick="saveAddress()">✅ Address Save Karo</button>
+      </div>
+    </div>
+
+    <!-- LOGOUT -->
+    <div class="section-title">⚙️ Settings</div>
+    <div style="background:var(--bg2);border:1px solid var(--bd);border-radius:14px;overflow:hidden;margin-bottom:32px;">
+      <div onclick="logout()" style="display:flex;align-items:center;justify-content:space-between;padding:16px;cursor:pointer;border-bottom:1px solid var(--bd);">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-size:18px;">🚪</span>
+          <div>
+            <div style="font-size:14px;font-weight:700;">Logout</div>
+            <div style="font-size:11px;color:var(--tx3);">Account se bahar jaao</div>
+          </div>
+        </div>
+        <span style="color:var(--re);font-weight:700;">→</span>
+      </div>
     </div>
   </div>
 
@@ -409,6 +447,12 @@ async function loadMain(user,profile){
     document.getElementById('acc-email').textContent=profile.email||'—';
     const addr=[profile.room_no,profile.road,profile.city,profile.district,profile.state].filter(Boolean);
     document.getElementById('acc-addr').textContent=addr.join(', ')||'—';
+    // Pre-fill address edit fields
+    if(profile.room_no)document.getElementById('edit-room').value=profile.room_no;
+    if(profile.road)document.getElementById('edit-road').value=profile.road;
+    if(profile.city)document.getElementById('edit-city').value=profile.city;
+    if(profile.district)document.getElementById('edit-district').value=profile.district;
+    if(profile.state)document.getElementById('edit-state').value=profile.state;
   }
   toast('✅ Login ho gaya!');
   // Auto-start map on login
@@ -451,15 +495,18 @@ function toggleMapTab(){
 // ══════════════════════════════════════════════════════
 // MAP — Start
 // ══════════════════════════════════════════════════════
+let leafletMap = null;
+let retailerMarker = null;
+let wsMarkers = [];
+
 function startMap(){
   mapActive=true;
   document.getElementById('map-btn-text').textContent='Map Live';
   document.getElementById('map-toggle-btn').classList.add('active');
   const loading=document.getElementById('map-loading');
-  const mapFrame=document.getElementById('retailer-map');
+  const mapDiv=document.getElementById('retailer-map');
   const errBox=document.getElementById('map-err-box');
   loading.style.display='flex';
-  mapFrame.style.display='none';
   errBox.style.display='none';
 
   if(!navigator.geolocation){
@@ -469,12 +516,24 @@ function startMap(){
     async pos=>{
       retailerLat=pos.coords.latitude;
       retailerLng=pos.coords.longitude;
-      // Show satellite map centered on retailer
-      mapFrame.src=`https://www.google.com/maps/embed/v1/view?key=${GOOGLE_MAPS_KEY}&center=${retailerLat},${retailerLng}&zoom=15&maptype=satellite`;
-      mapFrame.onload=()=>{
-        loading.style.display='none';
-        mapFrame.style.display='block';
-      };
+      loading.style.display='none';
+
+      // Init Leaflet map
+      if(!leafletMap){
+        leafletMap = L.map('retailer-map').setView([retailerLat, retailerLng], 15);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+          attribution:'© OpenStreetMap',maxZoom:19
+        }).addTo(leafletMap);
+      } else {
+        leafletMap.setView([retailerLat, retailerLng], 15);
+      }
+
+      // Retailer marker
+      if(retailerMarker) retailerMarker.remove();
+      retailerMarker = L.marker([retailerLat, retailerLng], {
+        icon: L.divIcon({html:'<div style="background:#F47B20;width:16px;height:16px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.5);"></div>',className:'',iconSize:[16,16]})
+      }).addTo(leafletMap).bindPopup('📍 Aap yahan hain').openPopup();
+
       // Load nearby wholesalers
       await loadNearbyWholesalers();
     },
@@ -528,7 +587,24 @@ async function loadNearbyWholesalers(){
     return;
   }
 
-  list.innerHTML=wholesalers.map(ws=>`
+  // Add Leaflet markers
+  wsMarkers.forEach(m=>m.remove());
+  wsMarkers=[];
+  wholesalers.forEach(ws=>{
+    if(ws.latitude&&ws.longitude&&leafletMap){
+      const m=L.marker([parseFloat(ws.latitude),parseFloat(ws.longitude)],{
+        icon:L.divIcon({html:`<div style="background:#3DBB78;color:#fff;font-size:10px;font-weight:800;padding:4px 7px;border-radius:8px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,0.4);">🏪 ${ws.shop_name||'WS'}</div>`,className:'',iconSize:[100,30]})
+      }).addTo(leafletMap).bindPopup(`<b>${ws.shop_name}</b><br>${ws.city||''}`);
+      wsMarkers.push(m);
+    }
+  });
+  renderWsList(wholesalers);
+}
+
+function renderWsList(wsList){
+  const container=document.getElementById('ws-list');
+  if(!wsList.length){container.innerHTML='<div style="text-align:center;padding:16px;color:var(--tx3);">Koi wholesaler nahi mila</div>';return;}
+  container.innerHTML=wsList.map(ws=>`
     <div class="ws-card" onclick="openOrderModal('${ws.id}','${(ws.shop_name||'').replace(/'/g,"\\'")}')">
       <div class="ws-card-top">
         <div class="ws-card-name">🏪 ${ws.shop_name||'—'}</div>
@@ -541,6 +617,13 @@ async function loadNearbyWholesalers(){
       </div>
       <button class="ws-order-btn" onclick="event.stopPropagation();openOrderModal('${ws.id}','${(ws.shop_name||'').replace(/'/g,"\\'")}')">🛒 Order Karo</button>
     </div>`).join('');
+}
+
+function filterWholesalers(q){
+  if(!q.trim()){renderWsList(wholesalers);return;}
+  const f=q.toLowerCase();
+  renderWsList(wholesalers.filter(ws=>(ws.shop_name||'').toLowerCase().includes(f)||(ws.city||'').toLowerCase().includes(f)||(ws.full_name||'').toLowerCase().includes(f)));
+
 }
 
 // Haversine distance formula
@@ -788,6 +871,25 @@ function openPDFWindow(html, filename){
     },500);
   };
   toast('📄 PDF window khul rahi hai — Print/Save as PDF chuniye');
+}
+
+// ══════════════════════════════════════════════════════
+// SAVE ADDRESS
+// ══════════════════════════════════════════════════════
+async function saveAddress(){
+  if(!currentUser){toast('❌ Login karo pehle');return;}
+  const room=document.getElementById('edit-room').value.trim();
+  const road=document.getElementById('edit-road').value.trim();
+  const city=document.getElementById('edit-city').value.trim();
+  const district=document.getElementById('edit-district').value.trim();
+  const state=document.getElementById('edit-state').value.trim();
+  if(!city){toast('❌ City zaroori hai');return;}
+  const{error}=await sb.from('mpm_users').update({room_no:room,road,city,district,state}).eq('id',currentUser.id);
+  if(error){toast('❌ Save nahi hua: '+error.message);return;}
+  const addr=[room,road,city,district,state].filter(Boolean).join(', ');
+  document.getElementById('acc-addr').textContent=addr||'—';
+  document.getElementById('hdr-city').textContent=city||'Mobile Part Mitra';
+  toast('✅ Address save ho gaya!');
 }
 
 // ══════════════════════════════════════════════════════
