@@ -477,9 +477,64 @@ select.form-input{cursor:pointer;}
         </select>
       </div>
     </div>
+    <div class="form-group">
+      <label class="form-label">Pin Code <span class="req">*</span></label>
+      <input class="form-input" id="addr-pin" type="tel" placeholder="211001" maxlength="6">
+    </div>
+    <div class="form-group">
+      <label class="form-label">📱 Mobile Number <span class="req">*</span></label>
+      <div style="display:flex;gap:8px;">
+        <div style="width:56px;background:var(--bg3);border:1.5px solid var(--bd2);border-radius:10px;padding:11px 8px;text-align:center;font-weight:700;font-size:12px;color:var(--tx2);flex-shrink:0;">+91</div>
+        <input class="form-input" id="addr-mobile" type="tel" placeholder="9876543210" maxlength="10">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">📧 Email Address</label>
+      <input class="form-input" id="addr-email" type="email" placeholder="aapka@email.com">
+    </div>
     <div id="addr-err" style="background:rgba(224,85,85,.1);border:1px solid rgba(224,85,85,.25);border-radius:8px;padding:10px;font-size:12px;color:#E05555;margin-bottom:12px;display:none;"></div>
     <button class="btn-primary" onclick="saveAddress()">💾 Save Karo</button>
     <button class="btn-ghost" onclick="closeModal('address-modal')">Cancel</button>
+  </div>
+</div>
+
+<!-- ════ WS DETAIL MODAL ════ -->
+<div class="modal-overlay" id="ws-detail-modal">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+      <div style="width:48px;height:48px;background:rgba(61,187,120,0.15);border:1.5px solid rgba(61,187,120,0.3);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">🏪</div>
+      <div>
+        <div style="font-size:17px;font-weight:900;" id="wsd-name">—</div>
+        <div style="font-size:11px;color:var(--tx3);margin-top:2px;" id="wsd-dist-badge">—</div>
+      </div>
+    </div>
+    <!-- Info cards -->
+    <div style="background:var(--bg3);border:1px solid var(--bd2);border-radius:12px;padding:14px;margin-bottom:12px;">
+      <div style="font-size:10px;color:var(--tx3);font-weight:700;text-transform:uppercase;margin-bottom:10px;">Shop Details</div>
+      <div style="font-size:13px;color:var(--tx2);line-height:2.2;">
+        <div>👤 <span id="wsd-owner">—</span></div>
+        <div>📍 <span id="wsd-addr">—</span></div>
+        <div>🏙️ <span id="wsd-city">—</span></div>
+        <div>📌 <span id="wsd-dist">—</span>, <span id="wsd-state">—</span></div>
+      </div>
+    </div>
+    <!-- Distance + map link -->
+    <div style="display:flex;gap:8px;margin-bottom:16px;">
+      <div style="flex:1;background:var(--or2);border:1px solid var(--orB);border-radius:10px;padding:12px;text-align:center;">
+        <div style="font-size:20px;font-weight:900;color:var(--or);" id="wsd-km">—</div>
+        <div style="font-size:10px;color:var(--tx3);margin-top:2px;">Distance</div>
+      </div>
+      <a id="wsd-map-link" href="#" target="_blank" style="flex:1;background:rgba(61,187,120,0.1);border:1px solid rgba(61,187,120,0.25);border-radius:10px;padding:12px;text-align:center;text-decoration:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;">
+        <div style="font-size:20px;">🗺️</div>
+        <div style="font-size:10px;color:var(--gr);font-weight:700;">Google Maps</div>
+      </a>
+    </div>
+    <div style="background:rgba(61,187,120,0.08);border:1px solid rgba(61,187,120,0.2);border-radius:10px;padding:10px 14px;font-size:11px;color:var(--gr);margin-bottom:16px;">
+      ✅ Verified Wholesaler · Mobile Part Mitra Partner
+    </div>
+    <button class="btn-primary" id="wsd-order-btn" onclick="">🛒 Is Shop Se Order Karo</button>
+    <button class="btn-ghost" onclick="closeModal('ws-detail-modal')">Bandh Karo</button>
   </div>
 </div>
 
@@ -594,8 +649,7 @@ async function loadMain(user,profile){
   }
   toast('✅ Login ho gaya!');
   await loadOrders();
-  switchTab('map');
-  startMap();
+  switchTab('orders');
 }
 
 // ══════════════════════════════════════════════════════
@@ -734,15 +788,44 @@ async function loadNearbyWholesalers(){
   document.getElementById('ws-sheet').style.display='block';
   document.getElementById('ws-sheet-title').textContent=`📍 ${allWholesalers.length} Nearby Wholesalers Mile`;
   document.getElementById('ws-list').innerHTML=allWholesalers.map(ws=>`
-    <div class="ws-card">
+    <div class="ws-card" onclick="openWsDetail('${ws.id}')">
       <div class="ws-card-top">
         <div class="ws-name">🏪 ${ws.shop_name||'—'}</div>
         <div class="ws-dist">${ws.dist<1?(ws.dist*1000).toFixed(0)+'m':ws.dist.toFixed(1)+'km'}</div>
       </div>
       <div class="ws-addr">👤 ${ws.full_name||'—'} · 📍 ${[ws.city,ws.state].filter(Boolean).join(', ')||'—'}</div>
       <div class="ws-tags"><span class="ws-tag">✅ Verified</span><span class="ws-tag">${ws.dist<1?(ws.dist*1000).toFixed(0)+' meter door':(ws.dist.toFixed(1)+' km door')}</span></div>
-      <button class="ws-order-btn" onclick="openOrderFromMap('${ws.id}','${(ws.shop_name||'').replace(/'/g,"\\'")}')">🛒 Order Karo</button>
+      <button class="ws-order-btn" onclick="event.stopPropagation();openOrderFromMap('${ws.id}','${(ws.shop_name||'').replace(/'/g,"\\'")}')">🛒 Order Karo</button>
     </div>`).join('');
+}
+
+// ── WS DETAIL MODAL ──
+function openWsDetail(wsId){
+  const ws=allWholesalers.find(w=>w.id===wsId);
+  if(!ws) return;
+  const distText=ws.dist<1?(ws.dist*1000).toFixed(0)+' meter':ws.dist.toFixed(2)+' km';
+  document.getElementById('wsd-name').textContent=ws.shop_name||'—';
+  document.getElementById('wsd-dist-badge').textContent='📍 '+distText+' door aapse';
+  document.getElementById('wsd-owner').textContent=ws.full_name||'—';
+  document.getElementById('wsd-addr').textContent=[ws.room_no,ws.road].filter(Boolean).join(', ')||'—';
+  document.getElementById('wsd-city').textContent=ws.city||'—';
+  document.getElementById('wsd-dist').textContent=ws.district||'—';
+  document.getElementById('wsd-state').textContent=ws.state||'—';
+  document.getElementById('wsd-km').textContent=distText;
+  // Google Maps link
+  const lat=parseFloat(ws.latitude)||0;
+  const lng=parseFloat(ws.longitude)||0;
+  const mapsUrl=lat&&lng
+    ?`https://www.google.com/maps/search/?api=1&query=${lat},${lng}`
+    :`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((ws.shop_name||'')+' '+[ws.city,ws.state].join(' '))}`;
+  document.getElementById('wsd-map-link').href=mapsUrl;
+  // Order button
+  document.getElementById('wsd-order-btn').onclick=()=>{
+    closeModal('ws-detail-modal');
+    openOrderFromMap(ws.id, ws.shop_name||'');
+  };
+  openModal('ws-detail-modal');
+}
 }
 
 function openOrderFromMap(wsId,wsName){
@@ -979,21 +1062,37 @@ async function saveAddress(){
   const city=document.getElementById('addr-city').value.trim();
   const dist=document.getElementById('addr-dist').value.trim();
   const state=document.getElementById('addr-state').value;
+  const pin=document.getElementById('addr-pin').value.trim();
+  const mobile=document.getElementById('addr-mobile').value.trim();
+  const email=document.getElementById('addr-email').value.trim();
   const errEl=document.getElementById('addr-err');
-  if(!room||!road||!city||!dist||!state){errEl.textContent='Saari details bharni zaroori hain';errEl.style.display='block';return;}
+  if(!room||!road||!city||!dist||!state){errEl.textContent='Room, Road, City, District aur State zaroori hain';errEl.style.display='block';return;}
+  if(pin&&(pin.length!==6||!/^\d+$/.test(pin))){errEl.textContent='Pin code 6 digit ka hona chahiye';errEl.style.display='block';return;}
+  if(mobile&&(mobile.length!==10||!/^\d+$/.test(mobile))){errEl.textContent='Mobile number 10 digit ka hona chahiye';errEl.style.display='block';return;}
+  if(email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){errEl.textContent='Valid email daalo';errEl.style.display='block';return;}
   errEl.style.display='none';
   const btn=document.querySelector('#address-modal .btn-primary');
   btn.disabled=true;btn.textContent='Save ho raha hai...';
   const isTest=currentUser.id.startsWith('test-rt-');
+  const updateData={room_no:room,road,city,district:dist,state};
+  if(pin) updateData.pincode=pin;
+  if(mobile) updateData.phone='+91'+mobile;
+  if(email) updateData.email=email;
   if(!isTest){
-    const{error}=await sb.from('mpm_users').update({room_no:room,road,city,district:dist,state}).eq('id',currentUser.id);
+    const{error}=await sb.from('mpm_users').update(updateData).eq('id',currentUser.id);
     if(error){btn.disabled=false;btn.textContent='💾 Save Karo';errEl.textContent='❌ '+error.message;errEl.style.display='block';return;}
   }
-  if(currentProfile){currentProfile.room_no=room;currentProfile.road=road;currentProfile.city=city;currentProfile.district=dist;currentProfile.state=state;}
+  if(currentProfile) Object.assign(currentProfile,updateData);
   btn.disabled=false;btn.textContent='💾 Save Karo';
-  const addr=[room,road,city,dist,state].filter(Boolean).join(', ');
   document.getElementById('set-addr').textContent=[room,road,city].join(', ');
   document.getElementById('hdr-city').textContent=city;
+  document.getElementById('profile-info').innerHTML=`
+    <div>👤 ${currentProfile?.full_name||'—'}</div>
+    <div>🏪 ${currentProfile?.shop_name||'—'}</div>
+    <div>📱 ${updateData.phone||currentProfile?.phone||'—'}</div>
+    <div>📧 ${updateData.email||currentProfile?.email||'—'}</div>
+    <div>📍 ${[room,road,city,dist,state].join(', ')}</div>
+    ${pin?`<div>📮 Pin: ${pin}</div>`:''}`;
   closeModal('address-modal');
   toast('✅ Address save ho gaya!');
 }
