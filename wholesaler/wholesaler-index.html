@@ -16,237 +16,634 @@
   --gr:#3DBB78;--re:#E05555;--am:#F4B420;
 }
 body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--tx);min-height:100vh;}
-
-/* ── AUTH SCREENS ── */
 #screen-auth{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;}
-#screen-main{display:none;min-height:100vh;padding:24px 20px 60px;}
+#screen-main{display:none;min-height:100vh;padding:24px 20px 80px;}
+#screen-add-product{display:none;min-height:100vh;padding:24px 20px 80px;}
 
-.auth-box{width:100%;max-width:400px;}
-.auth-logo{text-align:center;margin-bottom:32px;}
-.auth-logo img{width:72px;height:72px;border-radius:20px;object-fit:cover;}
-.auth-logo-name{font-size:22px;font-weight:800;margin-top:12px;letter-spacing:-0.3px;}
-.auth-logo-sub{font-size:12px;color:var(--tx3);margin-top:4px;}
+/* ── ROLE SELECTOR ── */
+.role-selector{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
+.role-card{background:var(--bg2);border:2px solid var(--bd2);border-radius:14px;padding:18px 12px;text-align:center;cursor:pointer;transition:all 0.2s;}
+.role-card:hover{border-color:var(--orB);background:var(--or2);}
+.role-card.selected{border-color:var(--or);background:var(--or2);}
+.role-card-icon{font-size:32px;margin-bottom:8px;}
+.role-card-title{font-size:13px;font-weight:800;color:var(--tx);}
+.role-card-sub{font-size:10px;color:var(--tx3);margin-top:3px;line-height:1.4;}
+.role-err{font-size:11px;color:var(--re);margin-top:-8px;margin-bottom:10px;display:none;}
 
-.tab-row{display:flex;background:var(--bg2);border:1px solid var(--bd);border-radius:12px;padding:4px;margin-bottom:24px;}
+.auth-box{width:100%;max-width:440px;}
+.auth-logo{text-align:center;margin-bottom:24px;}
+.auth-logo img{width:64px;height:64px;border-radius:18px;object-fit:cover;}
+.auth-logo-name{font-size:21px;font-weight:800;margin-top:10px;}
+.auth-logo-sub{font-size:11px;color:var(--tx3);margin-top:3px;}
+.tab-row{display:flex;background:var(--bg2);border:1px solid var(--bd);border-radius:12px;padding:4px;margin-bottom:20px;}
 .tab-btn{flex:1;padding:10px;border:none;background:transparent;color:var(--tx2);font-size:13px;font-weight:600;border-radius:9px;cursor:pointer;transition:all 0.2s;}
 .tab-btn.active{background:var(--or);color:#fff;}
-
-.form-group{margin-bottom:16px;}
-.form-label{font-size:12px;color:var(--tx2);font-weight:600;margin-bottom:6px;display:block;}
-.form-input{width:100%;background:var(--bg2);border:1px solid var(--bd2);border-radius:10px;padding:12px 14px;color:var(--tx);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;transition:border 0.2s;}
+.form-group{margin-bottom:13px;}
+.form-label{font-size:11px;color:var(--tx2);font-weight:600;margin-bottom:5px;display:flex;align-items:center;gap:4px;}
+.req{color:var(--re);font-size:12px;}
+.form-input{width:100%;background:var(--bg2);border:1.5px solid var(--bd2);border-radius:10px;padding:11px 14px;color:var(--tx);font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:border 0.2s;}
 .form-input:focus{border-color:var(--or);}
+.form-input.error{border-color:var(--re);}
 .form-input::placeholder{color:var(--tx3);}
-
+select.form-input{cursor:pointer;}
+textarea.form-input{resize:vertical;min-height:80px;}
+.field-err{font-size:10px;color:var(--re);margin-top:3px;display:none;}
 .phone-row{display:flex;gap:8px;}
-.country-code{width:80px;background:var(--bg2);border:1px solid var(--bd2);border-radius:10px;padding:12px 10px;color:var(--tx);font-size:14px;text-align:center;font-weight:700;}
-
+.country-code{width:64px;background:var(--bg2);border:1.5px solid var(--bd2);border-radius:10px;padding:11px 8px;color:var(--tx);font-size:13px;text-align:center;font-weight:700;flex-shrink:0;}
 .otp-row{display:flex;gap:8px;justify-content:center;margin:8px 0;}
-.otp-input{width:48px;height:52px;background:var(--bg2);border:1px solid var(--bd2);border-radius:10px;text-align:center;font-size:20px;font-weight:700;color:var(--tx);outline:none;transition:border 0.2s;}
+.otp-input{width:46px;height:50px;background:var(--bg2);border:1.5px solid var(--bd2);border-radius:10px;text-align:center;font-size:20px;font-weight:700;color:var(--tx);outline:none;transition:border 0.2s;}
 .otp-input:focus{border-color:var(--or);}
-
-.btn-primary{width:100%;padding:14px;background:var(--or);border:none;border-radius:12px;color:#fff;font-size:15px;font-weight:700;cursor:pointer;transition:opacity 0.2s;font-family:'DM Sans',sans-serif;}
+.btn-primary{width:100%;padding:13px;background:var(--or);border:none;border-radius:12px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;transition:opacity 0.2s;font-family:'DM Sans';}
 .btn-primary:hover{opacity:0.9;}
 .btn-primary:disabled{opacity:0.5;cursor:not-allowed;}
-
-.btn-ghost{width:100%;padding:12px;background:transparent;border:1px solid var(--bd2);border-radius:12px;color:var(--tx2);font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;font-family:'DM Sans',sans-serif;margin-top:8px;}
+.btn-ghost{width:100%;padding:11px;background:transparent;border:1px solid var(--bd2);border-radius:12px;color:var(--tx2);font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;font-family:'DM Sans';margin-top:8px;}
 .btn-ghost:hover{border-color:var(--or);color:var(--or);}
-
-.divider{text-align:center;color:var(--tx3);font-size:12px;margin:16px 0;position:relative;}
-.divider::before,.divider::after{content:'';position:absolute;top:50%;width:42%;height:1px;background:var(--bd2);}
-.divider::before{left:0;}.divider::after{right:0;}
-
+.btn-sm{padding:7px 14px;background:var(--or);border:none;border-radius:8px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans';}
+.btn-sm-ghost{padding:7px 14px;background:transparent;border:1px solid var(--bd2);border-radius:8px;color:var(--tx2);font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans';}
+.btn-sm-red{padding:7px 14px;background:rgba(224,85,85,0.12);border:1px solid rgba(224,85,85,0.25);border-radius:8px;color:var(--re);font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans';}
 .err-msg{background:rgba(224,85,85,0.1);border:1px solid rgba(224,85,85,0.25);border-radius:8px;padding:10px 12px;font-size:12px;color:#E05555;margin-bottom:12px;display:none;}
 .info-msg{background:rgba(61,187,120,0.1);border:1px solid rgba(61,187,120,0.25);border-radius:8px;padding:10px 12px;font-size:12px;color:#3DBB78;margin-bottom:12px;display:none;}
-
 .otp-timer{text-align:center;font-size:12px;color:var(--tx3);margin-top:8px;}
 .otp-timer span{color:var(--or);cursor:pointer;font-weight:600;}
 
-/* ── MAIN DASHBOARD ── */
+/* ── REGISTER PROGRESS ── */
+.progress-wrap{margin-bottom:20px;}
+.progress-steps{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;position:relative;}
+.progress-steps::before{content:'';position:absolute;top:16px;left:16px;right:16px;height:2px;background:var(--bd2);z-index:0;}
+.progress-line{position:absolute;top:16px;left:16px;height:2px;background:var(--or);z-index:1;transition:width 0.4s ease;}
+.prog-step{display:flex;flex-direction:column;align-items:center;gap:6px;position:relative;z-index:2;}
+.prog-dot{width:32px;height:32px;border-radius:50%;background:var(--bg3);border:2px solid var(--bd2);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--tx3);transition:all 0.3s;}
+.prog-dot.active{background:var(--or);border-color:var(--or);color:#fff;}
+.prog-dot.done{background:var(--gr);border-color:var(--gr);color:#fff;}
+.prog-lbl{font-size:9px;color:var(--tx3);font-weight:600;text-align:center;white-space:nowrap;}
+.prog-lbl.active{color:var(--or);}
+.prog-lbl.done{color:var(--gr);}
+
+/* ── ADD PRODUCT PROGRESS ── */
+.ap-progress{display:flex;align-items:center;gap:0;margin-bottom:24px;background:var(--bg2);border:1px solid var(--bd);border-radius:12px;padding:4px;}
+.ap-step{flex:1;padding:9px 6px;border-radius:9px;text-align:center;font-size:11px;font-weight:700;color:var(--tx3);transition:all 0.2s;}
+.ap-step.active{background:var(--or);color:#fff;}
+.ap-step.done{color:var(--gr);}
+
+/* ── PHOTO SLOTS ── */
+.photo-slots{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px;}
+.photo-slot{border:2px dashed var(--bd2);border-radius:12px;overflow:hidden;aspect-ratio:1;position:relative;cursor:pointer;transition:all 0.2s;background:var(--bg3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;}
+.photo-slot:hover{border-color:var(--or);background:var(--or2);}
+.photo-slot.filled{border-style:solid;border-color:var(--or);}
+.photo-slot input{display:none;}
+.photo-slot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:10px;}
+.photo-slot-label{font-size:10px;font-weight:700;color:var(--tx3);text-align:center;line-height:1.3;padding:0 6px;}
+.photo-slot-icon{font-size:22px;}
+.photo-slot-remove{position:absolute;top:5px;right:5px;width:20px;height:20px;background:var(--re);border:none;border-radius:50%;color:#fff;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;z-index:2;}
+.photo-slot-req{position:absolute;top:5px;left:5px;background:var(--or);color:#fff;font-size:8px;font-weight:700;padding:2px 5px;border-radius:4px;}
+
+/* ── CUSTOM TAG INPUT ── */
+.tag-input-wrap{background:var(--bg2);border:1.5px solid var(--bd2);border-radius:10px;padding:8px 10px;transition:border 0.2s;min-height:46px;}
+.tag-input-wrap:focus-within{border-color:var(--or);}
+.tag-input-wrap.error{border-color:var(--re);}
+.tags-row{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px;}
+.tag-chip{display:inline-flex;align-items:center;gap:4px;background:var(--or2);border:1px solid var(--orB);border-radius:6px;padding:3px 8px;font-size:11px;font-weight:600;color:var(--or);}
+.tag-chip-remove{font-size:10px;opacity:0.7;cursor:pointer;border:none;background:none;color:var(--or);}
+.tag-type-input{background:transparent;border:none;outline:none;color:var(--tx);font-size:12px;font-family:'DM Sans';min-width:80px;width:100%;padding:2px 0;}
+.tag-type-input::placeholder{color:var(--tx3);}
+.tag-suggestions{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;}
+.tag-suggest-chip{background:var(--bg3);border:1px solid var(--bd2);border-radius:6px;padding:3px 8px;font-size:11px;color:var(--tx2);cursor:pointer;transition:all 0.15s;}
+.tag-suggest-chip:hover{border-color:var(--or);color:var(--or);}
+
+/* ── MAP ── */
+#gps-map-wrap{border-radius:12px;overflow:hidden;border:1.5px solid var(--bd2);margin-top:8px;display:none;position:relative;}
+#gps-map{width:100%;height:220px;border:none;}
+.map-pin-overlay{position:absolute;top:50%;left:50%;transform:translate(-50%,-100%);font-size:28px;pointer-events:none;z-index:10;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5));}
+.map-confirm-bar{position:absolute;bottom:0;left:0;right:0;background:rgba(10,10,10,0.85);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;backdrop-filter:blur(4px);}
+.map-coords-text{font-size:10px;color:var(--tx2);font-family:monospace;}
+.map-confirm-btn{background:var(--or);border:none;border-radius:8px;color:#fff;font-size:12px;font-weight:700;padding:7px 14px;cursor:pointer;font-family:'DM Sans';white-space:nowrap;}
+
+/* ── DASHBOARD ── */
 .wrap{max-width:900px;margin:0 auto;}
-.hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px;}
+.hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px;}
 .hdr-left{display:flex;align-items:center;gap:12px;}
 .logo-box{width:42px;height:42px;border-radius:12px;overflow:hidden;}
 .logo-box img{width:100%;height:100%;object-fit:cover;}
 .hdr-title{font-size:18px;font-weight:800;}
 .hdr-sub{font-size:11px;color:var(--tx3);margin-top:2px;}
-
-.badge{background:var(--or2);border:1px solid var(--orB);color:var(--or);font-size:9px;font-weight:700;padding:4px 10px;border-radius:20px;letter-spacing:0.05em;text-transform:uppercase;}
+.badge{background:var(--or2);border:1px solid var(--orB);color:var(--or);font-size:9px;font-weight:700;padding:4px 10px;border-radius:20px;text-transform:uppercase;}
 .badge-pending{background:rgba(244,180,32,0.12);border:1px solid rgba(244,180,32,0.25);color:var(--am);}
 .badge-verified{background:rgba(61,187,120,0.12);border:1px solid rgba(61,187,120,0.25);color:var(--gr);}
-
 .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px;}
 .stat-card{background:var(--bg2);border:1px solid var(--bd);border-radius:14px;padding:16px;text-align:center;}
-.stat-num{font-size:28px;font-weight:900;color:var(--or);}
-.stat-lbl{font-size:11px;color:var(--tx3);margin-top:2px;}
-
-.section-title{font-size:13px;font-weight:700;color:var(--tx2);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;}
-
-.pending-box{background:rgba(244,180,32,0.06);border:1px solid rgba(244,180,32,0.2);border-radius:14px;padding:18px;margin-bottom:24px;}
-.pending-title{font-size:14px;font-weight:700;color:var(--am);margin-bottom:6px;}
+.stat-num{font-size:26px;font-weight:900;color:var(--or);}
+.stat-lbl{font-size:10px;color:var(--tx3);margin-top:2px;}
+.section-title{font-size:12px;font-weight:700;color:var(--tx2);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;}
+.pending-box{background:rgba(244,180,32,0.06);border:1px solid rgba(244,180,32,0.2);border-radius:14px;padding:16px;margin-bottom:24px;}
+.pending-title{font-size:14px;font-weight:700;color:var(--am);margin-bottom:5px;}
 .pending-sub{font-size:12px;color:var(--tx2);}
-
 .logout-btn{background:transparent;border:1px solid var(--bd2);border-radius:10px;padding:8px 16px;color:var(--tx2);font-size:12px;font-weight:600;cursor:pointer;transition:all 0.2s;}
 .logout-btn:hover{border-color:var(--re);color:var(--re);}
+.add-product-btn{display:flex;align-items:center;gap:10px;width:100%;padding:16px 18px;background:linear-gradient(135deg,var(--or),#e06010);border:none;border-radius:14px;color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans';margin-bottom:24px;transition:opacity 0.2s;}
+.add-product-btn:hover{opacity:0.9;}
+.add-product-btn:disabled{opacity:0.4;cursor:not-allowed;}
 
-/* Toast */
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#1C1C1C;border:1px solid var(--bd2);border-radius:12px;padding:12px 20px;font-size:13px;font-weight:600;color:var(--tx);z-index:9999;transition:transform 0.3s ease;white-space:nowrap;}
+/* ── PRODUCT CARDS ── */
+.products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;}
+.product-card{background:var(--bg2);border:1px solid var(--bd);border-radius:14px;overflow:hidden;transition:border 0.2s;}
+.product-card:hover{border-color:var(--orB);}
+.product-img{width:100%;height:130px;object-fit:cover;background:var(--bg3);}
+.product-img-placeholder{width:100%;height:130px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:30px;}
+.product-body{padding:11px;}
+.product-name{font-size:12px;font-weight:700;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.product-meta{font-size:10px;color:var(--tx3);margin-bottom:6px;}
+.product-price{font-size:15px;font-weight:900;color:var(--or);}
+
+/* ── INVENTORY TRACKER ── */
+.inv-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin:8px 0;padding:8px;background:var(--bg3);border-radius:10px;}
+.inv-cell{text-align:center;}
+.inv-num{font-size:16px;font-weight:900;}
+.inv-num.offline{color:var(--am);}
+.inv-num.online{color:var(--gr);}
+.inv-num.remaining{color:var(--or);}
+.inv-lbl{font-size:8px;color:var(--tx3);margin-top:1px;font-weight:600;text-transform:uppercase;}
+.inv-low-badge{background:rgba(224,85,85,0.12);border:1px solid rgba(224,85,85,0.25);border-radius:6px;padding:2px 7px;font-size:9px;color:var(--re);font-weight:700;display:inline-block;margin-top:4px;}
+
+.product-condition{display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;border-radius:6px;margin-top:4px;}
+.cond-new{background:rgba(61,187,120,0.12);color:var(--gr);}
+.cond-ref{background:rgba(244,123,32,0.12);color:var(--or);}
+.cond-oem{background:rgba(100,150,255,0.12);color:#6496ff;}
+.product-actions{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap;}
+.empty-state{text-align:center;padding:48px 20px;color:var(--tx3);}
+.empty-icon{font-size:48px;margin-bottom:12px;}
+.empty-title{font-size:15px;font-weight:700;color:var(--tx2);margin-bottom:6px;}
+
+/* ── PAGE HEADER ── */
+.page-hdr{display:flex;align-items:center;gap:12px;margin-bottom:24px;}
+.back-btn{width:36px;height:36px;background:var(--bg2);border:1px solid var(--bd2);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;flex-shrink:0;}
+.back-btn:hover{border-color:var(--or);}
+.page-title{font-size:18px;font-weight:800;}
+.page-sub{font-size:11px;color:var(--tx3);margin-top:2px;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+/* ── MODALS ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:100;display:none;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:var(--bg2);border:1px solid var(--bd2);border-radius:18px;width:100%;max-width:380px;padding:24px;max-height:90vh;overflow-y:auto;}
+.modal-title{font-size:16px;font-weight:800;margin-bottom:6px;}
+.modal-sub{font-size:12px;color:var(--tx3);margin-bottom:20px;}
+
+/* ── OFFLINE SALE MODAL ── */
+.sale-product-info{background:var(--bg3);border:1px solid var(--bd2);border-radius:12px;padding:12px;margin-bottom:16px;}
+.sale-product-name{font-size:14px;font-weight:700;margin-bottom:4px;}
+.sale-stock-info{display:flex;gap:12px;font-size:11px;color:var(--tx2);margin-top:6px;}
+.sale-stock-num{font-weight:800;color:var(--or);}
+
+/* ── HISTORY ── */
+.history-item{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--bd);}
+.history-item:last-child{border-bottom:none;}
+.history-type{font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;}
+.ht-offline{background:rgba(244,180,32,0.12);color:var(--am);}
+.ht-online{background:rgba(61,187,120,0.12);color:var(--gr);}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#1C1C1C;border:1px solid var(--bd2);border-radius:12px;padding:12px 20px;font-size:13px;font-weight:600;color:var(--tx);z-index:9999;transition:transform 0.3s;white-space:nowrap;}
 .toast.show{transform:translateX(-50%) translateY(0);}
 </style>
 </head>
 <body>
 <div style="background:#111;border-bottom:1px solid rgba(244,123,32,0.2);padding:6px 16px;font-size:11px;font-weight:700;color:#F47B20;letter-spacing:0.08em;text-align:center;font-family:'DM Sans',sans-serif;">📁 wholesaler-index.html — Wholesaler Panel — Mobile Part Mitra</div>
 
-<!-- ── AUTH SCREEN ── -->
+<!-- ════ SCREEN: AUTH ════ -->
 <div id="screen-auth">
-  <div class="auth-box">
+<div class="auth-box">
+  <div class="auth-logo">
+    <img src="../shared/images/MPM_Logo.png" alt="MPM">
+    <div class="auth-logo-name">Mobile Part Mitra</div>
+    <div class="auth-logo-sub">🏪 Wholesaler Panel</div>
+  </div>
 
-    <div class="auth-logo">
-      <img src="../shared/images/MPM_Logo.png" alt="MPM">
-      <div class="auth-logo-name">Mobile Part Mitra</div>
-      <div class="auth-logo-sub">🏪 Wholesaler Panel</div>
+  <div class="tab-row">
+    <button class="tab-btn active" onclick="switchTab('login')">Login</button>
+    <button class="tab-btn" onclick="switchTab('register')">Register</button>
+  </div>
+
+  <div id="err-box" class="err-msg"></div>
+  <div id="info-box" class="info-msg"></div>
+
+  <!-- ── LOGIN ── -->
+  <div id="form-login">
+    <div id="login-step-phone">
+      <div class="form-group">
+        <label class="form-label">Phone Number <span class="req">*</span></label>
+        <div class="phone-row">
+          <div class="country-code">+91</div>
+          <input class="form-input" id="login-phone" type="tel" placeholder="9999999992" maxlength="10" onkeydown="if(event.key==='Enter')sendLoginOTP()">
+        </div>
+      </div>
+      <button class="btn-primary" onclick="sendLoginOTP()">📱 OTP Bhejo</button>
+      <div style="margin-top:12px;background:var(--or2);border:1px solid var(--orB);border-radius:10px;padding:10px 13px;font-size:10px;color:var(--or);">
+        🧪 Test: <strong>9999999992</strong> → OTP: <strong>123456</strong>
+      </div>
+    </div>
+    <div id="login-step-otp" style="display:none;">
+      <div style="font-size:12px;color:var(--tx2);text-align:center;margin-bottom:14px;">OTP bheja gaya <strong id="login-phone-display" style="color:var(--or);"></strong> pe</div>
+      <div class="otp-row">
+        <input class="otp-input" id="o1" maxlength="1" oninput="otpNext(this,'o2')" onkeydown="otpBack(event,this,null)">
+        <input class="otp-input" id="o2" maxlength="1" oninput="otpNext(this,'o3')" onkeydown="otpBack(event,this,'o1')">
+        <input class="otp-input" id="o3" maxlength="1" oninput="otpNext(this,'o4')" onkeydown="otpBack(event,this,'o2')">
+        <input class="otp-input" id="o4" maxlength="1" oninput="otpNext(this,'o5')" onkeydown="otpBack(event,this,'o3')">
+        <input class="otp-input" id="o5" maxlength="1" oninput="otpNext(this,'o6')" onkeydown="otpBack(event,this,'o4')">
+        <input class="otp-input" id="o6" maxlength="1" oninput="otpNext(this,null)" onkeydown="otpBack(event,this,'o5')">
+      </div>
+      <div class="otp-timer">OTP nahi aaya? <span onclick="sendLoginOTP()">Dobara Bhejo</span></div>
+      <button class="btn-primary" style="margin-top:16px;" onclick="verifyLoginOTP()">✅ Verify & Login</button>
+      <button class="btn-ghost" onclick="resetLoginStep()">← Phone badlo</button>
+    </div>
+  </div>
+
+  <!-- ── REGISTER ── -->
+  <div id="form-register" style="display:none;">
+    <div class="progress-wrap">
+      <div class="progress-steps">
+        <div class="prog-step"><div class="prog-dot active" id="pd1">1</div><div class="prog-lbl active" id="pl1">Role</div></div>
+        <div class="prog-step"><div class="prog-dot" id="pd2">2</div><div class="prog-lbl" id="pl2">Malik Info</div></div>
+        <div class="prog-step"><div class="prog-dot" id="pd3">3</div><div class="prog-lbl" id="pl3">Dukan Pata</div></div>
+        <div class="prog-step"><div class="prog-dot" id="pd4">4</div><div class="prog-lbl" id="pl4">OTP</div></div>
+        <div class="progress-line" id="prog-line" style="width:0%;"></div>
+      </div>
     </div>
 
-    <!-- Login / Register Tabs -->
-    <div class="tab-row">
-      <button class="tab-btn active" onclick="switchTab('login')">Login</button>
-      <button class="tab-btn" onclick="switchTab('register')">Register</button>
+    <!-- STEP 0: Role Selection -->
+    <div id="reg-s0">
+      <div style="font-size:13px;font-weight:700;color:var(--tx2);margin-bottom:14px;">👤 Aap kaun hain?</div>
+      <div class="role-selector">
+        <div class="role-card" id="role-wholesaler" onclick="selectRole('wholesaler')">
+          <div class="role-card-icon">🏪</div>
+          <div class="role-card-title">Wholesaler</div>
+          <div class="role-card-sub">Main parts supply karta hoon aur retailers ko bechta hoon</div>
+        </div>
+        <div class="role-card" id="role-retailer" onclick="selectRole('retailer')">
+          <div class="role-card-icon">🛒</div>
+          <div class="role-card-title">Retailer</div>
+          <div class="role-card-sub">Main wholesalers se parts khareedta hoon aur repair karta hoon</div>
+        </div>
+      </div>
+      <div class="role-err" id="role-err">❌ Pehle apna role chuniye</div>
+      <button class="btn-primary" onclick="regStep0Next()">Aage Jao →</button>
+      <div style="margin-top:10px;background:var(--or2);border:1px solid var(--orB);border-radius:10px;padding:9px 12px;font-size:10px;color:var(--or);">
+        🧪 Wholesaler test: <strong>9999999992</strong> | Retailer test: <strong>9999999993</strong>
+      </div>
     </div>
 
-    <div id="err-box" class="err-msg"></div>
-    <div id="info-box" class="info-msg"></div>
+    <!-- STEP 1: Malik Info -->
+    <div id="reg-s1" style="display:none;">
+      <div style="font-size:13px;font-weight:700;color:var(--tx2);margin-bottom:14px;" id="reg-s1-title">👤 Aapki Jaankari</div>
+      <div class="form-group">
+        <label class="form-label">दुकान मालिक का नाम <span class="req">*</span></label>
+        <input class="form-input" id="r-owner" type="text" placeholder="Ramesh Kumar Sharma">
+        <div class="field-err" id="e-owner">Naam kam se kam 3 akshar</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">दुकान का नाम <span class="req">*</span></label>
+        <input class="form-input" id="r-shop" type="text" placeholder="Sharma Mobile Parts">
+        <div class="field-err" id="e-shop">Dukan ka naam zaroori hai</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">📱 Phone Number <span class="req">*</span></label>
+        <div class="phone-row">
+          <div class="country-code">+91</div>
+          <input class="form-input" id="r-phone" type="tel" placeholder="9999999992" maxlength="10">
+        </div>
+        <div class="field-err" id="e-phone">10 digit number daalo</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">📧 Email <span class="req">*</span></label>
+        <input class="form-input" id="r-email" type="email" placeholder="aapka@email.com">
+        <div class="field-err" id="e-email">Valid email daalo</div>
+      </div>
+      <button class="btn-primary" onclick="regStep1Next()">Aage Jao →</button>
+      <button class="btn-ghost" onclick="regGoBack(0)">← Role Badlo</button>
+    </div>
 
-    <!-- ── LOGIN FORM ── -->
-    <div id="form-login">
-
-      <!-- Step 1: Phone -->
-      <div id="login-step-phone">
+    <!-- STEP 2: Address -->
+    <div id="reg-s2" style="display:none;">
+      <div style="font-size:13px;font-weight:700;color:var(--tx2);margin-bottom:14px;">🏪 Dukan ka Pata</div>
+      <div class="form-group">
+        <label class="form-label">दुकान रूम / मकान नम्बर <span class="req">*</span></label>
+        <input class="form-input" id="r-room" type="text" placeholder="Shop No. 12, Ground Floor">
+        <div class="field-err" id="e-room">Room number daalo</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">रोड / गली नाम <span class="req">*</span></label>
+        <input class="form-input" id="r-road" type="text" placeholder="MG Road / Gandhi Gali">
+        <div class="field-err" id="e-road">Road/gali naam daalo</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">बाजार / शहर <span class="req">*</span></label>
+        <input class="form-input" id="r-city" type="text" placeholder="Paltan Bazaar, Prayagraj">
+        <div class="field-err" id="e-city">Bazaar/sheher naam daalo</div>
+      </div>
+      <div class="two-col">
         <div class="form-group">
-          <label class="form-label">Phone Number</label>
-          <div class="phone-row">
-            <div class="country-code">+91</div>
-            <input class="form-input" id="login-phone" type="tel" placeholder="9999999992" maxlength="10" onkeydown="if(event.key==='Enter')sendLoginOTP()">
+          <label class="form-label">District <span class="req">*</span></label>
+          <input class="form-input" id="r-dist" type="text" placeholder="Prayagraj">
+          <div class="field-err" id="e-dist">District daalo</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">State <span class="req">*</span></label>
+          <select class="form-input" id="r-state">
+            <option value="">-- Chuniye --</option>
+            <option>Andhra Pradesh</option><option>Arunachal Pradesh</option><option>Assam</option><option>Bihar</option><option>Chhattisgarh</option><option>Goa</option><option>Gujarat</option><option>Haryana</option><option>Himachal Pradesh</option><option>Jharkhand</option><option>Karnataka</option><option>Kerala</option><option>Madhya Pradesh</option><option>Maharashtra</option><option>Manipur</option><option>Meghalaya</option><option>Mizoram</option><option>Nagaland</option><option>Odisha</option><option>Punjab</option><option>Rajasthan</option><option>Sikkim</option><option>Tamil Nadu</option><option>Telangana</option><option>Tripura</option><option>Uttar Pradesh</option><option>Uttarakhand</option><option>West Bengal</option><option>Delhi</option><option>Jammu and Kashmir</option><option>Ladakh</option><option>Chandigarh</option><option>Puducherry</option>
+          </select>
+          <div class="field-err" id="e-state">State chuniye</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">📍 Map Location <span class="req">*</span></label>
+        <button class="gps-btn" id="gps-btn" onclick="getGPS()" style="display:flex;align-items:center;gap:8px;width:100%;padding:11px 14px;background:var(--bg3);border:1.5px dashed var(--orB);border-radius:10px;color:var(--or);font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans';">
+          <span id="gps-icon">📍</span><span id="gps-text">GPS se Location Detect Karo</span>
+        </button>
+        <div class="field-err" id="e-gps">Location confirm karna zaroori hai</div>
+        <input type="hidden" id="r-lat"><input type="hidden" id="r-lng">
+        <div id="gps-map-wrap" style="border-radius:12px;overflow:hidden;border:1.5px solid var(--bd2);margin-top:8px;display:none;position:relative;">
+          <iframe id="gps-map" style="width:100%;height:220px;border:none;" allowfullscreen loading="lazy"></iframe>
+          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-100%);font-size:28px;pointer-events:none;z-index:10;">📍</div>
+          <div style="position:absolute;bottom:0;left:0;right:0;background:rgba(10,10,10,0.85);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
+            <div style="font-size:10px;color:var(--tx2);font-family:monospace;" id="map-coords-text">Detecting...</div>
+            <button style="background:var(--or);border:none;border-radius:8px;color:#fff;font-size:12px;font-weight:700;padding:7px 14px;cursor:pointer;font-family:'DM Sans';" onclick="confirmMapLocation()">✅ Yahi Hai Meri Dukan</button>
           </div>
         </div>
-        <button class="btn-primary" onclick="sendLoginOTP()">📱 OTP Bhejo</button>
-        <div style="margin-top:12px;background:rgba(244,123,32,0.08);border:1px solid rgba(244,123,32,0.2);border-radius:10px;padding:10px 13px;font-size:10px;color:var(--or);">
-          🧪 Test: <strong>9999999992</strong> → OTP: <strong>123456</strong>
-        </div>
       </div>
-
-      <!-- Step 2: OTP verify -->
-      <div id="login-step-otp" style="display:none;">
-        <div style="font-size:12px;color:var(--tx2);text-align:center;margin-bottom:14px;">OTP bheja gaya <strong id="login-phone-display" style="color:var(--or);"></strong> pe</div>
-        <div class="otp-row">
-          <input class="otp-input" id="o1" maxlength="1" oninput="otpNext(this,'o2')" onkeydown="otpBack(event,this,null)">
-          <input class="otp-input" id="o2" maxlength="1" oninput="otpNext(this,'o3')" onkeydown="otpBack(event,this,'o1')">
-          <input class="otp-input" id="o3" maxlength="1" oninput="otpNext(this,'o4')" onkeydown="otpBack(event,this,'o2')">
-          <input class="otp-input" id="o4" maxlength="1" oninput="otpNext(this,'o5')" onkeydown="otpBack(event,this,'o3')">
-          <input class="otp-input" id="o5" maxlength="1" oninput="otpNext(this,'o6')" onkeydown="otpBack(event,this,'o4')">
-          <input class="otp-input" id="o6" maxlength="1" oninput="otpNext(this,null)"  onkeydown="otpBack(event,this,'o5')">
-        </div>
-        <div class="otp-timer">OTP nahi aaya? <span onclick="sendLoginOTP()">Dobara Bhejo</span></div>
-        <button class="btn-primary" style="margin-top:16px;" onclick="verifyLoginOTP()">✅ Verify & Login</button>
-        <button class="btn-ghost" onclick="resetLoginStep()">← Phone badlo</button>
+      <div style="display:flex;gap:10px;">
+        <button class="btn-ghost" style="margin-top:0;" onclick="regGoBack(1)">← Wapas</button>
+        <button class="btn-primary" onclick="regStep2Next()">OTP Verify →</button>
       </div>
     </div>
 
-    <!-- ── REGISTER FORM ── -->
-    <div id="form-register" style="display:none;">
-
-      <!-- Register Step 1: Details -->
-      <div id="reg-step-details">
-        <div class="form-group">
-          <label class="form-label">Aapka Naam</label>
-          <input class="form-input" id="reg-name" type="text" placeholder="Ramesh Sharma">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Dukan ka Naam</label>
-          <input class="form-input" id="reg-shop" type="text" placeholder="Sharma Mobile Parts">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Sheher / City</label>
-          <input class="form-input" id="reg-city" type="text" placeholder="Prayagraj">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Phone Number</label>
-          <div class="phone-row">
-            <div class="country-code">+91</div>
-            <input class="form-input" id="reg-phone" type="tel" placeholder="9999999992" maxlength="10">
-          </div>
-        </div>
-        <button class="btn-primary" onclick="sendRegisterOTP()">📱 OTP Bhejo & Register Karo</button>
-        <div style="margin-top:12px;background:rgba(244,123,32,0.08);border:1px solid rgba(244,123,32,0.2);border-radius:10px;padding:10px 13px;font-size:10px;color:var(--or);">
-          🧪 Test: <strong>9999999992</strong> → OTP: <strong>123456</strong>
-        </div>
+    <!-- STEP 3: OTP -->
+    <div id="reg-s3" style="display:none;">
+      <div style="font-size:13px;font-weight:700;color:var(--tx2);margin-bottom:6px;">🔐 Phone Verify Karo</div>
+      <div style="font-size:11px;color:var(--tx3);margin-bottom:14px;">OTP bheja gaya <strong id="reg-phone-display" style="color:var(--or);"></strong> pe</div>
+      <div style="background:var(--bg3);border:1px solid var(--bd2);border-radius:12px;padding:12px;margin-bottom:16px;font-size:11px;color:var(--tx2);line-height:2;">
+        <div style="font-size:10px;color:var(--tx3);font-weight:700;text-transform:uppercase;margin-bottom:6px;">Summary</div>
+        <div>👤 <span id="sum-owner"></span></div>
+        <div>🏪 <span id="sum-shop"></span></div>
+        <div>📍 <span id="sum-addr"></span></div>
+        <div>📱 <span id="sum-phone"></span></div>
+        <div id="sum-role-line"></div>
       </div>
+      <div class="otp-row">
+        <input class="otp-input" id="r1" maxlength="1" oninput="otpNext(this,'r2')" onkeydown="otpBack(event,this,null)">
+        <input class="otp-input" id="r2" maxlength="1" oninput="otpNext(this,'r3')" onkeydown="otpBack(event,this,'r1')">
+        <input class="otp-input" id="r3" maxlength="1" oninput="otpNext(this,'r4')" onkeydown="otpBack(event,this,'r2')">
+        <input class="otp-input" id="r4" maxlength="1" oninput="otpNext(this,'r5')" onkeydown="otpBack(event,this,'r3')">
+        <input class="otp-input" id="r5" maxlength="1" oninput="otpNext(this,'r6')" onkeydown="otpBack(event,this,'r4')">
+        <input class="otp-input" id="r6" maxlength="1" oninput="otpNext(this,null)" onkeydown="otpBack(event,this,'r5')">
+      </div>
+      <div class="otp-timer">OTP nahi aaya? <span onclick="resendRegOTP()">Dobara Bhejo</span></div>
+      <button class="btn-primary" style="margin-top:16px;" onclick="verifyRegisterOTP()">✅ Register & Login</button>
+      <button class="btn-ghost" onclick="regGoBack(2)">← Pata Badlo</button>
+    </div>
+  </div>
+</div>
+</div>
 
-      <!-- Register Step 2: OTP -->
-      <div id="reg-step-otp" style="display:none;">
-        <div style="font-size:12px;color:var(--tx2);text-align:center;margin-bottom:14px;">OTP bheja gaya <strong id="reg-phone-display" style="color:var(--or);"></strong> pe</div>
-        <div class="otp-row">
-          <input class="otp-input" id="r1" maxlength="1" oninput="otpNext(this,'r2')" onkeydown="otpBack(event,this,null)">
-          <input class="otp-input" id="r2" maxlength="1" oninput="otpNext(this,'r3')" onkeydown="otpBack(event,this,'r1')">
-          <input class="otp-input" id="r3" maxlength="1" oninput="otpNext(this,'r4')" onkeydown="otpBack(event,this,'r2')">
-          <input class="otp-input" id="r4" maxlength="1" oninput="otpNext(this,'r5')" onkeydown="otpBack(event,this,'r3')">
-          <input class="otp-input" id="r5" maxlength="1" oninput="otpNext(this,'r6')" onkeydown="otpBack(event,this,'r4')">
-          <input class="otp-input" id="r6" maxlength="1" oninput="otpNext(this,null)"  onkeydown="otpBack(event,this,'r5')">
-        </div>
-        <div class="otp-timer">OTP nahi aaya? <span onclick="sendRegisterOTP()">Dobara Bhejo</span></div>
-        <button class="btn-primary" style="margin-top:16px;" onclick="verifyRegisterOTP()">✅ Confirm & Register</button>
-        <button class="btn-ghost" onclick="resetRegisterStep()">← Wapas jao</button>
+<!-- ════ SCREEN: MAIN DASHBOARD ════ -->
+<div id="screen-main">
+<div class="wrap">
+  <div class="hdr">
+    <div class="hdr-left">
+      <div class="logo-box"><img src="../shared/images/MPM_Logo.png" alt="MPM"></div>
+      <div>
+        <div class="hdr-title" id="dash-shop-name">Wholesaler Dashboard</div>
+        <div class="hdr-sub" id="dash-city">Mobile Part Mitra</div>
       </div>
     </div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span id="dash-status-badge" class="badge badge-pending">⏳ Pending</span>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+  </div>
 
+  <div id="pending-notice" class="pending-box">
+    <div class="pending-title">⏳ Shop Approval Pending</div>
+    <div class="pending-sub">Admin se approval ke baad products list kar sakte hain. 24 ghante mein approve hoga.</div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-num" id="stat-total">0</div><div class="stat-lbl">Total Parts</div></div>
+    <div class="stat-card"><div class="stat-num" id="stat-active">0</div><div class="stat-lbl">Live Parts</div></div>
+    <div class="stat-card"><div class="stat-num" id="stat-stock">0</div><div class="stat-lbl">Total Stock</div></div>
+  </div>
+
+  <button class="add-product-btn" id="add-product-btn" onclick="showAddProduct()" disabled>
+    <span style="font-size:22px;">＋</span>
+    <div style="text-align:left;">
+      <div>Naya Part List Karo</div>
+      <div style="font-size:11px;font-weight:400;opacity:0.8;" id="add-btn-sub">Shop approved hone ke baad available hoga</div>
+    </div>
+  </button>
+
+  <div class="section-title">Aapke Products</div>
+  <div id="products-container">
+    <div class="empty-state"><div class="empty-icon">📦</div><div class="empty-title">Abhi koi product nahi</div><div style="font-size:12px;">Shop approve hone ke baad pehla part add karo</div></div>
+  </div>
+
+  <div style="margin-top:24px;">
+    <div class="section-title">Account Info</div>
+    <div style="background:var(--bg2);border:1px solid var(--bd);border-radius:14px;padding:16px;font-size:13px;color:var(--tx2);line-height:2.2;">
+      <div>👤 <span id="info-owner">—</span></div>
+      <div>🏪 <span id="info-shop">—</span></div>
+      <div>📱 <span id="info-phone">—</span></div>
+      <div>📧 <span id="info-email">—</span></div>
+      <div>📍 <span id="info-addr">—</span></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ════ SCREEN: ADD PRODUCT ════ -->
+<div id="screen-add-product">
+<div class="wrap" style="max-width:560px;">
+  <div class="page-hdr">
+    <div class="back-btn" onclick="showDashboard()">←</div>
+    <div>
+      <div class="page-title">Naya Part Add Karo</div>
+      <div class="page-sub">Saari details bharo — product turant live ho jayega</div>
+    </div>
+  </div>
+  <div class="ap-progress">
+    <div class="ap-step active" id="ap1">1 · Part Info</div>
+    <div class="ap-step" id="ap2">2 · Price & Stock</div>
+    <div class="ap-step" id="ap3">3 · Photos</div>
+  </div>
+  <div id="ap-err" class="err-msg"></div>
+
+  <!-- AP STEP 1 -->
+  <div id="ap-s1">
+    <div class="form-group">
+      <label class="form-label">Part ka Naam <span class="req">*</span></label>
+      <input class="form-input" id="p-name" type="text" placeholder="Display Assembly, Battery 4000mAh...">
+      <div class="field-err" id="pe-name">Part ka naam daalo</div>
+    </div>
+    <div class="two-col">
+      <div class="form-group">
+        <label class="form-label">Category <span class="req">*</span></label>
+        <div class="tag-input-wrap" id="cat-wrap">
+          <div class="tags-row" id="cat-tags-row"></div>
+          <input class="tag-type-input" id="cat-type" placeholder="Type karo ya chuniye..." oninput="filterSuggestions('cat')" onkeydown="tagKeydown(event,'cat')">
+        </div>
+        <div class="tag-suggestions" id="cat-suggestions"></div>
+        <div class="field-err" id="pe-cat">Category daalo</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Brand <span class="req">*</span></label>
+        <div class="tag-input-wrap" id="brand-wrap">
+          <div class="tags-row" id="brand-tags-row"></div>
+          <input class="tag-type-input" id="brand-type" placeholder="Type karo ya chuniye..." oninput="filterSuggestions('brand')" onkeydown="tagKeydown(event,'brand')">
+        </div>
+        <div class="tag-suggestions" id="brand-suggestions"></div>
+        <div class="field-err" id="pe-brand">Brand daalo</div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Compatible Models <span class="req">*</span></label>
+      <input class="form-input" id="p-models" type="text" placeholder="Samsung A51, A52 / Galaxy S21, S22">
+      <div class="field-err" id="pe-models">Compatible models daalo</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Description (Optional)</label>
+      <textarea class="form-input" id="p-desc" placeholder="Quality, warranty, details..."></textarea>
+    </div>
+    <button class="btn-primary" onclick="apStep1Next()">Aage — Price & Stock →</button>
+  </div>
+
+  <!-- AP STEP 2 -->
+  <div id="ap-s2" style="display:none;">
+    <div class="two-col">
+      <div class="form-group">
+        <label class="form-label">💰 Price (₹) <span class="req">*</span></label>
+        <input class="form-input" id="p-price" type="number" placeholder="450" min="1" oninput="updatePricePreview()">
+        <div class="field-err" id="pe-price">Price daalo</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">📦 Stock Qty <span class="req">*</span></label>
+        <input class="form-input" id="p-stock" type="number" placeholder="50" min="1" oninput="updatePricePreview()">
+        <div class="field-err" id="pe-stock">Stock quantity daalo</div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Condition <span class="req">*</span></label>
+      <select class="form-input" id="p-cond">
+        <option value="">-- Chuniye --</option>
+        <option value="New">✅ New</option>
+        <option value="OEM">🔵 OEM</option>
+        <option value="Refurbished">🔄 Refurbished</option>
+      </select>
+      <div class="field-err" id="pe-cond">Condition chuniye</div>
+    </div>
+    <div id="price-preview" style="display:none;background:var(--bg3);border:1px solid var(--bd2);border-radius:12px;padding:14px;margin-bottom:14px;">
+      <div style="font-size:10px;color:var(--tx3);margin-bottom:8px;font-weight:700;text-transform:uppercase;">Price Preview</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:13px;color:var(--tx2);">Listing price</span>
+        <span style="font-size:22px;font-weight:900;color:var(--or);">₹<span id="prev-price">0</span></span>
+      </div>
+      <div style="font-size:10px;color:var(--tx3);margin-top:4px;">Stock: <span id="prev-stock">0</span> units</div>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn-ghost" style="margin-top:0;" onclick="apGoBack(1)">← Wapas</button>
+      <button class="btn-primary" onclick="apStep2Next()">Aage — Photos →</button>
+    </div>
+  </div>
+
+  <!-- AP STEP 3 -->
+  <div id="ap-s3" style="display:none;">
+    <div class="form-group">
+      <label class="form-label">Part ki Photos <span class="req">*</span> <span style="color:var(--tx3);font-weight:400;">(Front+Back zaroori)</span></label>
+      <div class="photo-slots">
+        <div class="photo-slot required-slot" id="slot-0" onclick="triggerSlot(0)">
+          <input type="file" id="slot-input-0" accept="image/*" onchange="handleSlot(event,0)">
+          <span class="photo-slot-req">Zaroori</span><span class="photo-slot-icon">📱</span><span class="photo-slot-label">Front Side</span>
+        </div>
+        <div class="photo-slot required-slot" id="slot-1" onclick="triggerSlot(1)">
+          <input type="file" id="slot-input-1" accept="image/*" onchange="handleSlot(event,1)">
+          <span class="photo-slot-req">Zaroori</span><span class="photo-slot-icon">🔲</span><span class="photo-slot-label">Back Side</span>
+        </div>
+        <div class="photo-slot" id="slot-2" onclick="triggerSlot(2)">
+          <input type="file" id="slot-input-2" accept="image/*" onchange="handleSlot(event,2)">
+          <span class="photo-slot-icon">📐</span><span class="photo-slot-label">Angle View 1<br><span style="font-weight:400;opacity:0.6;">(Optional)</span></span>
+        </div>
+        <div class="photo-slot" id="slot-3" onclick="triggerSlot(3)">
+          <input type="file" id="slot-input-3" accept="image/*" onchange="handleSlot(event,3)">
+          <span class="photo-slot-icon">🔍</span><span class="photo-slot-label">Angle View 2<br><span style="font-weight:400;opacity:0.6;">(Optional)</span></span>
+        </div>
+      </div>
+      <div class="field-err" id="pe-photos">Front Side aur Back Side photo zaroori hai</div>
+    </div>
+    <div style="background:var(--bg3);border:1px solid var(--bd2);border-radius:12px;padding:12px;margin-bottom:14px;font-size:12px;color:var(--tx2);line-height:2;">
+      <div style="font-size:10px;color:var(--tx3);font-weight:700;text-transform:uppercase;margin-bottom:6px;">Final Summary</div>
+      <div>📦 <span id="fs-name"></span></div>
+      <div>🏷️ <span id="fs-cat"></span> · <span id="fs-brand"></span></div>
+      <div>📱 <span id="fs-models"></span></div>
+      <div>💰 ₹<span id="fs-price"></span> · Stock: <span id="fs-stock"></span></div>
+      <div>🔖 <span id="fs-cond"></span></div>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn-ghost" style="margin-top:0;" onclick="apGoBack(2)">← Wapas</button>
+      <button class="btn-primary" id="submit-product-btn" onclick="submitProduct()">🚀 Live Karo!</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ════ MODAL: OFFLINE SALE ════ -->
+<div class="modal-overlay" id="offline-modal">
+  <div class="modal-box">
+    <div class="modal-title">🏪 Offline Bikri Add Karo</div>
+    <div class="modal-sub">Kitni units offline biki aaj?</div>
+    <input type="hidden" id="offline-product-id">
+    <div class="sale-product-info">
+      <div class="sale-product-name" id="offline-product-name">—</div>
+      <div class="sale-stock-info">
+        <span>Remaining: <span class="sale-stock-num" id="offline-remaining">0</span></span>
+        <span>Offline sold: <span style="color:var(--am);font-weight:800;" id="offline-sold-so-far">0</span></span>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Kitni Units Biki? <span class="req">*</span></label>
+      <input class="form-input" id="offline-qty" type="number" placeholder="5" min="1">
+      <div class="field-err" id="offline-qty-err">Valid quantity daalo</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Note (Optional)</label>
+      <input class="form-input" id="offline-note" type="text" placeholder="Customer ka naam, order no...">
+    </div>
+    <button class="btn-primary" onclick="saveOfflineSale()">✅ Save Karo</button>
+    <button class="btn-ghost" onclick="closeOfflineModal()">Cancel</button>
   </div>
 </div>
 
-<!-- ── MAIN DASHBOARD ── -->
-<div id="screen-main">
-  <div class="wrap">
-    <div class="hdr">
-      <div class="hdr-left">
-        <div class="logo-box"><img src="../shared/images/MPM_Logo.png" alt="MPM"></div>
-        <div>
-          <div class="hdr-title" id="dash-shop-name">Wholesaler Dashboard</div>
-          <div class="hdr-sub" id="dash-city">Mobile Part Mitra</div>
-        </div>
-      </div>
-      <div style="display:flex;align-items:center;gap:10px;">
-        <span id="dash-status-badge" class="badge badge-pending">⏳ Pending Approval</span>
-        <button class="logout-btn" onclick="logout()">Logout</button>
+<!-- ════ MODAL: SALES HISTORY ════ -->
+<div class="modal-overlay" id="history-modal">
+  <div class="modal-box">
+    <div class="modal-title">📊 Sales History</div>
+    <div class="modal-sub" id="history-product-name">—</div>
+    <div style="background:var(--bg3);border-radius:12px;padding:14px;margin-bottom:16px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center;">
+        <div><div style="font-size:18px;font-weight:900;color:var(--am);" id="hist-offline">0</div><div style="font-size:9px;color:var(--tx3);">Offline Sold</div></div>
+        <div><div style="font-size:18px;font-weight:900;color:var(--gr);" id="hist-online">0</div><div style="font-size:9px;color:var(--tx3);">Online Sold</div></div>
+        <div><div style="font-size:18px;font-weight:900;color:var(--or);" id="hist-remaining">0</div><div style="font-size:9px;color:var(--tx3);">Remaining</div></div>
       </div>
     </div>
+    <div style="font-size:11px;font-weight:700;color:var(--tx2);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.06em;">Recent Activity</div>
+    <div id="history-list" style="max-height:260px;overflow-y:auto;"></div>
+    <button class="btn-ghost" style="margin-top:12px;" onclick="closeHistoryModal()">Bandh Karo</button>
+  </div>
+</div>
 
-    <!-- Pending approval notice -->
-    <div id="pending-notice" class="pending-box">
-      <div class="pending-title">⏳ Approval Pending</div>
-      <div class="pending-sub">Aapka account admin ke paas review ke liye hai. Approve hone ke baad aap parts add kar sakte hain. Admin usually 24 ghante mein approve karta hai.</div>
-    </div>
-
-    <div class="stats-row">
-      <div class="stat-card">
-        <div class="stat-num" id="stat-parts">0</div>
-        <div class="stat-lbl">Parts</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-num" id="stat-pending">0</div>
-        <div class="stat-lbl">Pending Orders</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-num" id="stat-done">0</div>
-        <div class="stat-lbl">Completed</div>
-      </div>
-    </div>
-
-    <div class="section-title">Aapka Account</div>
-    <div style="background:var(--bg2);border:1px solid var(--bd);border-radius:14px;padding:18px;">
-      <div style="font-size:13px;color:var(--tx2);line-height:2;">
-        <div>📧 <span id="info-email">—</span></div>
-        <div>📱 <span id="info-phone">—</span></div>
-        <div>🏙️ <span id="info-city">—</span></div>
-      </div>
-    </div>
-
+<!-- ════ MODAL: DELETE ════ -->
+<div class="modal-overlay" id="delete-modal">
+  <div class="modal-box">
+    <div class="modal-title">🗑️ Delete Karo?</div>
+    <div class="modal-sub">Yeh undo nahi hoga.</div>
+    <input type="hidden" id="delete-product-id">
+    <button class="btn-primary" style="background:var(--re);" onclick="confirmDelete()">Haan, Delete Karo</button>
+    <button class="btn-ghost" onclick="document.getElementById('delete-modal').classList.remove('open')">Cancel</button>
   </div>
 </div>
 
@@ -257,252 +654,629 @@ const SUPABASE_URL  = 'https://etcvgvxqrtcgbjvkqobt.supabase.co';
 const SUPABASE_ANON = 'sb_publishable_38tz5qsQgDs75Q6lBqd8uQ_89R1NDfP';
 var sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
-let currentUser = null;
+let currentUser    = null;
+let currentProfile = null;
+const WS_TEST_PHONES = { '9999999992':'123456', '9999999993':'123456' };
+let selectedRole   = '';
+let mapLat=null, mapLng=null, locationConfirmed=false;
+let selectedCat='', selectedBrand='';
+const slotPhotos=[null,null,null,null];
 
-// ── TEST PHONE NUMBERS (Wholesaler only) ──────────────
-const WS_TEST_PHONES = { '9999999992': '123456' };
-
-// ── TOAST ──
-function toast(msg, dur=3000) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), dur);
-}
-
-function showErr(msg) { const e=document.getElementById('err-box'); e.textContent=msg; e.style.display='block'; document.getElementById('info-box').style.display='none'; }
-function showInfo(msg) { const e=document.getElementById('info-box'); e.textContent=msg; e.style.display='block'; document.getElementById('err-box').style.display='none'; }
-function clearMsgs() { document.getElementById('err-box').style.display='none'; document.getElementById('info-box').style.display='none'; }
-
-// ── OTP INPUT HELPERS ──
-function otpNext(el, nextId) { if(el.value && nextId) document.getElementById(nextId).focus(); }
-function otpBack(e, el, prevId) { if(e.key==='Backspace' && !el.value && prevId) document.getElementById(prevId).focus(); }
+// ── UTILS ──
+function toast(msg,dur=3000){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),dur);}
+function showErr(msg){const e=document.getElementById('err-box');e.textContent=msg;e.style.display='block';document.getElementById('info-box').style.display='none';}
+function showInfo(msg){const e=document.getElementById('info-box');e.textContent=msg;e.style.display='block';document.getElementById('err-box').style.display='none';}
+function clearMsgs(){document.getElementById('err-box').style.display='none';document.getElementById('info-box').style.display='none';}
+function showApErr(msg){const e=document.getElementById('ap-err');e.textContent=msg;e.style.display='block';}
+function clearApErr(){document.getElementById('ap-err').style.display='none';}
+function otpNext(el,nid){if(el.value&&nid)document.getElementById(nid).focus();}
+function otpBack(e,el,pid){if(e.key==='Backspace'&&!el.value&&pid)document.getElementById(pid).focus();}
+function fv(id,errId,cond,msg){const el=document.getElementById(id),er=document.getElementById(errId);if(!cond){el.classList.add('error');er.textContent=msg;er.style.display='block';return false;}el.classList.remove('error');er.style.display='none';return true;}
 
 // ── TABS ──
-function switchTab(tab) {
+function switchTab(tab){
   clearMsgs();
-  document.querySelectorAll('.tab-btn').forEach((b,i) => {
-    b.classList.toggle('active', (tab==='login'&&i===0)||(tab==='register'&&i===1));
-  });
-  document.getElementById('form-login').style.display = tab==='login' ? 'block' : 'none';
-  document.getElementById('form-register').style.display = tab==='register' ? 'block' : 'none';
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',(tab==='login'&&i===0)||(tab==='register'&&i===1)));
+  document.getElementById('form-login').style.display=tab==='login'?'block':'none';
+  document.getElementById('form-register').style.display=tab==='register'?'block':'none';
 }
 
-// ── RESET STEPS ──
-function resetLoginStep() {
+// ── REGISTER PROGRESS (4 steps) ──
+function setProgress(step){
+  [1,2,3,4].forEach(i=>{
+    const dot=document.getElementById('pd'+i);
+    const lbl=document.getElementById('pl'+i);
+    if(!dot)return;
+    dot.className='prog-dot'+(i<step?' done':i===step?' active':'');
+    lbl.className='prog-lbl'+(i<step?' done':i===step?' active':'');
+    dot.textContent=i<step?'✓':i;
+  });
+  const pct=step===1?0:step===2?33:step===3?66:100;
+  document.getElementById('prog-line').style.width=pct+'%';
+}
+
+// ── ROLE SELECTION ──
+function selectRole(role){
+  selectedRole=role;
+  document.getElementById('role-wholesaler').classList.toggle('selected',role==='wholesaler');
+  document.getElementById('role-retailer').classList.toggle('selected',role==='retailer');
+  document.getElementById('role-err').style.display='none';
+}
+
+function regStep0Next(){
+  if(!selectedRole){document.getElementById('role-err').style.display='block';return;}
+  // Update phone placeholder based on role
+  document.getElementById('r-phone').placeholder=selectedRole==='wholesaler'?'9999999992':'9999999993';
+  document.getElementById('reg-s1-title').textContent=selectedRole==='wholesaler'?'👤 Dukan Malik ki Jaankari':'👤 Aapki Jaankari';
+  document.getElementById('reg-s0').style.display='none';
+  document.getElementById('reg-s1').style.display='block';
+  setProgress(2);
+}
+
+// ── REGISTER STEP 1 ──
+function regStep1Next(){
+  clearMsgs();
+  const owner=document.getElementById('r-owner').value.trim();
+  const shop=document.getElementById('r-shop').value.trim();
+  const phone=document.getElementById('r-phone').value.trim();
+  const email=document.getElementById('r-email').value.trim();
+  let ok=true;
+  ok=fv('r-owner','e-owner',owner.length>=3,'Naam kam se kam 3 akshar')&&ok;
+  ok=fv('r-shop','e-shop',shop.length>=3,'Dukan naam kam se kam 3 akshar')&&ok;
+  ok=fv('r-phone','e-phone',phone.length===10&&/^\d+$/.test(phone),'10 digit number daalo')&&ok;
+  ok=fv('r-email','e-email',/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email),'Valid email daalo')&&ok;
+  if(!ok)return;
+  document.getElementById('reg-s1').style.display='none';
+  document.getElementById('reg-s2').style.display='block';
+  setProgress(3);
+}
+
+// ── GPS + MAP ──
+function getGPS(){
+  if(!navigator.geolocation){showErr('Browser GPS support nahi karta');return;}
+  const btn=document.getElementById('gps-btn');
+  document.getElementById('gps-icon').textContent='⏳';
+  document.getElementById('gps-text').textContent='Location dhundh raha hai...';
+  btn.disabled=true;
+  navigator.geolocation.getCurrentPosition(
+    pos=>{
+      mapLat=pos.coords.latitude; mapLng=pos.coords.longitude;
+      btn.disabled=false;
+      document.getElementById('gps-icon').textContent='🛰️';
+      document.getElementById('gps-text').textContent='Map pe dekho — pin confirm karo';
+      btn.style.borderColor='var(--or)';
+      const wrap=document.getElementById('gps-map-wrap');
+      const iframe=document.getElementById('gps-map');
+      iframe.src=`https://www.google.com/maps/embed/v1/view?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&center=${mapLat},${mapLng}&zoom=18&maptype=satellite`;
+      wrap.style.display='block';
+      document.getElementById('map-coords-text').textContent=`📌 ${mapLat.toFixed(5)}, ${mapLng.toFixed(5)}`;
+      document.getElementById('e-gps').style.display='none';
+    },
+    err=>{
+      document.getElementById('gps-icon').textContent='❌';
+      document.getElementById('gps-text').textContent='Dobara try karo';
+      btn.disabled=false;
+      showErr('GPS: '+(err.code===1?'Location allow karo':err.code===2?'Signal nahi mila':'Timeout'));
+    },
+    {enableHighAccuracy:true,timeout:12000,maximumAge:0}
+  );
+}
+
+function confirmMapLocation(){
+  document.getElementById('r-lat').value=mapLat;
+  document.getElementById('r-lng').value=mapLng;
+  locationConfirmed=true;
+  document.getElementById('gps-icon').textContent='✅';
+  document.getElementById('gps-text').textContent='Location Confirm Ho Gayi!';
+  document.getElementById('e-gps').style.display='none';
+  toast('✅ Location save ho gayi');
+}
+
+// ── REGISTER STEP 2 ──
+async function regStep2Next(){
+  clearMsgs();
+  let ok=true;
+  ok=fv('r-room','e-room',document.getElementById('r-room').value.trim().length>=1,'Room number daalo')&&ok;
+  ok=fv('r-road','e-road',document.getElementById('r-road').value.trim().length>=3,'Road/gali naam daalo')&&ok;
+  ok=fv('r-city','e-city',document.getElementById('r-city').value.trim().length>=2,'Bazaar/sheher naam daalo')&&ok;
+  ok=fv('r-dist','e-dist',document.getElementById('r-dist').value.trim().length>=2,'District naam daalo')&&ok;
+  ok=fv('r-state','e-state',document.getElementById('r-state').value!=='','State chuniye')&&ok;
+  if(!locationConfirmed){document.getElementById('e-gps').style.display='block';ok=false;}
+  if(!ok)return;
+  const phone=document.getElementById('r-phone').value.trim();
+  const btn=document.querySelector('#reg-s2 .btn-primary');
+  btn.disabled=true;btn.textContent='OTP Bhej raha hai...';
+  if(WS_TEST_PHONES[phone]){
+    btn.disabled=false;btn.textContent='OTP Verify →';
+    showSummary(); goToOTPStep(); showInfo('✅ Test OTP: '+WS_TEST_PHONES[phone]);
+    return;
+  }
+  const{error}=await sb.auth.signInWithOtp({phone:'+91'+phone});
+  btn.disabled=false;btn.textContent='OTP Verify →';
+  if(error){showErr('❌ '+error.message);return;}
+  showSummary(); goToOTPStep(); showInfo('✅ OTP bheja gaya +91'+phone);
+}
+
+function goToOTPStep(){
+  const phone=document.getElementById('r-phone').value.trim();
+  document.getElementById('reg-phone-display').textContent='+91 '+phone;
+  document.getElementById('reg-s2').style.display='none';
+  document.getElementById('reg-s3').style.display='block';
+  setProgress(4);
+  document.getElementById('r1').focus();
+}
+
+function showSummary(){
+  const phone=document.getElementById('r-phone').value.trim();
+  document.getElementById('sum-owner').textContent=document.getElementById('r-owner').value.trim();
+  document.getElementById('sum-shop').textContent=document.getElementById('r-shop').value.trim();
+  document.getElementById('sum-addr').textContent=[document.getElementById('r-room').value.trim(),document.getElementById('r-road').value.trim(),document.getElementById('r-city').value.trim(),document.getElementById('r-dist').value.trim(),document.getElementById('r-state').value].join(', ');
+  document.getElementById('sum-phone').textContent='+91 '+phone;
+  document.getElementById('sum-role-line').textContent='👤 Role: '+(selectedRole==='wholesaler'?'🏪 Wholesaler':'🛒 Retailer');
+}
+
+function resendRegOTP(){const p=document.getElementById('r-phone').value.trim();if(WS_TEST_PHONES[p]){showInfo('✅ Test OTP: '+WS_TEST_PHONES[p]);return;}sb.auth.signInWithOtp({phone:'+91'+p});showInfo('OTP dobara bheja');}
+
+function regGoBack(toStep){
+  clearMsgs();
+  document.getElementById('reg-s0').style.display=toStep===0?'block':'none';
+  document.getElementById('reg-s1').style.display=toStep===1?'block':'none';
+  document.getElementById('reg-s2').style.display=toStep===2?'block':'none';
+  document.getElementById('reg-s3').style.display='none';
+  setProgress(toStep+1);
+}
+
+// ── REGISTER VERIFY OTP ──
+async function verifyRegisterOTP(){
+  clearMsgs();
+  const phone=document.getElementById('r-phone').value.trim();
+  const otp=['r1','r2','r3','r4','r5','r6'].map(id=>document.getElementById(id).value).join('');
+  if(otp.length!==6){showErr('6-digit OTP poora daalo');return;}
+  const btn=document.querySelector('#reg-s3 .btn-primary');
+  btn.disabled=true;btn.textContent='Register ho raha hai...';
+
+  const fullData={
+    full_name:document.getElementById('r-owner').value.trim(),
+    shop_name:document.getElementById('r-shop').value.trim(),
+    phone:'+91'+phone,email:document.getElementById('r-email').value.trim(),
+    room_no:document.getElementById('r-room').value.trim(),
+    road:document.getElementById('r-road').value.trim(),
+    city:document.getElementById('r-city').value.trim(),
+    district:document.getElementById('r-dist').value.trim(),
+    state:document.getElementById('r-state').value,
+    latitude:document.getElementById('r-lat').value||null,
+    longitude:document.getElementById('r-lng').value||null,
+    role:selectedRole,
+    is_verified:false,is_suspended:false,strikes:0
+  };
+
+  if(WS_TEST_PHONES[phone]){
+    if(otp!==WS_TEST_PHONES[phone]){btn.disabled=false;btn.textContent='✅ Register & Login';showErr('❌ OTP galat. Test: '+WS_TEST_PHONES[phone]);return;}
+    btn.disabled=false;btn.textContent='✅ Register & Login';
+
+    // Role-based redirect
+    if(selectedRole==='retailer'){
+      toast('🎉 Retailer registration ho gaya! Retailer app pe jao.');
+      showErr('✅ Register ho gaya! Ab retailer-catalog.html pe login karo.');
+      return;
+    }
+    toast('🎉 Registration ho gaya! Admin approval pending...');
+    await loadDashboard({id:'test-ws-'+phone,phone:'+91'+phone},fullData);
+    return;
+  }
+
+  const{data,error}=await sb.auth.verifyOtp({phone:'+91'+phone,token:otp,type:'sms'});
+  btn.disabled=false;btn.textContent='✅ Register & Login';
+  if(error){showErr('❌ OTP galat ya expire');return;}
+  if(data.user) await sb.from('mpm_users').upsert({id:data.user.id,...fullData});
+
+  // Role-based redirect
+  if(selectedRole==='retailer'){
+    await sb.auth.signOut();
+    showInfo('✅ Retailer registration ho gaya! Ab retailer-catalog.html pe login karo.');
+    return;
+  }
+  const{data:profile}=await sb.from('mpm_users').select('*').eq('id',data.user.id).single();
+  await loadDashboard(data.user,profile);
+}
+
+// ── LOGIN SEND OTP ──
+async function sendLoginOTP(){
+  clearMsgs();
+  const phone=document.getElementById('login-phone').value.trim();
+  if(phone.length!==10){showErr('10 digit phone number daalo');return;}
+  if(!WS_TEST_PHONES[phone]&&Object.keys(WS_TEST_PHONES).length>0){showErr('❌ Yeh number registered nahi hai');return;}
+  const btn=document.querySelector('#login-step-phone .btn-primary');
+  btn.disabled=true;btn.textContent='Bhej raha hai...';
+  if(WS_TEST_PHONES[phone]){
+    btn.disabled=false;btn.textContent='📱 OTP Bhejo';
+    document.getElementById('login-phone-display').textContent='+91 '+phone;
+    document.getElementById('login-step-phone').style.display='none';
+    document.getElementById('login-step-otp').style.display='block';
+    showInfo('✅ Test OTP: '+WS_TEST_PHONES[phone]);
+    document.getElementById('o1').focus();return;
+  }
+  const{error}=await sb.auth.signInWithOtp({phone:'+91'+phone});
+  btn.disabled=false;btn.textContent='📱 OTP Bhejo';
+  if(error){showErr('❌ '+error.message);return;}
+  document.getElementById('login-phone-display').textContent='+91 '+phone;
+  document.getElementById('login-step-phone').style.display='none';
+  document.getElementById('login-step-otp').style.display='block';
+  showInfo('✅ OTP bheja gaya');document.getElementById('o1').focus();
+}
+
+// ── LOGIN VERIFY OTP ──
+async function verifyLoginOTP(){
+  clearMsgs();
+  const phone=document.getElementById('login-phone').value.trim();
+  const otp=['o1','o2','o3','o4','o5','o6'].map(id=>document.getElementById(id).value).join('');
+  if(otp.length!==6){showErr('6-digit OTP daalo');return;}
+  const btn=document.querySelector('#login-step-otp .btn-primary');
+  btn.disabled=true;btn.textContent='Verify ho raha hai...';
+
+  if(WS_TEST_PHONES[phone]){
+    if(otp!==WS_TEST_PHONES[phone]){btn.disabled=false;btn.textContent='✅ Verify & Login';showErr('❌ OTP galat. Test: '+WS_TEST_PHONES[phone]);return;}
+    btn.disabled=false;btn.textContent='✅ Verify & Login';
+    // Check if retailer trying to login on wholesaler panel
+    if(phone==='9999999993'){showErr('❌ Retailer ho? retailer-catalog.html pe login karo');return;}
+    await loadDashboard({id:'test-ws-'+phone,phone:'+91'+phone},{full_name:'Test Owner',shop_name:'Test Wholesaler',city:'Test City',phone:'+91'+phone,email:'test@ws.com',is_verified:true,role:'wholesaler'});
+    return;
+  }
+  const{data,error}=await sb.auth.verifyOtp({phone:'+91'+phone,token:otp,type:'sms'});
+  btn.disabled=false;btn.textContent='✅ Verify & Login';
+  if(error){showErr('❌ OTP galat ya expire');return;}
+  const{data:profile}=await sb.from('mpm_users').select('*').eq('id',data.user.id).single();
+  // Role guard
+  if(!profile||profile.role!=='wholesaler'){
+    await sb.auth.signOut();
+    showErr('❌ Aap Wholesaler nahi hain. Sahi app pe login karo.');
+    return;
+  }
+  await loadDashboard(data.user,profile);
+}
+
+function resetLoginStep(){
   clearMsgs();
   document.getElementById('login-step-otp').style.display='none';
   document.getElementById('login-step-phone').style.display='block';
   ['o1','o2','o3','o4','o5','o6'].forEach(id=>document.getElementById(id).value='');
 }
-function resetRegisterStep() {
-  clearMsgs();
-  document.getElementById('reg-step-otp').style.display='none';
-  document.getElementById('reg-step-details').style.display='block';
-  ['r1','r2','r3','r4','r5','r6'].forEach(id=>document.getElementById(id).value='');
-}
-
-// ── LOGIN: SEND OTP ──
-async function sendLoginOTP() {
-  clearMsgs();
-  const phone = document.getElementById('login-phone').value.trim();
-  if(phone.length !== 10) { showErr('10 digit phone number daalo'); return; }
-
-  // Role guard — sirf wholesaler numbers allowed
-  if(!WS_TEST_PHONES[phone]) {
-    // Real Supabase flow ke liye role check baad mein hoga
-    // Test mode mein sirf registered numbers allow
-    if(Object.keys(WS_TEST_PHONES).length > 0) {
-      showErr('❌ Yeh number wholesaler ke liye registered nahi hai');
-      return;
-    }
-  }
-
-  const btn = document.querySelector('#login-step-phone .btn-primary');
-  btn.disabled=true; btn.textContent='Bhej raha hai...';
-
-  // Test number — bypass Supabase
-  if(WS_TEST_PHONES[phone]) {
-    btn.disabled=false; btn.textContent='📱 OTP Bhejo';
-    document.getElementById('login-phone-display').textContent = '+91 '+phone;
-    document.getElementById('login-step-phone').style.display='none';
-    document.getElementById('login-step-otp').style.display='block';
-    showInfo('✅ Test OTP: ' + WS_TEST_PHONES[phone]);
-    document.getElementById('o1').focus();
-    return;
-  }
-
-  const {error} = await sb.auth.signInWithOtp({ phone: '+91'+phone });
-  btn.disabled=false; btn.textContent='📱 OTP Bhejo';
-  if(error) { showErr('❌ '+error.message); return; }
-  document.getElementById('login-phone-display').textContent = '+91 '+phone;
-  document.getElementById('login-step-phone').style.display='none';
-  document.getElementById('login-step-otp').style.display='block';
-  showInfo('✅ OTP bheja gaya +91'+phone+' pe');
-  document.getElementById('o1').focus();
-}
-
-// ── LOGIN: VERIFY OTP ──
-async function verifyLoginOTP() {
-  clearMsgs();
-  const phone = document.getElementById('login-phone').value.trim();
-  const otp = ['o1','o2','o3','o4','o5','o6'].map(id=>document.getElementById(id).value).join('');
-  if(otp.length !== 6) { showErr('6-digit OTP daalo'); return; }
-
-  const btn = document.querySelector('#login-step-otp .btn-primary');
-  btn.disabled=true; btn.textContent='Verify ho raha hai...';
-
-  // Test number
-  if(WS_TEST_PHONES[phone]) {
-    if(otp !== WS_TEST_PHONES[phone]) {
-      btn.disabled=false; btn.textContent='✅ Verify & Login';
-      showErr('❌ OTP galat hai. Test OTP: '+WS_TEST_PHONES[phone]);
-      return;
-    }
-    btn.disabled=false; btn.textContent='✅ Verify & Login';
-    // Mock test user profile
-    await loadDashboard({ id:'test-ws-'+phone, phone:'+91'+phone }, {
-      shop_name:'Test Wholesaler Shop', city:'Test City',
-      phone:'+91'+phone, email:'test@wholesaler.com', is_verified:true
-    });
-    return;
-  }
-
-  const {data,error} = await sb.auth.verifyOtp({phone:'+91'+phone, token:otp, type:'sms'});
-  btn.disabled=false; btn.textContent='✅ Verify & Login';
-  if(error) { showErr('❌ OTP galat hai ya expire ho gaya'); return; }
-
-  const {data:profile} = await sb.from('mpm_users').select('*').eq('id',data.user.id).single();
-  if(profile && profile.role !== 'wholesaler') {
-    await sb.auth.signOut();
-    showErr('❌ Yeh number wholesaler ke liye registered nahi hai');
-    return;
-  }
-  await loadDashboard(data.user, profile);
-}
-
-// ── REGISTER: SEND OTP ──
-async function sendRegisterOTP() {
-  clearMsgs();
-  const name  = document.getElementById('reg-name').value.trim();
-  const shop  = document.getElementById('reg-shop').value.trim();
-  const city  = document.getElementById('reg-city').value.trim();
-  const phone = document.getElementById('reg-phone').value.trim();
-
-  if(!name||!shop||!city||!phone) { showErr('Saari details bharni zaroori hain'); return; }
-  if(phone.length !== 10) { showErr('10 digit phone number daalo'); return; }
-
-  const btn = document.querySelector('#reg-step-details .btn-primary');
-  btn.disabled=true; btn.textContent='Bhej raha hai...';
-
-  // Test number
-  if(WS_TEST_PHONES[phone]) {
-    btn.disabled=false; btn.textContent='📱 OTP Bhejo & Register Karo';
-    document.getElementById('reg-phone-display').textContent = '+91 '+phone;
-    document.getElementById('reg-step-details').style.display='none';
-    document.getElementById('reg-step-otp').style.display='block';
-    showInfo('✅ Test OTP: '+WS_TEST_PHONES[phone]);
-    document.getElementById('r1').focus();
-    return;
-  }
-
-  const {error} = await sb.auth.signInWithOtp({ phone: '+91'+phone });
-  btn.disabled=false; btn.textContent='📱 OTP Bhejo & Register Karo';
-  if(error) { showErr('❌ '+error.message); return; }
-  document.getElementById('reg-phone-display').textContent = '+91 '+phone;
-  document.getElementById('reg-step-details').style.display='none';
-  document.getElementById('reg-step-otp').style.display='block';
-  showInfo('✅ OTP bheja gaya +91'+phone+' pe');
-  document.getElementById('r1').focus();
-}
-
-// ── REGISTER: VERIFY OTP ──
-async function verifyRegisterOTP() {
-  clearMsgs();
-  const phone = document.getElementById('reg-phone').value.trim();
-  const name  = document.getElementById('reg-name').value.trim();
-  const shop  = document.getElementById('reg-shop').value.trim();
-  const city  = document.getElementById('reg-city').value.trim();
-  const otp   = ['r1','r2','r3','r4','r5','r6'].map(id=>document.getElementById(id).value).join('');
-  if(otp.length !== 6) { showErr('6-digit OTP daalo'); return; }
-
-  const btn = document.querySelector('#reg-step-otp .btn-primary');
-  btn.disabled=true; btn.textContent='Register ho raha hai...';
-
-  // Test number
-  if(WS_TEST_PHONES[phone]) {
-    if(otp !== WS_TEST_PHONES[phone]) {
-      btn.disabled=false; btn.textContent='✅ Confirm & Register';
-      showErr('❌ OTP galat hai. Test OTP: '+WS_TEST_PHONES[phone]);
-      return;
-    }
-    btn.disabled=false; btn.textContent='✅ Confirm & Register';
-    toast('🎉 Registration ho gaya! Admin approval ka wait karo.');
-    showInfo('✅ Registered! Pending approval — admin se contact karo.');
-    await loadDashboard({ id:'test-ws-'+phone, phone:'+91'+phone }, {
-      shop_name: shop, city, phone:'+91'+phone, email:'', is_verified:false
-    });
-    return;
-  }
-
-  const {data,error} = await sb.auth.verifyOtp({phone:'+91'+phone, token:otp, type:'sms'});
-  btn.disabled=false; btn.textContent='✅ Confirm & Register';
-  if(error) { showErr('❌ OTP galat hai ya expire ho gaya'); return; }
-
-  if(data.user) {
-    await sb.from('mpm_users').upsert({
-      id: data.user.id, full_name:name, shop_name:shop,
-      city, phone:'+91'+phone, role:'wholesaler',
-      is_verified:false, is_suspended:false, strikes:0
-    });
-  }
-  toast('🎉 Registration ho gaya!');
-  const {data:profile} = await sb.from('mpm_users').select('*').eq('id',data.user.id).single();
-  await loadDashboard(data.user, profile);
-}
 
 // ── LOAD DASHBOARD ──
-async function loadDashboard(user, profile) {
-  currentUser = user;
-  document.getElementById('screen-auth').style.display = 'none';
-  document.getElementById('screen-main').style.display = 'block';
-
-  if(!profile) {
-    const {data:p} = await sb.from('mpm_users').select('*').eq('id',user.id).single();
-    profile = p;
-  }
-
-  if(profile) {
-    document.getElementById('dash-shop-name').textContent = profile.shop_name || profile.full_name || 'Wholesaler';
-    document.getElementById('dash-city').textContent = profile.city || 'Mobile Part Mitra';
-    document.getElementById('info-email').textContent = profile.email || '—';
-    document.getElementById('info-phone').textContent = profile.phone || user.phone || '—';
-    document.getElementById('info-city').textContent = profile.city || '—';
-
-    const badge = document.getElementById('dash-status-badge');
-    if(profile.is_verified) {
-      badge.textContent='✅ Verified'; badge.className='badge badge-verified';
+async function loadDashboard(user,profile){
+  currentUser=user;
+  if(!profile){const{data:p}=await sb.from('mpm_users').select('*').eq('id',user.id).single();profile=p;}
+  currentProfile=profile;
+  document.getElementById('screen-auth').style.display='none';
+  document.getElementById('screen-main').style.display='block';
+  if(profile){
+    document.getElementById('dash-shop-name').textContent=profile.shop_name||'Wholesaler';
+    document.getElementById('dash-city').textContent=[profile.city,profile.state].filter(Boolean).join(', ')||'MPM';
+    document.getElementById('info-owner').textContent=profile.full_name||'—';
+    document.getElementById('info-shop').textContent=profile.shop_name||'—';
+    document.getElementById('info-phone').textContent=profile.phone||'—';
+    document.getElementById('info-email').textContent=profile.email||'—';
+    const addr=[profile.room_no,profile.road,profile.city,profile.district,profile.state].filter(Boolean);
+    document.getElementById('info-addr').textContent=addr.join(', ')||'—';
+    const badge=document.getElementById('dash-status-badge');
+    const addBtn=document.getElementById('add-product-btn');
+    if(profile.is_verified){
+      badge.textContent='✅ Verified';badge.className='badge badge-verified';
       document.getElementById('pending-notice').style.display='none';
+      addBtn.disabled=false;
+      document.getElementById('add-btn-sub').textContent='Nayi part listing banao — turant live hogi';
     }
-  } else {
-    document.getElementById('dash-shop-name').textContent = user.phone || 'Wholesaler';
   }
   toast('✅ Login ho gaya!');
+  await loadProducts();
+}
+
+// ── LOAD PRODUCTS ──
+async function loadProducts(){
+  if(!currentUser)return;
+  const isTest=currentUser.id.startsWith('test-ws-');
+  let products=[];
+  if(!isTest){
+    const{data}=await sb.from('mpm_products').select('*').eq('wholesaler_id',currentUser.id).order('created_at',{ascending:false});
+    products=data||[];
+  }
+  document.getElementById('stat-total').textContent=products.length;
+  document.getElementById('stat-active').textContent=products.filter(p=>p.is_active).length;
+  document.getElementById('stat-stock').textContent=products.reduce((s,p)=>s+(p.stock||0),0);
+  renderProducts(products);
+}
+
+function renderProducts(products){
+  const container=document.getElementById('products-container');
+  if(!products.length){
+    container.innerHTML='<div class="empty-state"><div class="empty-icon">📦</div><div class="empty-title">Abhi koi product nahi</div><div style="font-size:12px;">Pehla part add karo</div></div>';
+    return;
+  }
+  const condMap={New:'cond-new',OEM:'cond-oem',Refurbished:'cond-ref'};
+  container.innerHTML='<div class="products-grid">'+products.map(p=>{
+    const remaining=p.stock||0;
+    const offlineSold=p.offline_sold||0;
+    const onlineSold=p.online_sold||0;
+    const isLow=remaining<=10&&remaining>0;
+    const isOut=remaining===0;
+    return`<div class="product-card">
+      ${p.photo_urls&&p.photo_urls[0]
+        ?`<img class="product-img" src="${p.photo_urls[0]}" alt="${p.name}" loading="lazy">`
+        :`<div class="product-img-placeholder">📦</div>`}
+      <div class="product-body">
+        <div class="product-name">${p.name}</div>
+        <div class="product-meta">${p.category||''} · ${p.brand||''}</div>
+        <span class="product-condition ${condMap[p.condition]||''}">${p.condition||'—'}</span>
+        <div class="product-price">₹${p.price}</div>
+
+        <!-- ── INVENTORY ROW ── -->
+        <div class="inv-row">
+          <div class="inv-cell"><div class="inv-num offline">${offlineSold}</div><div class="inv-lbl">🏪 Offline</div></div>
+          <div class="inv-cell"><div class="inv-num online">${onlineSold}</div><div class="inv-lbl">🌐 Online</div></div>
+          <div class="inv-cell"><div class="inv-num remaining">${remaining}</div><div class="inv-lbl">📦 Bacha</div></div>
+        </div>
+        ${isOut?'<div class="inv-low-badge">❌ Stock Khatam</div>':isLow?'<div class="inv-low-badge">⚠️ Low Stock</div>':''}
+
+        <div class="product-actions">
+          <button class="btn-sm" onclick="openOfflineModal('${p.id}','${p.name.replace(/'/g,"\\'")}',${remaining},${offlineSold})" ${remaining<=0?'disabled':''}>🏪 Offline Bikri</button>
+          <button class="btn-sm-ghost" onclick="openHistoryModal('${p.id}','${p.name.replace(/'/g,"\\'")}',${offlineSold},${onlineSold},${remaining})">📊</button>
+          <button class="btn-sm-ghost" onclick="toggleProduct('${p.id}',${p.is_active})">${p.is_active?'⏸':'▶'}</button>
+          <button class="btn-sm-red" onclick="openDeleteModal('${p.id}')">🗑</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('')+'</div>';
+}
+
+// ── OFFLINE SALE MODAL ──
+function openOfflineModal(id,name,remaining,offlineSold){
+  document.getElementById('offline-product-id').value=id;
+  document.getElementById('offline-product-name').textContent=name;
+  document.getElementById('offline-remaining').textContent=remaining;
+  document.getElementById('offline-sold-so-far').textContent=offlineSold;
+  document.getElementById('offline-qty').value='';
+  document.getElementById('offline-note').value='';
+  document.getElementById('offline-qty-err').style.display='none';
+  document.getElementById('offline-modal').classList.add('open');
+}
+function closeOfflineModal(){document.getElementById('offline-modal').classList.remove('open');}
+
+async function saveOfflineSale(){
+  const id=document.getElementById('offline-product-id').value;
+  const qty=parseInt(document.getElementById('offline-qty').value);
+  const remaining=parseInt(document.getElementById('offline-remaining').textContent);
+  const note=document.getElementById('offline-note').value.trim();
+  if(!qty||qty<=0){document.getElementById('offline-qty-err').style.display='block';document.getElementById('offline-qty-err').textContent='Valid quantity daalo';return;}
+  if(qty>remaining){document.getElementById('offline-qty-err').style.display='block';document.getElementById('offline-qty-err').textContent=`Max ${remaining} units available hain`;return;}
+  document.getElementById('offline-qty-err').style.display='none';
+  const btn=document.querySelector('#offline-modal .btn-primary');
+  btn.disabled=true;btn.textContent='Save ho raha hai...';
+  const isTest=currentUser.id.startsWith('test-ws-');
+  if(!isTest){
+    // Update product: offline_sold + stock decrease
+    const{data:prod}=await sb.from('mpm_products').select('offline_sold,stock').eq('id',id).single();
+    const{error}=await sb.from('mpm_products').update({
+      offline_sold:(prod.offline_sold||0)+qty,
+      stock:prod.stock-qty
+    }).eq('id',id);
+    if(error){btn.disabled=false;btn.textContent='✅ Save Karo';toast('❌ Error: '+error.message);return;}
+    // Save history record
+    await sb.from('mpm_offline_sales').insert({
+      product_id:id,wholesaler_id:currentUser.id,
+      quantity:qty,note:note||null,sold_at:new Date().toISOString()
+    });
+  }
+  btn.disabled=false;btn.textContent='✅ Save Karo';
+  closeOfflineModal();
+  toast(`✅ ${qty} units offline biki save ho gayi!`);
+  await loadProducts();
+}
+
+// ── HISTORY MODAL ──
+function openHistoryModal(id,name,offline,online,remaining){
+  document.getElementById('history-product-name').textContent=name;
+  document.getElementById('hist-offline').textContent=offline;
+  document.getElementById('hist-online').textContent=online;
+  document.getElementById('hist-remaining').textContent=remaining;
+  document.getElementById('history-modal').classList.add('open');
+  loadSaleHistory(id);
+}
+function closeHistoryModal(){document.getElementById('history-modal').classList.remove('open');}
+
+async function loadSaleHistory(productId){
+  const list=document.getElementById('history-list');
+  list.innerHTML='<div style="text-align:center;padding:20px;color:var(--tx3);">Loading...</div>';
+  const isTest=currentUser.id.startsWith('test-ws-');
+  if(isTest){
+    list.innerHTML='<div style="text-align:center;padding:20px;color:var(--tx3);">Test mode mein history nahi dikhta</div>';
+    return;
+  }
+  const{data}=await sb.from('mpm_offline_sales').select('*').eq('product_id',productId).order('sold_at',{ascending:false}).limit(20);
+  if(!data||!data.length){list.innerHTML='<div style="text-align:center;padding:20px;color:var(--tx3);">Abhi koi history nahi</div>';return;}
+  list.innerHTML=data.map(s=>`
+    <div class="history-item">
+      <div>
+        <div style="font-size:12px;font-weight:700;">🏪 ${s.quantity} units sold</div>
+        <div style="font-size:10px;color:var(--tx3);">${s.note||'No note'} · ${new Date(s.sold_at).toLocaleDateString('hi-IN')}</div>
+      </div>
+      <span class="history-type ht-offline">Offline</span>
+    </div>`).join('');
+}
+
+// ── TOGGLE / DELETE ──
+async function toggleProduct(id,isActive){
+  const{error}=await sb.from('mpm_products').update({is_active:!isActive}).eq('id',id);
+  if(error){toast('❌ '+error.message);return;}
+  toast(isActive?'⏸ Paused':'✅ Live ho gaya!');
+  await loadProducts();
+}
+function openDeleteModal(id){document.getElementById('delete-product-id').value=id;document.getElementById('delete-modal').classList.add('open');}
+async function confirmDelete(){
+  const id=document.getElementById('delete-product-id').value;
+  const{error}=await sb.from('mpm_products').delete().eq('id',id);
+  document.getElementById('delete-modal').classList.remove('open');
+  if(error){toast('❌ Delete nahi hua');return;}
+  toast('🗑️ Delete ho gaya');await loadProducts();
+}
+
+// ── ADD PRODUCT SCREEN ──
+function showAddProduct(){
+  if(!currentProfile||!currentProfile.is_verified){toast('❌ Pehle shop approval ka wait karo');return;}
+  clearApErr();
+  slotPhotos.fill(null);
+  [0,1,2,3].forEach(i=>{removeSlot(i);document.getElementById('slot-input-'+i).value='';});
+  selectedCat='';selectedBrand='';
+  renderSelectedTag('cat','');renderSelectedTag('brand','');
+  ['p-name','p-models','p-desc','p-price','p-stock'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('p-cond').value='';
+  document.getElementById('cat-type').value='';document.getElementById('brand-type').value='';
+  initTagInputs();
+  document.getElementById('ap-s1').style.display='block';
+  document.getElementById('ap-s2').style.display='none';
+  document.getElementById('ap-s3').style.display='none';
+  setApProgress(1);
+  document.getElementById('screen-main').style.display='none';
+  document.getElementById('screen-add-product').style.display='block';
+}
+function showDashboard(){
+  document.getElementById('screen-add-product').style.display='none';
+  document.getElementById('screen-main').style.display='block';
+}
+function setApProgress(step){[1,2,3].forEach(i=>{const el=document.getElementById('ap'+i);el.className='ap-step'+(i===step?' active':i<step?' done':'');});}
+function apGoBack(toStep){clearApErr();document.getElementById('ap-s1').style.display=toStep===1?'block':'none';document.getElementById('ap-s2').style.display=toStep===2?'block':'none';document.getElementById('ap-s3').style.display='none';setApProgress(toStep);}
+
+// ── CUSTOM TAG INPUT ──
+const DEFAULT_CATS=['Display','Battery','Back Panel','Charging Port','Camera','Speaker','Mic','Motherboard','Button Flex','Vibrator'];
+const DEFAULT_BRANDS=['Samsung','Apple','Xiaomi','Realme','OPPO','Vivo','OnePlus','Motorola','Nokia','Tecno','Infinix','Itel'];
+function getSaved(key){try{return JSON.parse(localStorage.getItem(key)||'[]');}catch(e){return[];}}
+function saveCustom(key,val){const s=getSaved(key);if(!s.includes(val)){s.push(val);localStorage.setItem(key,JSON.stringify(s));}}
+function initTagInputs(){renderSuggestions('cat',[...DEFAULT_CATS,...getSaved('mpm_custom_cats')]);renderSuggestions('brand',[...DEFAULT_BRANDS,...getSaved('mpm_custom_brands')]);}
+function renderSuggestions(type,items){document.getElementById(type+'-suggestions').innerHTML=items.map(v=>`<span class="tag-suggest-chip" onclick="selectTag('${type}','${v.replace(/'/g,"\\'")}'">${v}</span>`).join('');}
+function filterSuggestions(type){const q=document.getElementById(type+'-type').value.trim().toLowerCase();const base=type==='cat'?[...DEFAULT_CATS,...getSaved('mpm_custom_cats')]:[...DEFAULT_BRANDS,...getSaved('mpm_custom_brands')];renderSuggestions(type,q?base.filter(v=>v.toLowerCase().includes(q)):base);}
+function selectTag(type,val){if(type==='cat'){selectedCat=val;renderSelectedTag('cat',val);document.getElementById('pe-cat').style.display='none';document.getElementById('cat-wrap').classList.remove('error');}if(type==='brand'){selectedBrand=val;renderSelectedTag('brand',val);document.getElementById('pe-brand').style.display='none';document.getElementById('brand-wrap').classList.remove('error');}document.getElementById(type+'-type').value='';filterSuggestions(type);}
+function renderSelectedTag(type,val){document.getElementById(type+'-tags-row').innerHTML=val?`<span class="tag-chip">${val}<button class="tag-chip-remove" onclick="clearTag('${type}')">×</button></span>`:'';;}
+function clearTag(type){if(type==='cat'){selectedCat='';renderSelectedTag('cat','');}if(type==='brand'){selectedBrand='';renderSelectedTag('brand','');}}
+function tagKeydown(e,type){if(e.key==='Enter'){e.preventDefault();const val=document.getElementById(type+'-type').value.trim();if(!val)return;saveCustom(type==='cat'?'mpm_custom_cats':'mpm_custom_brands',val);selectTag(type,val);}}
+
+// ── AP STEP 1 ──
+function apStep1Next(){
+  clearApErr();
+  let ok=true;
+  ok=fv('p-name','pe-name',document.getElementById('p-name').value.trim().length>=3,'Part naam daalo')&&ok;
+  if(!selectedCat){document.getElementById('cat-wrap').classList.add('error');document.getElementById('pe-cat').style.display='block';ok=false;}
+  if(!selectedBrand){document.getElementById('brand-wrap').classList.add('error');document.getElementById('pe-brand').style.display='block';ok=false;}
+  ok=fv('p-models','pe-models',document.getElementById('p-models').value.trim().length>=2,'Compatible models daalo')&&ok;
+  if(!ok)return;
+  document.getElementById('ap-s1').style.display='none';document.getElementById('ap-s2').style.display='block';setApProgress(2);updatePricePreview();
+}
+
+// ── AP STEP 2 ──
+function updatePricePreview(){const p=document.getElementById('p-price').value,s=document.getElementById('p-stock').value;const prev=document.getElementById('price-preview');if(p&&s){prev.style.display='block';document.getElementById('prev-price').textContent=p;document.getElementById('prev-stock').textContent=s;}else prev.style.display='none';}
+function apStep2Next(){
+  clearApErr();
+  let ok=true;
+  ok=fv('p-price','pe-price',document.getElementById('p-price').value>0,'Price daalo')&&ok;
+  ok=fv('p-stock','pe-stock',document.getElementById('p-stock').value>0,'Stock quantity daalo')&&ok;
+  ok=fv('p-cond','pe-cond',document.getElementById('p-cond').value!=='','Condition chuniye')&&ok;
+  if(!ok)return;
+  document.getElementById('fs-name').textContent=document.getElementById('p-name').value.trim();
+  document.getElementById('fs-cat').textContent=selectedCat;
+  document.getElementById('fs-brand').textContent=selectedBrand;
+  document.getElementById('fs-models').textContent=document.getElementById('p-models').value.trim();
+  document.getElementById('fs-price').textContent=document.getElementById('p-price').value;
+  document.getElementById('fs-stock').textContent=document.getElementById('p-stock').value+' units';
+  document.getElementById('fs-cond').textContent=document.getElementById('p-cond').value;
+  document.getElementById('ap-s2').style.display='none';document.getElementById('ap-s3').style.display='block';setApProgress(3);
+}
+
+// ── PHOTO SLOTS ──
+function triggerSlot(idx){document.getElementById('slot-input-'+idx).click();}
+function handleSlot(e,idx){
+  const file=e.target.files[0];if(!file)return;
+  if(file.size>5*1024*1024){toast('❌ Photo 5MB se badi hai');return;}
+  slotPhotos[idx]=file;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    const slot=document.getElementById('slot-'+idx);slot.classList.add('filled');
+    slot.querySelectorAll('img,.photo-slot-icon,.photo-slot-label,.photo-slot-req').forEach(el=>el.remove());
+    const img=document.createElement('img');img.src=ev.target.result;slot.appendChild(img);
+    let rb=slot.querySelector('.photo-slot-remove');
+    if(!rb){rb=document.createElement('button');rb.className='photo-slot-remove';rb.textContent='×';rb.onclick=ev2=>{ev2.stopPropagation();removeSlot(idx);};slot.appendChild(rb);}
+    document.getElementById('pe-photos').style.display='none';
+  };
+  reader.readAsDataURL(file);
+}
+function removeSlot(idx){
+  slotPhotos[idx]=null;
+  const slot=document.getElementById('slot-'+idx);slot.classList.remove('filled');
+  document.getElementById('slot-input-'+idx).value='';
+  slot.querySelectorAll('img,.photo-slot-remove').forEach(el=>el.remove());
+  const labels=[['📱','Front Side',true],['🔲','Back Side',true],['📐','Angle View 1',false],['🔍','Angle View 2',false]];
+  const[icon,label,req]=labels[idx];
+  if(req){const r=document.createElement('span');r.className='photo-slot-req';r.textContent='Zaroori';slot.appendChild(r);}
+  const ic=document.createElement('span');ic.className='photo-slot-icon';ic.textContent=icon;slot.appendChild(ic);
+  const lb=document.createElement('span');lb.className='photo-slot-label';lb.innerHTML=label+(req?'':'<br><span style="font-weight:400;opacity:0.6;">(Optional)</span>');slot.appendChild(lb);
+}
+
+// ── SUBMIT PRODUCT ──
+async function submitProduct(){
+  clearApErr();
+  if(!slotPhotos[0]||!slotPhotos[1]){document.getElementById('pe-photos').style.display='block';return;}
+  const btn=document.getElementById('submit-product-btn');
+  btn.disabled=true;btn.textContent='Upload ho raha hai...';
+  try{
+    const photoUrls=[];
+    const isTest=currentUser.id.startsWith('test-ws-');
+    const names=['front','back','angle1','angle2'];
+    if(!isTest){
+      for(let i=0;i<4;i++){
+        if(!slotPhotos[i])continue;
+        const ext=slotPhotos[i].name.split('.').pop();
+        const path=`products/${currentUser.id}/${Date.now()}_${names[i]}.${ext}`;
+        const{error:upErr}=await sb.storage.from('mpm-products').upload(path,slotPhotos[i],{upsert:true});
+        if(upErr)throw new Error(upErr.message);
+        const{data:{publicUrl}}=sb.storage.from('mpm-products').getPublicUrl(path);
+        photoUrls.push(publicUrl);
+      }
+    }else{slotPhotos.filter(Boolean).forEach(()=>photoUrls.push(''));}
+    const productData={
+      wholesaler_id:currentUser.id,
+      name:document.getElementById('p-name').value.trim(),
+      category:selectedCat,brand:selectedBrand,
+      models:document.getElementById('p-models').value.trim(),
+      description:document.getElementById('p-desc').value.trim()||null,
+      price:parseFloat(document.getElementById('p-price').value),
+      stock:parseInt(document.getElementById('p-stock').value),
+      condition:document.getElementById('p-cond').value,
+      photo_urls:photoUrls,
+      offline_sold:0, online_sold:0,
+      is_active:true,created_at:new Date().toISOString()
+    };
+    if(!isTest){const{error}=await sb.from('mpm_products').insert(productData);if(error)throw new Error(error.message);}
+    btn.disabled=false;btn.textContent='🚀 Live Karo!';
+    toast('🎉 Product live ho gaya!');showDashboard();await loadProducts();
+  }catch(err){btn.disabled=false;btn.textContent='🚀 Live Karo!';showApErr('❌ '+err.message);}
 }
 
 // ── LOGOUT ──
-async function logout() {
-  await sb.auth.signOut();
+async function logout(){
+  await sb.auth.signOut();currentUser=null;currentProfile=null;
   document.getElementById('screen-main').style.display='none';
+  document.getElementById('screen-add-product').style.display='none';
   document.getElementById('screen-auth').style.display='flex';
-  currentUser=null;
-  resetLoginStep(); resetRegisterStep();
-  toast('Logout ho gaya');
+  resetLoginStep();
+  ['reg-s1','reg-s2','reg-s3'].forEach(id=>document.getElementById(id).style.display='none');
+  document.getElementById('reg-s0').style.display='block';
+  selectedRole='';
+  document.getElementById('role-wholesaler').classList.remove('selected');
+  document.getElementById('role-retailer').classList.remove('selected');
+  setProgress(1);toast('Logout ho gaya');
 }
 
-// ── AUTO LOGIN CHECK ──
-(async () => {
-  const {data:{session}} = await sb.auth.getSession();
-  if(session?.user) await loadDashboard(session.user);
+// ── AUTO LOGIN ──
+(async()=>{
+  const{data:{session}}=await sb.auth.getSession();
+  if(session?.user)await loadDashboard(session.user);
 })();
 </script>
 </body>
