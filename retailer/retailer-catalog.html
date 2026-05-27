@@ -48,8 +48,8 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--tx);min-h
 /* ── HEADER ── */
 .main-hdr{position:sticky;top:0;z-index:50;background:rgba(10,10,10,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--bd);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
 .hdr-left{display:flex;align-items:center;gap:10px;}
-.hdr-logo{width:36px;height:36px;border-radius:10px;overflow:hidden;flex-shrink:0;}
-.hdr-logo img{width:100%;height:100%;object-fit:cover;}
+.hdr-logo{width:40px;height:40px;border-radius:0;overflow:visible;flex-shrink:0;}
+.hdr-logo img{width:100%;height:100%;object-fit:contain;background:transparent;}
 .hdr-name{font-size:14px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px;}
 .hdr-sub{font-size:10px;color:var(--tx3);}
 .hdr-right{display:flex;align-items:center;gap:6px;}
@@ -59,7 +59,7 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--tx);min-h
 .settings-btn:hover{border-color:var(--orB);}
 
 /* ── BOTTOM NAV ── */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,10,0.95);backdrop-filter:blur(12px);border-top:1px solid var(--bd);display:flex;z-index:50;padding:0 4px 4px;}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,10,0.95);backdrop-filter:blur(12px);border-top:1px solid var(--bd);display:flex;z-index:50;padding:0 4px env(safe-area-inset-bottom,0px);}
 .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px 6px;cursor:pointer;transition:all .2s;border-top:2px solid transparent;}
 .nav-item.active{border-top-color:var(--or);}
 .nav-icon{font-size:20px;line-height:1;}
@@ -190,13 +190,13 @@ select.form-input{cursor:pointer;}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
-<div style="background:#111;border-bottom:1px solid rgba(244,123,32,0.2);padding:6px 16px;font-size:11px;font-weight:700;color:#F47B20;letter-spacing:0.08em;text-align:center;font-family:'DM Sans',sans-serif;">📁 retailer-catalog.html — Retailer Panel — Mobile Part Mitra</div>
+
 
 <!-- ════ LOGIN ════ -->
 <div id="screen-login">
   <div class="login-box">
     <div class="login-logo">
-      <div class="login-logo-icon">🛒</div>
+      <div class="login-logo-icon" style="background:transparent;border:none;width:80px;height:80px;border-radius:0;"><img src="../shared/images/New-MPM-Logo.png" alt="MPM" style="width:100%;height:100%;object-fit:contain;background:transparent;"></div>
       <div class="login-logo-name">Mobile Part Mitra</div>
       <div class="login-logo-sub">Retailer Panel</div>
     </div>
@@ -236,7 +236,7 @@ select.form-input{cursor:pointer;}
   <!-- HEADER -->
   <div class="main-hdr">
     <div class="hdr-left">
-      <div class="hdr-logo"><img src="../shared/images/MPM_Logo.png" alt="MPM" onerror="this.parentElement.innerHTML='🔧'"></div>
+      <div class="hdr-logo"><img src="../shared/images/New-MPM-Logo.png" alt="MPM" onerror="this.parentElement.innerHTML='🔧'"></div>
       <div>
         <div class="hdr-name" id="hdr-shop">Retailer</div>
         <div class="hdr-sub" id="hdr-city">Mobile Part Mitra</div>
@@ -573,7 +573,6 @@ async function sendOTP(){
   lClear();
   const phone=document.getElementById('l-phone').value.trim();
   if(phone.length!==10){lShowErr('10 digit number daalo');return;}
-  if(!RT_TEST[phone]){lShowErr('❌ Yeh number retailer ke liye registered nahi. Wholesaler ho toh wholesaler app use karo.');return;}
   const btn=document.querySelector('#l-step-phone .l-btn');
   btn.disabled=true;btn.textContent='Bhej raha hai...';
   if(RT_TEST[phone]){
@@ -649,7 +648,7 @@ async function loadMain(user,profile){
   }
   toast('✅ Login ho gaya!');
   await loadOrders();
-  switchTab('orders');
+  switchTab('map');
 }
 
 // ══════════════════════════════════════════════════════
@@ -825,7 +824,6 @@ function openWsDetail(wsId){
     openOrderFromMap(ws.id, ws.shop_name||'');
   };
   openModal('ws-detail-modal');
-}
 }
 
 function openOrderFromMap(wsId,wsName){

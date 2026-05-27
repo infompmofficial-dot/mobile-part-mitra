@@ -175,13 +175,13 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--tx);min-h
 </style>
 </head>
 <body>
-<div style="background:#111;border-bottom:1px solid rgba(244,123,32,0.2);padding:6px 16px;font-size:11px;font-weight:700;color:#F47B20;letter-spacing:0.08em;text-align:center;font-family:'DM Sans',sans-serif;">📁 admin-index.html — Admin Panel — Mobile Part Mitra</div>
+
 
 <!-- ══ LOGIN ══ -->
 <div id="app-login">
   <div class="login-box">
     <div style="display:flex;align-items:center;gap:11px;margin-bottom:24px;">
-      <div class="sb-icon"><img src="../shared/images/MPM_Logo.png" style="width:28px;height:28px;border-radius:6px;object-fit:cover;" alt="MPM"></div>
+      <div class="sb-icon"><img src="../shared/images/New-MPM-Logo.png" style="width:32px;height:32px;border-radius:0;object-fit:contain;background:transparent;" alt="MPM"></div>
       <div>
         <div style="font-size:16px;font-weight:900;">MPM Admin</div>
         <div style="font-size:10px;color:var(--tx3);">Restricted Access — Admin Only</div>
@@ -228,7 +228,7 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--tx);min-h
 <!-- SIDEBAR -->
 <div class="sidebar">
   <div class="sb-logo">
-    <div class="sb-icon"><img src="../shared/images/MPM_Logo.png" style="width:28px;height:28px;border-radius:6px;object-fit:cover;" alt="MPM"></div>
+    <div class="sb-icon"><img src="../shared/images/New-MPM-Logo.png" style="width:32px;height:32px;border-radius:0;object-fit:contain;background:transparent;" alt="MPM"></div>
     <div>
       <div class="sb-title">MPM — Admin Panel</div>
       <div class="sb-badge">Super Admin</div>
@@ -692,10 +692,11 @@ async function initDashboard(){
     return;
   }
   // Real Supabase
-  const [{data:users},{data:parts},{data:orders}] = await Promise.all([
+  const [{data:users},{data:parts},{data:orders},{data:pendingWs}] = await Promise.all([
     sb.from('mpm_users').select('role'),
     sb.from('mpm_parts').select('id').eq('is_active',true),
     sb.from('mpm_orders').select('status,price,wholesaler_id,part_name,retailer_name,created_at').order('created_at',{ascending:false}),
+    sb.from('mpm_users').select('*').eq('role','wholesaler').eq('is_verified',false).eq('is_rejected',false).order('created_at',{ascending:true}),
   ]);
   const retailers   = (users||[]).filter(u=>u.role==='retailer').length;
   const wholesalers = (users||[]).filter(u=>u.role==='wholesaler').length;
@@ -707,6 +708,18 @@ async function initDashboard(){
   (orders||[]).forEach(o=>{ breakdown[o.status]=(breakdown[o.status]||0)+1; });
   renderOrderBreakdown(breakdown);
   renderRecentActivity((orders||[]).slice(0,5));
+  // Dashboard pe pending approvals bhi dikhao
+  const pending = pendingWs||[];
+  renderDashApprovals(pending);
+  // Top wholesalers
+  const wsOrderMap = {};
+  (orders||[]).filter(o=>o.status==='completed').forEach(o=>{
+    if(!wsOrderMap[o.wholesaler_id]) wsOrderMap[o.wholesaler_id]={name:'—',orders:0,revenue:0};
+    wsOrderMap[o.wholesaler_id].orders++;
+    wsOrderMap[o.wholesaler_id].revenue+=(o.price||0);
+  });
+  const topWs = Object.values(wsOrderMap).sort((a,b)=>b.orders-a.orders).slice(0,5);
+  renderTopWholesalers(topWs);
 }
 
 function renderOrderBreakdown(b){
@@ -780,9 +793,13 @@ async function loadApprovals(){
   if(DEMO_MODE){
     pending = demoUsers.filter(u=>u.role==='wholesaler'&&!u.is_verified);
   } else {
-    const {data} = await sb.from('mpm_users').select('*').eq('role','wholesaler').eq('is_verified',false).order('created_at',{ascending:true});
+    const {data} = await sb.from('mpm_users').select('*').eq('role','wholesaler').eq('is_verified',false).eq('is_rejected',false).order('created_at',{ascending:true});
     pending = data||[];
   }
+
+  // Badge always update karo
+  document.getElementById('appr-badge').textContent = pending.length;
+  document.getElementById('appr-count-badge').textContent = pending.length+' pending';
 
   if(!pending.length){ list.innerHTML='<div style="color:var(--gr);font-size:12px;text-align:center;padding:40px;">✅ Koi pending approval nahi! Sab clear hai.</div>'; return; }
 
@@ -813,11 +830,20 @@ async function loadApprovals(){
 }
 
 async function approveUser(id){
-  if(DEMO_MODE){ toast('✅ Demo: Wholesaler approved!'); await loadApprovals(); return; }
-  const {error} = await sb.from('mpm_users').update({is_verified:true}).eq('id',id);
-  if(error){ toast('❌ Error: '+error.message); return; }
+  if(DEMO_MODE){
+    toast('✅ Demo: Wholesaler approved!');
+    await loadApprovals();
+    renderDashApprovals(demoUsers.filter(u=>u.role==='wholesaler'&&!u.is_verified));
+    return;
+  }
+  const {data, error} = await sb.from('mpm_users')
+    .update({is_verified:true, is_rejected:false, rejection_reason:null})
+    .eq('id',id)
+    .select();
+  if(error){ toast('❌ Approve failed: '+error.message); return; }
   toast('✅ Wholesaler approved! Ab parts add kar sakta hai.');
-  loadApprovals(); initDashboard();
+  await loadApprovals();
+  await refreshDashboardApprovals();
 }
 
 function openRejectModal(id,name){
@@ -830,10 +856,20 @@ async function confirmReject(){
   const reason = document.getElementById('reject-reason').value.trim();
   if(!reason){ toast('❌ Reason likhna zaroori hai'); return; }
   closeModal('reject-modal');
-  if(DEMO_MODE){ toast('❌ Demo: Wholesaler rejected!'); await loadApprovals(); return; }
-  await sb.from('mpm_users').update({is_verified:false,rejection_reason:reason}).eq('id',pendingRejectId);
-  toast('✅ Rejected with reason sent.');
-  loadApprovals(); initDashboard();
+  if(DEMO_MODE){
+    toast('❌ Demo: Wholesaler rejected!');
+    await loadApprovals();
+    renderDashApprovals(demoUsers.filter(u=>u.role==='wholesaler'&&!u.is_verified));
+    return;
+  }
+  const {data, error} = await sb.from('mpm_users')
+    .update({is_verified:false, is_rejected:true, rejection_reason:reason})
+    .eq('id',pendingRejectId)
+    .select();
+  if(error){ toast('❌ Reject failed: '+error.message); return; }
+  toast('❌ Wholesaler rejected. Reason save ho gaya.');
+  await loadApprovals();
+  await refreshDashboardApprovals();
 }
 
 // ── USERS ─────────────────────────────────────────────
@@ -896,14 +932,16 @@ async function confirmStrike(){
   const newStrikes = (u?.strikes||0)+1;
   const updates = {strikes:newStrikes};
   if(newStrikes>=3) updates.is_suspended=true;
-  await sb.from('mpm_users').update(updates).eq('id',pendingStrikeId);
+  const {error:sErr} = await sb.from('mpm_users').update(updates).eq('id',pendingStrikeId).select();
+  if(sErr){ toast('❌ Strike error: '+sErr.message); return; }
   toast(newStrikes>=3?'🚫 3 strikes — Account suspended!':'⚠️ Strike added');
   loadUsers();
 }
 
 async function toggleSuspend(id, isSuspended){
   if(DEMO_MODE){ toast(isSuspended?'✅ Demo: Unsuspended':'🚫 Demo: Suspended'); return; }
-  await sb.from('mpm_users').update({is_suspended:!isSuspended}).eq('id',id);
+  const {error:tErr} = await sb.from('mpm_users').update({is_suspended:!isSuspended}).eq('id',id).select();
+  if(tErr){ toast('❌ Error: '+tErr.message); return; }
   toast(isSuspended?'✅ User unsuspended':'🚫 User suspended');
   loadUsers();
 }
@@ -1109,6 +1147,13 @@ function updateReportPreview(){
 
 function printReport(){
   window.print();
+}
+
+// ── REFRESH DASHBOARD APPROVALS (real mode) ──────────
+async function refreshDashboardApprovals(){
+  if(DEMO_MODE) return;
+  const {data} = await sb.from('mpm_users').select('*').eq('role','wholesaler').eq('is_verified',false).eq('is_rejected',false).order('created_at',{ascending:true});
+  renderDashApprovals(data||[]);
 }
 
 // ── UTILS ─────────────────────────────────────────────

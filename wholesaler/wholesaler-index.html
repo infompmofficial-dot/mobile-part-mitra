@@ -6,6 +6,9 @@
 <title>🏪 Wholesaler Panel — Mobile Part Mitra</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- Leaflet Map (Free, no API key) -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 :root{
@@ -32,7 +35,7 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--tx);min-h
 
 .auth-box{width:100%;max-width:440px;}
 .auth-logo{text-align:center;margin-bottom:24px;}
-.auth-logo img{width:64px;height:64px;border-radius:18px;object-fit:cover;}
+.auth-logo img{width:72px;height:72px;border-radius:0;object-fit:contain;background:transparent;}
 .auth-logo-name{font-size:21px;font-weight:800;margin-top:10px;}
 .auth-logo-sub{font-size:11px;color:var(--tx3);margin-top:3px;}
 .tab-row{display:flex;background:var(--bg2);border:1px solid var(--bd);border-radius:12px;padding:4px;margin-bottom:20px;}
@@ -122,8 +125,8 @@ textarea.form-input{resize:vertical;min-height:80px;}
 .wrap{max-width:900px;margin:0 auto;}
 .hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px;}
 .hdr-left{display:flex;align-items:center;gap:12px;}
-.logo-box{width:42px;height:42px;border-radius:12px;overflow:hidden;}
-.logo-box img{width:100%;height:100%;object-fit:cover;}
+.logo-box{width:42px;height:42px;border-radius:0;overflow:visible;}
+.logo-box img{width:100%;height:100%;object-fit:contain;background:transparent;}
 .hdr-title{font-size:18px;font-weight:800;}
 .hdr-sub{font-size:11px;color:var(--tx3);margin-top:2px;}
 .badge{background:var(--or2);border:1px solid var(--orB);color:var(--or);font-size:9px;font-weight:700;padding:4px 10px;border-radius:20px;text-transform:uppercase;}
@@ -206,13 +209,13 @@ textarea.form-input{resize:vertical;min-height:80px;}
 </style>
 </head>
 <body>
-<div style="background:#111;border-bottom:1px solid rgba(244,123,32,0.2);padding:6px 16px;font-size:11px;font-weight:700;color:#F47B20;letter-spacing:0.08em;text-align:center;font-family:'DM Sans',sans-serif;">📁 wholesaler-index.html — Wholesaler Panel — Mobile Part Mitra</div>
+
 
 <!-- ════ SCREEN: AUTH ════ -->
 <div id="screen-auth">
 <div class="auth-box">
   <div class="auth-logo">
-    <img src="../shared/images/MPM_Logo.png" alt="MPM">
+    <img src="../shared/images/New-MPM-Logo.png" alt="MPM">
     <div class="auth-logo-name">Mobile Part Mitra</div>
     <div class="auth-logo-sub">🏪 Wholesaler Panel</div>
   </div>
@@ -354,6 +357,11 @@ textarea.form-input{resize:vertical;min-height:80px;}
         </div>
       </div>
       <div class="form-group">
+        <label class="form-label">📮 Pin Code <span class="req">*</span></label>
+        <input class="form-input" id="r-pin" type="tel" placeholder="211001" maxlength="6">
+        <div class="field-err" id="e-pin">6 digit pin code daalo</div>
+      </div>
+      <div class="form-group">
         <label class="form-label">📍 Map Location <span class="req">*</span></label>
         <button class="gps-btn" id="gps-btn" onclick="getGPS()" style="display:flex;align-items:center;gap:8px;width:100%;padding:11px 14px;background:var(--bg3);border:1.5px dashed var(--orB);border-radius:10px;color:var(--or);font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans';">
           <span id="gps-icon">📍</span><span id="gps-text">GPS se Location Detect Karo</span>
@@ -361,7 +369,7 @@ textarea.form-input{resize:vertical;min-height:80px;}
         <div class="field-err" id="e-gps">Location confirm karna zaroori hai</div>
         <input type="hidden" id="r-lat"><input type="hidden" id="r-lng">
         <div id="gps-map-wrap" style="border-radius:12px;overflow:hidden;border:1.5px solid var(--bd2);margin-top:8px;display:none;position:relative;">
-          <iframe id="gps-map" style="width:100%;height:220px;border:none;" allowfullscreen loading="lazy"></iframe>
+          <div id="gps-map" style="width:100%;height:220px;"></div>
           <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-100%);font-size:28px;pointer-events:none;z-index:10;">📍</div>
           <div style="position:absolute;bottom:0;left:0;right:0;background:rgba(10,10,10,0.85);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
             <div style="font-size:10px;color:var(--tx2);font-family:monospace;" id="map-coords-text">Detecting...</div>
@@ -408,7 +416,7 @@ textarea.form-input{resize:vertical;min-height:80px;}
 <div class="wrap">
   <div class="hdr">
     <div class="hdr-left">
-      <div class="logo-box"><img src="../shared/images/MPM_Logo.png" alt="MPM"></div>
+      <div class="logo-box"><img src="../shared/images/New-MPM-Logo.png" alt="MPM"></div>
       <div>
         <div class="hdr-title" id="dash-shop-name">Wholesaler Dashboard</div>
         <div class="hdr-sub" id="dash-city">Mobile Part Mitra</div>
@@ -746,11 +754,18 @@ function getGPS(){
       document.getElementById('gps-text').textContent='Map pe dekho — pin confirm karo';
       btn.style.borderColor='var(--or)';
       const wrap=document.getElementById('gps-map-wrap');
-      const iframe=document.getElementById('gps-map');
-      iframe.src=`https://www.google.com/maps/embed/v1/view?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&center=${mapLat},${mapLng}&zoom=18&maptype=satellite`;
       wrap.style.display='block';
       document.getElementById('map-coords-text').textContent=`📌 ${mapLat.toFixed(5)}, ${mapLng.toFixed(5)}`;
       document.getElementById('e-gps').style.display='none';
+      // Init Leaflet map (free, no API key)
+      if(window._wsLeafMap){window._wsLeafMap.setView([mapLat,mapLng],18);window._wsLeafMarker.setLatLng([mapLat,mapLng]);}
+      else{
+        const m=L.map('gps-map',{zoomControl:true,attributionControl:false}).setView([mapLat,mapLng],18);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(m);
+        const marker=L.marker([mapLat,mapLng],{draggable:true}).addTo(m);
+        marker.on('dragend',e=>{const p=e.target.getLatLng();mapLat=p.lat;mapLng=p.lng;document.getElementById('map-coords-text').textContent=`📌 ${mapLat.toFixed(5)}, ${mapLng.toFixed(5)}`;});
+        window._wsLeafMap=m; window._wsLeafMarker=marker;
+      }
     },
     err=>{
       document.getElementById('gps-icon').textContent='❌';
@@ -781,6 +796,8 @@ async function regStep2Next(){
   ok=fv('r-city','e-city',document.getElementById('r-city').value.trim().length>=2,'Bazaar/sheher naam daalo')&&ok;
   ok=fv('r-dist','e-dist',document.getElementById('r-dist').value.trim().length>=2,'District naam daalo')&&ok;
   ok=fv('r-state','e-state',document.getElementById('r-state').value!=='','State chuniye')&&ok;
+  const pin=document.getElementById('r-pin').value.trim();
+  ok=fv('r-pin','e-pin',pin.length===6&&/^\d+$/.test(pin),'6 digit pin code daalo')&&ok;
   if(!locationConfirmed){document.getElementById('e-gps').style.display='block';ok=false;}
   if(!ok)return;
   const phone=document.getElementById('r-phone').value.trim();
@@ -844,6 +861,7 @@ async function verifyRegisterOTP(){
     city:document.getElementById('r-city').value.trim(),
     district:document.getElementById('r-dist').value.trim(),
     state:document.getElementById('r-state').value,
+    pincode:document.getElementById('r-pin').value.trim(),
     latitude:document.getElementById('r-lat').value||null,
     longitude:document.getElementById('r-lng').value||null,
     role:selectedRole,
@@ -885,7 +903,6 @@ async function sendLoginOTP(){
   clearMsgs();
   const phone=document.getElementById('login-phone').value.trim();
   if(phone.length!==10){showErr('10 digit phone number daalo');return;}
-  if(!WS_TEST_PHONES[phone]&&Object.keys(WS_TEST_PHONES).length>0){showErr('❌ Yeh number registered nahi hai');return;}
   const btn=document.querySelector('#login-step-phone .btn-primary');
   btn.disabled=true;btn.textContent='Bhej raha hai...';
   if(WS_TEST_PHONES[phone]){
@@ -1058,7 +1075,7 @@ async function saveOfflineSale(){
     const{error}=await sb.from('mpm_products').update({
       offline_sold:(prod.offline_sold||0)+qty,
       stock:prod.stock-qty
-    }).eq('id',id);
+    }).eq('id',id).select();
     if(error){btn.disabled=false;btn.textContent='✅ Save Karo';toast('❌ Error: '+error.message);return;}
     // Save history record
     await sb.from('mpm_offline_sales').insert({
@@ -1105,7 +1122,7 @@ async function loadSaleHistory(productId){
 
 // ── TOGGLE / DELETE ──
 async function toggleProduct(id,isActive){
-  const{error}=await sb.from('mpm_products').update({is_active:!isActive}).eq('id',id);
+  const{data:toggled,error}=await sb.from('mpm_products').update({is_active:!isActive}).eq('id',id).select();
   if(error){toast('❌ '+error.message);return;}
   toast(isActive?'⏸ Paused':'✅ Live ho gaya!');
   await loadProducts();
