@@ -727,27 +727,49 @@ function initLeafletMap(lat,lng){
 
   if(leafletMap){leafletMap.remove();leafletMap=null;}
 
-  leafletMap=L.map('leaflet-map',{zoomControl:true}).setView([lat,lng],15);
-
-  // Satellite tiles (free)
-  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{
-    attribution:'© Esri',maxZoom:19
-  }).addTo(leafletMap);
-
-  // Road labels overlay
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-    attribution:'© OSM',maxZoom:19,opacity:0.35
-  }).addTo(leafletMap);
-
-  // Retailer marker
-  const retailerIcon=L.divIcon({
-    html:'<div style="background:#F47B20;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.5);">🛒</div>',
-    iconSize:[28,28],iconAnchor:[14,14],className:''
+  // Fix Leaflet default marker icon (CDN issue on mobile)
+  delete L.Icon.Default.prototype._getIconUrl;
+  L.Icon.Default.mergeOptions({
+    iconUrl:'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+    iconRetinaUrl:'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+    shadowUrl:'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+    iconSize:[25,41],iconAnchor:[12,41],popupAnchor:[1,-34],shadowSize:[41,41]
   });
-  L.marker([lat,lng],{icon:retailerIcon}).addTo(leafletMap)
-   .bindPopup('<strong>📍 Aapki Location</strong><br>'+currentProfile?.shop_name||'Retailer').openPopup();
+
+  leafletMap=L.map('leaflet-map',{zoomControl:true,attributionControl:false}).setView([lat,lng],16);
+
+  // Layer 1: Satellite tiles — Esri World Imagery (free, no key)
+  L.tileLayer(
+    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    {maxZoom:19,attribution:'© Esri'}
+  ).addTo(leafletMap);
+
+  // Layer 2: Road + area name overlay — Stamen Toner Hybrid (roads + labels only, transparent bg)
+  L.tileLayer(
+    'https://stamen-tiles.a.ssl.fastly.net/toner-hybrid/{z}/{x}/{y}.png',
+    {maxZoom:18,opacity:0.6}
+  ).addTo(leafletMap);
+
+  // Retailer marker — orange pin (SVG, no CDN dependency)
+  const retailerIcon=L.divIcon({
+    html:`<div style="width:28px;height:42px;">
+      <svg viewBox="0 0 28 42" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.6))">
+        <path d="M14 0C6.27 0 0 6.27 0 14c0 10.5 14 28 14 28S28 24.5 28 14C28 6.27 21.73 0 14 0z" fill="#F47B20"/>
+        <circle cx="14" cy="14" r="6" fill="#fff"/>
+      </svg>
+    </div>`,
+    iconSize:[28,42],iconAnchor:[14,42],popupAnchor:[0,-44],className:''
+  });
+
+  L.marker([lat,lng],{icon:retailerIcon})
+   .addTo(leafletMap)
+   .bindPopup(`<strong style="font-size:12px;">📍 Aapki Location</strong><br><span style="font-size:11px;color:#666;">${currentProfile?.shop_name||'Retailer'}</span>`,{maxWidth:180})
+   .openPopup();
 
   mapReady=true;
+
+  // Force map to render on mobile (layout recalc after display:block)
+  setTimeout(()=>leafletMap.invalidateSize(),300);
 }
 
 async function loadNearbyWholesalers(){
@@ -771,15 +793,17 @@ async function loadNearbyWholesalers(){
 
   // Add markers on map
   if(leafletMap){
+    // SVG green pin markers — no emoji, works on all mobile browsers
     allWholesalers.forEach(ws=>{
       if(!ws.latitude||!ws.longitude)return;
       const wsIcon=L.divIcon({
-        html:`<div style="background:#3DBB78;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.5);">🏪</div>`,
-        iconSize:[28,28],iconAnchor:[14,14],className:''
+        html:`<div style="width:24px;height:36px;"><svg viewBox="0 0 28 42" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;filter:drop-shadow(0 2px 5px rgba(0,0,0,0.5))"><path d="M14 0C6.27 0 0 6.27 0 14c0 10.5 14 28 14 28S28 24.5 28 14C28 6.27 21.73 0 14 0z" fill="#3DBB78"/><circle cx="14" cy="14" r="6" fill="#fff"/></svg></div>`,
+        iconSize:[24,36],iconAnchor:[12,36],popupAnchor:[0,-38],className:''
       });
+      const distTxt=ws.dist<1?(ws.dist*1000).toFixed(0)+'m':ws.dist.toFixed(1)+'km';
       L.marker([parseFloat(ws.latitude),parseFloat(ws.longitude)],{icon:wsIcon})
        .addTo(leafletMap)
-       .bindPopup(`<strong>🏪 ${ws.shop_name}</strong><br>${ws.city||''}<br><button onclick="openOrderFromMap('${ws.id}','${(ws.shop_name||'').replace(/'/g,"\\'")}');return false;" style="margin-top:6px;padding:5px 10px;background:#F47B20;border:none;border-radius:6px;color:#fff;font-size:11px;cursor:pointer;font-family:sans-serif;font-weight:700;">🛒 Order Karo</button>`);
+       .bindPopup(`<div style="min-width:160px;font-family:sans-serif;"><div style="font-size:13px;font-weight:700;margin-bottom:4px;">${ws.shop_name}</div><div style="font-size:11px;color:#666;margin-bottom:6px;">${ws.city||''} · ${distTxt} door</div><button onclick="openOrderFromMap('${ws.id}','${(ws.shop_name||'').replace(/'/g,"\'")}');return false;" style="width:100%;padding:7px;background:#F47B20;border:none;border-radius:8px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;">Order Karo</button></div>`,{maxWidth:200});
     });
   }
 

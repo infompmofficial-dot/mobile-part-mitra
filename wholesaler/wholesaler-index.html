@@ -6,7 +6,6 @@
 <title>🏪 Wholesaler Panel — Mobile Part Mitra</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<!-- Leaflet Map (Free, no API key) -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
@@ -35,7 +34,7 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--tx);min-h
 
 .auth-box{width:100%;max-width:440px;}
 .auth-logo{text-align:center;margin-bottom:24px;}
-.auth-logo img{width:72px;height:72px;border-radius:0;object-fit:contain;background:transparent;}
+.auth-logo img{width:64px;height:64px;border-radius:18px;object-fit:cover;}
 .auth-logo-name{font-size:21px;font-weight:800;margin-top:10px;}
 .auth-logo-sub{font-size:11px;color:var(--tx3);margin-top:3px;}
 .tab-row{display:flex;background:var(--bg2);border:1px solid var(--bd);border-radius:12px;padding:4px;margin-bottom:20px;}
@@ -115,7 +114,7 @@ textarea.form-input{resize:vertical;min-height:80px;}
 
 /* ── MAP ── */
 #gps-map-wrap{border-radius:12px;overflow:hidden;border:1.5px solid var(--bd2);margin-top:8px;display:none;position:relative;}
-#gps-map{width:100%;height:220px;border:none;}
+#gps-map{width:100%;height:240px;}
 .map-pin-overlay{position:absolute;top:50%;left:50%;transform:translate(-50%,-100%);font-size:28px;pointer-events:none;z-index:10;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5));}
 .map-confirm-bar{position:absolute;bottom:0;left:0;right:0;background:rgba(10,10,10,0.85);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;backdrop-filter:blur(4px);}
 .map-coords-text{font-size:10px;color:var(--tx2);font-family:monospace;}
@@ -125,8 +124,8 @@ textarea.form-input{resize:vertical;min-height:80px;}
 .wrap{max-width:900px;margin:0 auto;}
 .hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px;}
 .hdr-left{display:flex;align-items:center;gap:12px;}
-.logo-box{width:42px;height:42px;border-radius:0;overflow:visible;}
-.logo-box img{width:100%;height:100%;object-fit:contain;background:transparent;}
+.logo-box{width:42px;height:42px;border-radius:12px;overflow:hidden;}
+.logo-box img{width:100%;height:100%;object-fit:cover;}
 .hdr-title{font-size:18px;font-weight:800;}
 .hdr-sub{font-size:11px;color:var(--tx3);margin-top:2px;}
 .badge{background:var(--or2);border:1px solid var(--orB);color:var(--or);font-size:9px;font-weight:700;padding:4px 10px;border-radius:20px;text-transform:uppercase;}
@@ -209,13 +208,13 @@ textarea.form-input{resize:vertical;min-height:80px;}
 </style>
 </head>
 <body>
-
+<div style="background:#111;border-bottom:1px solid rgba(244,123,32,0.2);padding:6px 16px;font-size:11px;font-weight:700;color:#F47B20;letter-spacing:0.08em;text-align:center;font-family:'DM Sans',sans-serif;">📁 wholesaler-index.html — Wholesaler Panel — Mobile Part Mitra</div>
 
 <!-- ════ SCREEN: AUTH ════ -->
 <div id="screen-auth">
 <div class="auth-box">
   <div class="auth-logo">
-    <img src="../shared/images/New-MPM-Logo.png" alt="MPM">
+    <img src="../shared/images/MPM_Logo.png" alt="MPM">
     <div class="auth-logo-name">Mobile Part Mitra</div>
     <div class="auth-logo-sub">🏪 Wholesaler Panel</div>
   </div>
@@ -369,7 +368,7 @@ textarea.form-input{resize:vertical;min-height:80px;}
         <div class="field-err" id="e-gps">Location confirm karna zaroori hai</div>
         <input type="hidden" id="r-lat"><input type="hidden" id="r-lng">
         <div id="gps-map-wrap" style="border-radius:12px;overflow:hidden;border:1.5px solid var(--bd2);margin-top:8px;display:none;position:relative;">
-          <div id="gps-map" style="width:100%;height:220px;"></div>
+          <div id="gps-map" style="width:100%;height:240px;"></div>
           <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-100%);font-size:28px;pointer-events:none;z-index:10;">📍</div>
           <div style="position:absolute;bottom:0;left:0;right:0;background:rgba(10,10,10,0.85);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
             <div style="font-size:10px;color:var(--tx2);font-family:monospace;" id="map-coords-text">Detecting...</div>
@@ -416,7 +415,7 @@ textarea.form-input{resize:vertical;min-height:80px;}
 <div class="wrap">
   <div class="hdr">
     <div class="hdr-left">
-      <div class="logo-box"><img src="../shared/images/New-MPM-Logo.png" alt="MPM"></div>
+      <div class="logo-box"><img src="../shared/images/MPM_Logo.png" alt="MPM"></div>
       <div>
         <div class="hdr-title" id="dash-shop-name">Wholesaler Dashboard</div>
         <div class="hdr-sub" id="dash-city">Mobile Part Mitra</div>
@@ -751,21 +750,12 @@ function getGPS(){
       mapLat=pos.coords.latitude; mapLng=pos.coords.longitude;
       btn.disabled=false;
       document.getElementById('gps-icon').textContent='🛰️';
-      document.getElementById('gps-text').textContent='Map pe dekho — pin confirm karo';
+      document.getElementById('gps-text').textContent='Map pe dekho — pin drag karo, phir confirm karo';
       btn.style.borderColor='var(--or)';
-      const wrap=document.getElementById('gps-map-wrap');
-      wrap.style.display='block';
+      document.getElementById('gps-map-wrap').style.display='block';
       document.getElementById('map-coords-text').textContent=`📌 ${mapLat.toFixed(5)}, ${mapLng.toFixed(5)}`;
       document.getElementById('e-gps').style.display='none';
-      // Init Leaflet map (free, no API key)
-      if(window._wsLeafMap){window._wsLeafMap.setView([mapLat,mapLng],18);window._wsLeafMarker.setLatLng([mapLat,mapLng]);}
-      else{
-        const m=L.map('gps-map',{zoomControl:true,attributionControl:false}).setView([mapLat,mapLng],18);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(m);
-        const marker=L.marker([mapLat,mapLng],{draggable:true}).addTo(m);
-        marker.on('dragend',e=>{const p=e.target.getLatLng();mapLat=p.lat;mapLng=p.lng;document.getElementById('map-coords-text').textContent=`📌 ${mapLat.toFixed(5)}, ${mapLng.toFixed(5)}`;});
-        window._wsLeafMap=m; window._wsLeafMarker=marker;
-      }
+      initGPSMap(mapLat, mapLng);
     },
     err=>{
       document.getElementById('gps-icon').textContent='❌';
@@ -777,14 +767,99 @@ function getGPS(){
   );
 }
 
+function initGPSMap(lat, lng){
+  // Fix Leaflet default marker icon (CDN issue on mobile)
+  delete L.Icon.Default.prototype._getIconUrl;
+  L.Icon.Default.mergeOptions({
+    iconUrl:'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+    iconRetinaUrl:'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+    shadowUrl:'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+    iconSize:[25,41], iconAnchor:[12,41], popupAnchor:[1,-34], shadowSize:[41,41]
+  });
+
+  if(window._gpsMap){
+    window._gpsMap.setView([lat,lng],18);
+    window._gpsMarker.setLatLng([lat,lng]);
+    return;
+  }
+
+  // Create map
+  const m = L.map('gps-map',{zoomControl:true,attributionControl:false}).setView([lat,lng],18);
+
+  // Layer 1: Satellite tiles (Esri World Imagery — free, no key)
+  const satellite = L.tileLayer(
+    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    {maxZoom:19, attribution:'© Esri'}
+  ).addTo(m);
+
+  // Layer 2: Road + area name overlay (OSM transparent labels)
+  L.tileLayer(
+    'https://stamen-tiles.a.ssl.fastly.net/toner-hybrid/{z}/{x}/{y}.png',
+    {maxZoom:18, opacity:0.55}
+  ).addTo(m);
+
+  // Draggable orange marker
+  const markerIcon = L.divIcon({
+    html:`<div style="width:28px;height:42px;position:relative;">
+      <svg viewBox="0 0 28 42" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.5))">
+        <path d="M14 0C6.27 0 0 6.27 0 14c0 10.5 14 28 14 28S28 24.5 28 14C28 6.27 21.73 0 14 0z" fill="#F47B20"/>
+        <circle cx="14" cy="14" r="6" fill="#fff"/>
+      </svg>
+    </div>`,
+    iconSize:[28,42], iconAnchor:[14,42], popupAnchor:[0,-44], className:''
+  });
+
+  const marker = L.marker([lat,lng],{icon:markerIcon, draggable:true}).addTo(m);
+  marker.bindPopup('<strong style="font-size:12px;">📍 Aapki Dukan</strong><br><span style="font-size:11px;color:#666;">Pin ko drag karke sahi jagah pe rakho</span>', {maxWidth:180}).openPopup();
+
+  // Update coords on drag
+  marker.on('drag', e=>{
+    const p = e.target.getLatLng();
+    mapLat = p.lat; mapLng = p.lng;
+    document.getElementById('map-coords-text').textContent=`📌 ${mapLat.toFixed(5)}, ${mapLng.toFixed(5)}`;
+  });
+  marker.on('dragend', e=>{
+    const p = e.target.getLatLng();
+    mapLat = p.lat; mapLng = p.lng;
+    document.getElementById('map-coords-text').textContent=`📌 ${mapLat.toFixed(5)}, ${mapLng.toFixed(5)}`;
+    // Reverse geocode — get area name
+    fetch(`https://nominatim.openstreetmap.org/reverse?lat=${mapLat}&lon=${mapLng}&format=json`)
+      .then(r=>r.json())
+      .then(d=>{
+        const area = d.address?.suburb || d.address?.village || d.address?.town || d.address?.city || '';
+        const road = d.address?.road || d.address?.pedestrian || '';
+        const label = [road, area].filter(Boolean).join(', ');
+        if(label) document.getElementById('map-coords-text').textContent=`📍 ${label}`;
+        marker.bindPopup(`<strong style="font-size:12px;">📍 ${label||'Aapki Dukan'}</strong><br><span style="font-size:10px;color:#888;">${mapLat.toFixed(5)}, ${mapLng.toFixed(5)}</span>`,{maxWidth:200}).openPopup();
+      }).catch(()=>{});
+  });
+
+  window._gpsMap = m;
+  window._gpsMarker = marker;
+
+  // Force map to render properly on mobile (layout recalc)
+  setTimeout(()=>m.invalidateSize(),300);
+}
+
 function confirmMapLocation(){
-  document.getElementById('r-lat').value=mapLat;
-  document.getElementById('r-lng').value=mapLng;
-  locationConfirmed=true;
+  if(!mapLat || !mapLng){ toast('❌ Pehle GPS se location detect karo'); return; }
+  // Save final marker position
+  if(window._gpsMarker){
+    const p = window._gpsMarker.getLatLng();
+    mapLat = p.lat; mapLng = p.lng;
+  }
+  document.getElementById('r-lat').value = mapLat;
+  document.getElementById('r-lng').value = mapLng;
+  locationConfirmed = true;
   document.getElementById('gps-icon').textContent='✅';
-  document.getElementById('gps-text').textContent='Location Confirm Ho Gayi!';
+  document.getElementById('gps-text').textContent='Location Confirm Ho Gayi! ✅';
+  document.getElementById('gps-btn').style.borderColor='var(--gr)';
   document.getElementById('e-gps').style.display='none';
-  toast('✅ Location save ho gayi');
+  // Show confirmed state on map
+  if(window._gpsMarker){
+    window._gpsMarker.bindPopup('<strong style="font-size:12px;color:#3DBB78;">✅ Location Confirmed!</strong><br><span style="font-size:10px;color:#888;">'+mapLat.toFixed(5)+', '+mapLng.toFixed(5)+'</span>',{maxWidth:200}).openPopup();
+  }
+  toast('✅ Location confirm ho gayi! Lat: '+mapLat.toFixed(4));
 }
 
 // ── REGISTER STEP 2 ──
@@ -841,6 +916,8 @@ function regGoBack(toStep){
   document.getElementById('reg-s2').style.display=toStep===2?'block':'none';
   document.getElementById('reg-s3').style.display='none';
   setProgress(toStep+1);
+  // Reset map if going back past step 2
+  if(toStep<2 && window._gpsMap){ window._gpsMap.remove(); window._gpsMap=null; window._gpsMarker=null; locationConfirmed=false; document.getElementById('gps-map-wrap').style.display='none'; document.getElementById('gps-icon').textContent='📍'; document.getElementById('gps-text').textContent='GPS se Location Detect Karo'; }
 }
 
 // ── REGISTER VERIFY OTP ──
@@ -903,6 +980,7 @@ async function sendLoginOTP(){
   clearMsgs();
   const phone=document.getElementById('login-phone').value.trim();
   if(phone.length!==10){showErr('10 digit phone number daalo');return;}
+  if(!WS_TEST_PHONES[phone]&&Object.keys(WS_TEST_PHONES).length>0){showErr('❌ Yeh number registered nahi hai');return;}
   const btn=document.querySelector('#login-step-phone .btn-primary');
   btn.disabled=true;btn.textContent='Bhej raha hai...';
   if(WS_TEST_PHONES[phone]){
@@ -1075,7 +1153,7 @@ async function saveOfflineSale(){
     const{error}=await sb.from('mpm_products').update({
       offline_sold:(prod.offline_sold||0)+qty,
       stock:prod.stock-qty
-    }).eq('id',id).select();
+    }).eq('id',id);
     if(error){btn.disabled=false;btn.textContent='✅ Save Karo';toast('❌ Error: '+error.message);return;}
     // Save history record
     await sb.from('mpm_offline_sales').insert({
@@ -1122,7 +1200,7 @@ async function loadSaleHistory(productId){
 
 // ── TOGGLE / DELETE ──
 async function toggleProduct(id,isActive){
-  const{data:toggled,error}=await sb.from('mpm_products').update({is_active:!isActive}).eq('id',id).select();
+  const{error}=await sb.from('mpm_products').update({is_active:!isActive}).eq('id',id);
   if(error){toast('❌ '+error.message);return;}
   toast(isActive?'⏸ Paused':'✅ Live ho gaya!');
   await loadProducts();
