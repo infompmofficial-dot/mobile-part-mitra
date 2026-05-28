@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🛒 Retailer Login — Mobile Part Mitra</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --or:#F47B20;--or2:rgba(244,123,32,0.13);--orB:rgba(244,123,32,0.28);
+  --bg:#0A0A0A;--bg2:#111111;--bg3:#181818;--bg4:#202020;
+  --bd:rgba(255,255,255,0.06);--bd2:rgba(255,255,255,0.12);
+  --tx:#F2EDE8;--tx2:#A89E96;--tx3:#5A534E;
+  --gr:#3DBB78;--re:#E05555;--am:#F4B420;
+}
+body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--tx);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(244,123,32,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(244,123,32,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;}
+body::after{content:'';position:fixed;top:-200px;left:50%;transform:translateX(-50%);width:600px;height:400px;background:radial-gradient(ellipse,rgba(244,123,32,0.1) 0%,transparent 70%);pointer-events:none;}
+
+.auth-box{position:relative;z-index:1;width:100%;max-width:400px;background:var(--bg2);border:1px solid var(--bd2);border-radius:24px;padding:28px 24px;animation:fadeUp 0.5s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+
+.auth-logo{text-align:center;margin-bottom:22px;}
+.auth-logo img{width:72px;height:72px;object-fit:contain;margin-bottom:10px;}
+.auth-logo-name{font-size:20px;font-weight:900;letter-spacing:0.02em;}
+.auth-logo-sub{font-size:11px;color:var(--tx3);margin-top:3px;}
+
+.tab-row{display:flex;background:var(--bg3);border-radius:12px;padding:4px;gap:4px;margin-bottom:20px;}
+.tab-btn{flex:1;padding:9px;border:none;border-radius:9px;font-family:'DM Sans';font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;background:transparent;color:var(--tx3);}
+.tab-btn.active{background:var(--or);color:#fff;}
+
+.err-msg{background:rgba(224,85,85,0.1);border:1px solid rgba(224,85,85,0.25);border-radius:10px;padding:10px 13px;font-size:12px;color:#E05555;margin-bottom:14px;display:none;}
+.info-msg{background:rgba(61,187,120,0.1);border:1px solid rgba(61,187,120,0.25);border-radius:10px;padding:10px 13px;font-size:12px;color:#3DBB78;margin-bottom:14px;display:none;}
+
+.form-group{margin-bottom:14px;}
+.form-label{font-size:11px;color:var(--tx2);font-weight:700;margin-bottom:6px;display:block;letter-spacing:0.04em;}
+.req{color:var(--or);}
+.form-input{width:100%;background:var(--bg3);border:1.5px solid var(--bd2);border-radius:10px;padding:12px 14px;color:var(--tx);font-size:13px;font-family:'DM Sans';outline:none;transition:border 0.2s;}
+.form-input:focus{border-color:var(--or);}
+.form-input::placeholder{color:var(--tx3);}
+.phone-row{display:flex;gap:8px;}
+.country-code{min-width:50px;background:var(--bg3);border:1.5px solid var(--bd2);border-radius:10px;padding:12px;text-align:center;font-weight:700;font-size:13px;color:var(--tx2);}
+.field-err{font-size:11px;color:var(--re);margin-top:4px;display:none;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+.btn-primary{width:100%;padding:13px;background:var(--or);border:none;border-radius:12px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans';transition:opacity 0.2s;margin-top:4px;}
+.btn-primary:hover{opacity:0.9;}
+.btn-primary:disabled{opacity:0.5;cursor:not-allowed;}
+.btn-ghost{width:100%;padding:11px;background:transparent;border:1.5px solid var(--bd2);border-radius:12px;color:var(--tx2);font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans';margin-top:10px;transition:all 0.2s;}
+.btn-ghost:hover{border-color:var(--orB);color:var(--or);}
+
+.otp-row{display:flex;gap:8px;justify-content:center;margin:6px 0 14px;}
+.otp-input{width:44px;height:50px;background:var(--bg3);border:1.5px solid var(--bd2);border-radius:10px;text-align:center;font-size:20px;font-weight:700;color:var(--tx);outline:none;transition:border 0.2s;font-family:'DM Sans';}
+.otp-input:focus{border-color:var(--or);}
+.otp-timer{text-align:center;font-size:12px;color:var(--tx3);margin-top:6px;}
+.otp-timer span{color:var(--or);cursor:pointer;font-weight:600;}
+
+/* Progress */
+.progress-wrap{margin-bottom:20px;}
+.progress-steps{display:flex;align-items:center;justify-content:space-between;position:relative;}
+.progress-steps::before{content:'';position:absolute;top:16px;left:16px;right:16px;height:2px;background:var(--bd2);z-index:0;}
+.progress-line{position:absolute;top:16px;left:16px;height:2px;background:var(--or);z-index:1;transition:width 0.4s ease;}
+.prog-step{display:flex;flex-direction:column;align-items:center;gap:5px;position:relative;z-index:2;}
+.prog-dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:var(--bg3);border:2px solid var(--bd2);color:var(--tx3);transition:all 0.3s;}
+.prog-dot.active{background:var(--or);border-color:var(--or);color:#fff;}
+.prog-dot.done{background:var(--gr);border-color:var(--gr);color:#fff;}
+.prog-lbl{font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:0.04em;}
+.prog-lbl.active{color:var(--or);}
+
+/* GPS map */
+.gps-btn{display:flex;align-items:center;gap:8px;width:100%;padding:11px 14px;background:var(--bg3);border:1.5px dashed var(--orB);border-radius:10px;color:var(--or);font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans';}
+#gps-map-wrap{border-radius:12px;overflow:hidden;border:1.5px solid var(--bd2);margin-top:8px;display:none;position:relative;}
+#gps-map{width:100%;height:220px;}
+.map-bar{position:absolute;bottom:0;left:0;right:0;background:rgba(10,10,10,0.88);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.map-coords{font-size:10px;color:var(--tx2);font-family:monospace;}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#1C1C1C;border:1px solid var(--bd2);border-radius:12px;padding:12px 20px;font-size:13px;font-weight:600;color:var(--tx);z-index:9999;transition:transform 0.3s;white-space:nowrap;pointer-events:none;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+/* Summary box */
+.summary-box{background:var(--bg3);border:1px solid var(--bd2);border-radius:12px;padding:12px 14px;margin-bottom:16px;font-size:11px;color:var(--tx2);line-height:2.2;}
+.summary-box .s-title{font-size:10px;color:var(--tx3);font-weight:700;text-transform:uppercase;margin-bottom:6px;letter-spacing:0.05em;}
+</style>
+</head>
+<body>
+<div class="auth-box">
+  <div class="auth-logo">
+    <img src="../shared/images/New-MPM-Logo.png" alt="MPM" onerror="this.style.display='none'">
+    <div class="auth-logo-name">Mobile Part Mitra</div>
+    <div class="auth-logo-sub">🛒 Retailer Panel</div>
+  </div>
+
+  <div class="tab-row">
+    <button class="tab-btn active" id="tab-login" onclick="switchTab('login')">Login</button>
+    <button class="tab-btn" id="tab-register" onclick="switchTab('register')">Register</button>
+  </div>
+
+  <div id="err-box" class="err-msg"></div>
+  <div id="info-box" class="info-msg"></div>
+
+  <!-- ── LOGIN ── -->
+  <div id="form-login">
+    <div id="login-step-phone">
+      <div class="form-group">
+        <label class="form-label">📱 Phone Number <span class="req">*</span></label>
+        <div class="phone-row">
+          <div class="country-code">+91</div>
+          <input class="form-input" id="login-phone" type="tel" placeholder="9999999993" maxlength="10" onkeydown="if(event.key==='Enter')sendLoginOTP()">
+        </div>
+      </div>
+      <button class="btn-primary" onclick="sendLoginOTP()">📱 OTP Bhejo</button>
+      <div style="margin-top:12px;background:var(--or2);border:1px solid var(--orB);border-radius:10px;padding:10px 13px;font-size:10px;color:var(--or);">
+        🧪 Test: <strong>9999999993</strong> → OTP: <strong>123456</strong>
+      </div>
+    </div>
+    <div id="login-step-otp" style="display:none;">
+      <div style="font-size:12px;color:var(--tx2);text-align:center;margin-bottom:14px;">OTP bheja gaya <strong id="login-phone-disp" style="color:var(--or);"></strong> pe</div>
+      <div class="otp-row">
+        <input class="otp-input" id="o1" maxlength="1" oninput="otpN(this,'o2')" onkeydown="otpB(event,this,null)">
+        <input class="otp-input" id="o2" maxlength="1" oninput="otpN(this,'o3')" onkeydown="otpB(event,this,'o1')">
+        <input class="otp-input" id="o3" maxlength="1" oninput="otpN(this,'o4')" onkeydown="otpB(event,this,'o2')">
+        <input class="otp-input" id="o4" maxlength="1" oninput="otpN(this,'o5')" onkeydown="otpB(event,this,'o3')">
+        <input class="otp-input" id="o5" maxlength="1" oninput="otpN(this,'o6')" onkeydown="otpB(event,this,'o4')">
+        <input class="otp-input" id="o6" maxlength="1" oninput="otpN(this,null)"  onkeydown="otpB(event,this,'o5')">
+      </div>
+      <div class="otp-timer">OTP nahi aaya? <span onclick="sendLoginOTP()">Dobara Bhejo</span></div>
+      <button class="btn-primary" style="margin-top:16px;" onclick="verifyLoginOTP()">✅ Verify & Login</button>
+      <button class="btn-ghost" onclick="resetLoginStep()">← Phone badlo</button>
+    </div>
+  </div>
+
+  <!-- ── REGISTER ── -->
+  <div id="form-register" style="display:none;">
+    <div class="progress-wrap">
+      <div class="progress-steps">
+        <div class="prog-step"><div class="prog-dot active" id="pd1">1</div><div class="prog-lbl active" id="pl1">Jaankari</div></div>
+        <div class="prog-step"><div class="prog-dot" id="pd2">2</div><div class="prog-lbl" id="pl2">Pata</div></div>
+        <div class="prog-step"><div class="prog-dot" id="pd3">3</div><div class="prog-lbl" id="pl3">OTP</div></div>
+        <div class="progress-line" id="prog-line" style="width:0%;"></div>
+      </div>
+    </div>
+
+    <!-- STEP 1: Basic Info -->
+    <div id="reg-s1">
+      <div class="form-group">
+        <label class="form-label">👤 Aapka Naam <span class="req">*</span></label>
+        <input class="form-input" id="r-owner" type="text" placeholder="Ramesh Kumar">
+        <div class="field-err" id="e-owner">Naam kam se kam 3 akshar</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">🏪 Dukan ka Naam <span class="req">*</span></label>
+        <input class="form-input" id="r-shop" type="text" placeholder="Sharma Mobile Repair">
+        <div class="field-err" id="e-shop">Dukan naam kam se kam 3 akshar</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">📱 Phone Number <span class="req">*</span></label>
+        <div class="phone-row">
+          <div class="country-code">+91</div>
+          <input class="form-input" id="r-phone" type="tel" placeholder="9999999993" maxlength="10">
+        </div>
+        <div class="field-err" id="e-phone">10 digit number daalo</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">📧 Email <span class="req">*</span></label>
+        <input class="form-input" id="r-email" type="email" placeholder="aapka@email.com">
+        <div class="field-err" id="e-email">Valid email daalo</div>
+      </div>
+      <button class="btn-primary" onclick="regStep1Next()">Aage Jao →</button>
+      <div style="margin-top:10px;background:var(--or2);border:1px solid var(--orB);border-radius:10px;padding:9px 12px;font-size:10px;color:var(--or);">
+        🧪 Retailer test: <strong>9999999993</strong>
+      </div>
+    </div>
+
+    <!-- STEP 2: Address + GPS -->
+    <div id="reg-s2" style="display:none;">
+      <div style="font-size:13px;font-weight:700;color:var(--tx2);margin-bottom:14px;">🏪 Dukan ka Pata</div>
+      <div class="form-group">
+        <label class="form-label">दुकान रूम / मकान नम्बर <span class="req">*</span></label>
+        <input class="form-input" id="r-room" type="text" placeholder="Shop No. 5, Ground Floor">
+        <div class="field-err" id="e-room">Room number daalo</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">रोड / गली नाम <span class="req">*</span></label>
+        <input class="form-input" id="r-road" type="text" placeholder="MG Road / Gandhi Gali">
+        <div class="field-err" id="e-road">Road/gali naam daalo</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">बाजार / शहर <span class="req">*</span></label>
+        <input class="form-input" id="r-city" type="text" placeholder="Paltan Bazaar, Prayagraj">
+        <div class="field-err" id="e-city">Bazaar/sheher naam daalo</div>
+      </div>
+      <div class="two-col">
+        <div class="form-group">
+          <label class="form-label">District <span class="req">*</span></label>
+          <input class="form-input" id="r-dist" type="text" placeholder="Prayagraj">
+          <div class="field-err" id="e-dist">District daalo</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">State <span class="req">*</span></label>
+          <select class="form-input" id="r-state">
+            <option value="">-- Chuniye --</option>
+            <option>Andhra Pradesh</option><option>Arunachal Pradesh</option><option>Assam</option><option>Bihar</option><option>Chhattisgarh</option><option>Goa</option><option>Gujarat</option><option>Haryana</option><option>Himachal Pradesh</option><option>Jharkhand</option><option>Karnataka</option><option>Kerala</option><option>Madhya Pradesh</option><option>Maharashtra</option><option>Manipur</option><option>Meghalaya</option><option>Mizoram</option><option>Nagaland</option><option>Odisha</option><option>Punjab</option><option>Rajasthan</option><option>Sikkim</option><option>Tamil Nadu</option><option>Telangana</option><option>Tripura</option><option selected>Uttar Pradesh</option><option>Uttarakhand</option><option>West Bengal</option><option>Delhi</option><option>Jammu and Kashmir</option>
+          </select>
+          <div class="field-err" id="e-state">State chuniye</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">📮 Pin Code <span class="req">*</span></label>
+        <input class="form-input" id="r-pin" type="tel" placeholder="211001" maxlength="6">
+        <div class="field-err" id="e-pin">6 digit pin code daalo</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">📍 Map Location <span class="req">*</span></label>
+        <button type="button" class="gps-btn" id="gps-btn" onclick="getGPS()">
+          <span id="gps-icon">📍</span><span id="gps-text">GPS se Location Detect Karo</span>
+        </button>
+        <div class="field-err" id="e-gps">Location confirm karna zaroori hai</div>
+        <input type="hidden" id="r-lat"><input type="hidden" id="r-lng">
+        <div id="gps-map-wrap">
+          <div id="gps-map"></div>
+          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-100%);font-size:26px;pointer-events:none;z-index:10;">📍</div>
+          <div class="map-bar">
+            <div class="map-coords" id="map-coords-text">Detecting...</div>
+            <button type="button" style="background:var(--or);border:none;border-radius:8px;color:#fff;font-size:12px;font-weight:700;padding:7px 14px;cursor:pointer;font-family:'DM Sans';" onclick="confirmMapLocation()">✅ Yahi Hai Meri Dukan</button>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button type="button" class="btn-ghost" style="margin-top:0;" onclick="regGoBack(1)">← Wapas</button>
+        <button type="button" class="btn-primary" onclick="regStep2Next()">OTP Verify →</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: OTP Verify -->
+    <div id="reg-s3" style="display:none;">
+      <div style="font-size:13px;font-weight:700;color:var(--tx2);margin-bottom:6px;">🔐 Phone Verify Karo</div>
+      <div style="font-size:11px;color:var(--tx3);margin-bottom:14px;">OTP bheja gaya <strong id="reg-phone-disp" style="color:var(--or);"></strong> pe</div>
+      <div class="summary-box">
+        <div class="s-title">Summary</div>
+        <div>👤 <span id="sum-owner"></span></div>
+        <div>🏪 <span id="sum-shop"></span></div>
+        <div>📍 <span id="sum-addr"></span></div>
+        <div>📱 <span id="sum-phone"></span></div>
+      </div>
+      <div class="otp-row">
+        <input class="otp-input" id="r1" maxlength="1" oninput="otpN(this,'r2')" onkeydown="otpB(event,this,null)">
+        <input class="otp-input" id="r2" maxlength="1" oninput="otpN(this,'r3')" onkeydown="otpB(event,this,'r1')">
+        <input class="otp-input" id="r3" maxlength="1" oninput="otpN(this,'r4')" onkeydown="otpB(event,this,'r2')">
+        <input class="otp-input" id="r4" maxlength="1" oninput="otpN(this,'r5')" onkeydown="otpB(event,this,'r3')">
+        <input class="otp-input" id="r5" maxlength="1" oninput="otpN(this,'r6')" onkeydown="otpB(event,this,'r4')">
+        <input class="otp-input" id="r6" maxlength="1" oninput="otpN(this,null)"  onkeydown="otpB(event,this,'r5')">
+      </div>
+      <div class="otp-timer">OTP nahi aaya? <span onclick="resendOTP()">Dobara Bhejo</span></div>
+      <button class="btn-primary" style="margin-top:16px;" onclick="verifyRegOTP()">✅ Register & Login</button>
+      <button class="btn-ghost" onclick="regGoBack(2)">← Pata Badlo</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPABASE_URL  = 'https://etcvgvxqrtcgbjvkqobt.supabase.co';
+const SUPABASE_ANON = 'sb_publishable_38tz5qsQgDs75Q6lBqd8uQ_89R1NDfP';
+var sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+const RT_TEST = {'9999999993':'123456'};
+
+let mapLat=null, mapLng=null, locationConfirmed=false;
+let currentStep=1;
+
+// ── HELPERS ──
+function otpN(el,n){if(el.value&&n)document.getElementById(n).focus();}
+function otpB(e,el,p){if(e.key==='Backspace'&&!el.value&&p)document.getElementById(p).focus();}
+function showErr(m){const e=document.getElementById('err-box');e.textContent=m;e.style.display='block';document.getElementById('info-box').style.display='none';}
+function showInfo(m){const e=document.getElementById('info-box');e.textContent=m;e.style.display='block';document.getElementById('err-box').style.display='none';}
+function clearMsgs(){['err-box','info-box'].forEach(id=>document.getElementById(id).style.display='none');}
+function fv(inp,err,ok,msg){const e=document.getElementById(err);if(!ok){e.textContent=msg;e.style.display='block';document.getElementById(inp).style.borderColor='var(--re)';}else{e.style.display='none';document.getElementById(inp).style.borderColor='';}return ok;}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+
+function switchTab(tab){
+  document.getElementById('form-login').style.display=tab==='login'?'block':'none';
+  document.getElementById('form-register').style.display=tab==='register'?'block':'none';
+  document.getElementById('tab-login').classList.toggle('active',tab==='login');
+  document.getElementById('tab-register').classList.toggle('active',tab==='register');
+  clearMsgs();
+}
+
+function setProgress(step){
+  currentStep=step;
+  const dots=['pd1','pd2','pd3'];
+  const lbls=['pl1','pl2','pl3'];
+  dots.forEach((id,i)=>{
+    const el=document.getElementById(id);
+    el.classList.remove('active','done');
+    if(i+1<step)el.classList.add('done');
+    else if(i+1===step)el.classList.add('active');
+    document.getElementById(lbls[i]).classList.toggle('active',i+1===step);
+  });
+  const pct=step===1?0:step===2?50:100;
+  document.getElementById('prog-line').style.width=pct+'%';
+}
+
+// ── LOGIN ──
+async function sendLoginOTP(){
+  clearMsgs();
+  const phone=document.getElementById('login-phone').value.trim();
+  if(phone.length!==10){showErr('10 digit number daalo');return;}
+  const btn=document.querySelector('#login-step-phone .btn-primary');
+  btn.disabled=true;btn.textContent='Bhej raha hai...';
+  if(RT_TEST[phone]){
+    btn.disabled=false;btn.textContent='📱 OTP Bhejo';
+    document.getElementById('login-phone-disp').textContent='+91 '+phone;
+    document.getElementById('login-step-phone').style.display='none';
+    document.getElementById('login-step-otp').style.display='block';
+    showInfo('✅ Test OTP: '+RT_TEST[phone]);
+    document.getElementById('o1').focus();return;
+  }
+  const{error}=await sb.auth.signInWithOtp({phone:'+91'+phone});
+  btn.disabled=false;btn.textContent='📱 OTP Bhejo';
+  if(error){showErr('❌ '+error.message);return;}
+  document.getElementById('login-phone-disp').textContent='+91 '+phone;
+  document.getElementById('login-step-phone').style.display='none';
+  document.getElementById('login-step-otp').style.display='block';
+  showInfo('✅ OTP bheja gaya');document.getElementById('o1').focus();
+}
+
+async function verifyLoginOTP(){
+  clearMsgs();
+  const phone=document.getElementById('login-phone').value.trim();
+  const otp=['o1','o2','o3','o4','o5','o6'].map(id=>document.getElementById(id).value).join('');
+  if(otp.length!==6){showErr('6-digit OTP daalo');return;}
+  const btn=document.querySelector('#login-step-otp .btn-primary');
+  btn.disabled=true;btn.textContent='Verify ho raha hai...';
+  if(RT_TEST[phone]){
+    if(otp!==RT_TEST[phone]){btn.disabled=false;btn.textContent='✅ Verify & Login';showErr('❌ OTP galat');return;}
+    btn.disabled=false;btn.textContent='✅ Verify & Login';
+    toast('✅ Login ho gaya!');
+    setTimeout(()=>window.location.href='retailer-catalog.html',800);
+    return;
+  }
+  const{data,error}=await sb.auth.verifyOtp({phone:'+91'+phone,token:otp,type:'sms'});
+  btn.disabled=false;btn.textContent='✅ Verify & Login';
+  if(error){showErr('❌ OTP galat ya expire');return;}
+  const{data:p}=await sb.from('mpm_users').select('*').eq('id',data.user.id).single();
+  if(!p||p.role!=='retailer'){await sb.auth.signOut();showErr('❌ Aap Retailer nahi hain. Register karein.');return;}
+  toast('✅ Login ho gaya!');
+  setTimeout(()=>window.location.href='retailer-catalog.html',800);
+}
+
+function resetLoginStep(){
+  clearMsgs();
+  document.getElementById('login-step-otp').style.display='none';
+  document.getElementById('login-step-phone').style.display='block';
+  ['o1','o2','o3','o4','o5','o6'].forEach(id=>document.getElementById(id).value='');
+}
+
+// ── REGISTER STEP 1 ──
+function regStep1Next(){
+  clearMsgs();
+  const owner=document.getElementById('r-owner').value.trim();
+  const shop=document.getElementById('r-shop').value.trim();
+  const phone=document.getElementById('r-phone').value.trim();
+  const email=document.getElementById('r-email').value.trim();
+  let ok=true;
+  ok=fv('r-owner','e-owner',owner.length>=3,'Naam kam se kam 3 akshar')&&ok;
+  ok=fv('r-shop','e-shop',shop.length>=3,'Dukan naam kam se kam 3 akshar')&&ok;
+  ok=fv('r-phone','e-phone',phone.length===10&&/^\d+$/.test(phone),'10 digit number daalo')&&ok;
+  ok=fv('r-email','e-email',/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email),'Valid email daalo')&&ok;
+  if(!ok)return;
+  document.getElementById('reg-s1').style.display='none';
+  document.getElementById('reg-s2').style.display='block';
+  setProgress(2);
+}
+
+// ── GPS ──
+function getGPS(){
+  if(!navigator.geolocation){showErr('Browser GPS support nahi karta');return;}
+  const btn=document.getElementById('gps-btn');
+  document.getElementById('gps-icon').textContent='⏳';
+  document.getElementById('gps-text').textContent='Location dhundh raha hai...';
+  btn.disabled=true;
+  navigator.geolocation.getCurrentPosition(
+    pos=>{
+      mapLat=pos.coords.latitude;mapLng=pos.coords.longitude;
+      btn.disabled=false;
+      document.getElementById('gps-icon').textContent='🛰️';
+      document.getElementById('gps-text').textContent='Map pe dekho — pin drag karo, phir confirm karo';
+      btn.style.borderColor='var(--or)';
+      document.getElementById('gps-map-wrap').style.display='block';
+      document.getElementById('map-coords-text').textContent=`📌 ${mapLat.toFixed(5)}, ${mapLng.toFixed(5)}`;
+      document.getElementById('e-gps').style.display='none';
+      initGPSMap(mapLat,mapLng);
+    },
+    err=>{
+      document.getElementById('gps-icon').textContent='❌';
+      document.getElementById('gps-text').textContent='Dobara try karo';
+      btn.disabled=false;
+      showErr('GPS: '+(err.code===1?'Location allow karo':err.code===2?'Signal nahi':'Timeout'));
+    },
+    {enableHighAccuracy:true,timeout:12000,maximumAge:0}
+  );
+}
+
+function initGPSMap(lat,lng){
+  delete L.Icon.Default.prototype._getIconUrl;
+  L.Icon.Default.mergeOptions({iconUrl:'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',iconRetinaUrl:'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',shadowUrl:'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',iconSize:[25,41],iconAnchor:[12,41],popupAnchor:[1,-34],shadowSize:[41,41]});
+  if(window._gpsMap){window._gpsMap.setView([lat,lng],18);window._gpsMarker.setLatLng([lat,lng]);return;}
+  const m=L.map('gps-map',{zoomControl:true,attributionControl:false}).setView([lat,lng],18);
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19}).addTo(m);
+  L.tileLayer('https://stamen-tiles.a.ssl.fastly.net/toner-hybrid/{z}/{x}/{y}.png',{maxZoom:18,opacity:0.55}).addTo(m);
+  const icon=L.divIcon({html:`<div style="width:28px;height:42px;"><svg viewBox="0 0 28 42" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.5))"><path d="M14 0C6.27 0 0 6.27 0 14c0 10.5 14 28 14 28S28 24.5 28 14C28 6.27 21.73 0 14 0z" fill="#F47B20"/><circle cx="14" cy="14" r="6" fill="#fff"/></svg></div>`,iconSize:[28,42],iconAnchor:[14,42],className:''});
+  const marker=L.marker([lat,lng],{icon,draggable:true}).addTo(m);
+  marker.bindPopup('<strong style="font-size:12px;">📍 Aapki Dukan</strong><br><span style="font-size:11px;color:#666;">Pin drag karke sahi jagah rakho</span>',{maxWidth:180}).openPopup();
+  marker.on('drag dragend',e=>{const p=e.target.getLatLng();mapLat=p.lat;mapLng=p.lng;document.getElementById('map-coords-text').textContent=`📌 ${mapLat.toFixed(5)}, ${mapLng.toFixed(5)}`;});
+  window._gpsMap=m;window._gpsMarker=marker;
+  setTimeout(()=>m.invalidateSize(),300);
+}
+
+function confirmMapLocation(){
+  if(!mapLat||!mapLng){toast('❌ Pehle GPS se location detect karo');return;}
+  if(window._gpsMarker){const p=window._gpsMarker.getLatLng();mapLat=p.lat;mapLng=p.lng;}
+  document.getElementById('r-lat').value=mapLat;
+  document.getElementById('r-lng').value=mapLng;
+  locationConfirmed=true;
+  document.getElementById('gps-icon').textContent='✅';
+  document.getElementById('gps-text').textContent='Location Confirm Ho Gayi! ✅';
+  document.getElementById('gps-btn').style.borderColor='var(--gr)';
+  document.getElementById('e-gps').style.display='none';
+  toast('✅ Location confirm! Lat: '+mapLat.toFixed(4));
+}
+
+// ── REGISTER STEP 2 ──
+async function regStep2Next(){
+  clearMsgs();
+  let ok=true;
+  ok=fv('r-room','e-room',document.getElementById('r-room').value.trim().length>=1,'Room number daalo')&&ok;
+  ok=fv('r-road','e-road',document.getElementById('r-road').value.trim().length>=3,'Road/gali naam daalo')&&ok;
+  ok=fv('r-city','e-city',document.getElementById('r-city').value.trim().length>=2,'Bazaar/sheher naam daalo')&&ok;
+  ok=fv('r-dist','e-dist',document.getElementById('r-dist').value.trim().length>=2,'District naam daalo')&&ok;
+  ok=fv('r-state','e-state',document.getElementById('r-state').value!=='','State chuniye')&&ok;
+  const pin=document.getElementById('r-pin').value.trim();
+  ok=fv('r-pin','e-pin',pin.length===6&&/^\d+$/.test(pin),'6 digit pin code daalo')&&ok;
+  if(!locationConfirmed){document.getElementById('e-gps').style.display='block';ok=false;}
+  if(!ok)return;
+  const phone=document.getElementById('r-phone').value.trim();
+  const btn=document.querySelector('#reg-s2 .btn-primary');
+  btn.disabled=true;btn.textContent='OTP Bhej raha hai...';
+  // Show summary
+  document.getElementById('sum-owner').textContent=document.getElementById('r-owner').value.trim();
+  document.getElementById('sum-shop').textContent=document.getElementById('r-shop').value.trim();
+  document.getElementById('sum-addr').textContent=[document.getElementById('r-room').value.trim(),document.getElementById('r-road').value.trim(),document.getElementById('r-city').value.trim(),document.getElementById('r-dist').value.trim()].join(', ');
+  document.getElementById('sum-phone').textContent='+91 '+phone;
+  document.getElementById('reg-phone-disp').textContent='+91 '+phone;
+  if(RT_TEST[phone]){
+    btn.disabled=false;btn.textContent='OTP Verify →';
+    document.getElementById('reg-s2').style.display='none';
+    document.getElementById('reg-s3').style.display='block';
+    setProgress(3);
+    showInfo('✅ Test OTP: '+RT_TEST[phone]);
+    document.getElementById('r1').focus();return;
+  }
+  const{error}=await sb.auth.signInWithOtp({phone:'+91'+phone});
+  btn.disabled=false;btn.textContent='OTP Verify →';
+  if(error){showErr('❌ '+error.message);return;}
+  document.getElementById('reg-s2').style.display='none';
+  document.getElementById('reg-s3').style.display='block';
+  setProgress(3);
+  showInfo('✅ OTP bheja gaya +91'+phone);
+  document.getElementById('r1').focus();
+}
+
+function resendOTP(){
+  const p=document.getElementById('r-phone').value.trim();
+  if(RT_TEST[p]){showInfo('✅ Test OTP: '+RT_TEST[p]);return;}
+  sb.auth.signInWithOtp({phone:'+91'+p});showInfo('OTP dobara bheja');
+}
+
+function regGoBack(toStep){
+  clearMsgs();
+  document.getElementById('reg-s1').style.display=toStep===1?'block':'none';
+  document.getElementById('reg-s2').style.display=toStep===2?'block':'none';
+  document.getElementById('reg-s3').style.display='none';
+  setProgress(toStep);
+  if(toStep<2&&window._gpsMap){window._gpsMap.remove();window._gpsMap=null;window._gpsMarker=null;locationConfirmed=false;document.getElementById('gps-map-wrap').style.display='none';document.getElementById('gps-icon').textContent='📍';document.getElementById('gps-text').textContent='GPS se Location Detect Karo';}
+}
+
+// ── REGISTER VERIFY OTP ──
+async function verifyRegOTP(){
+  clearMsgs();
+  const phone=document.getElementById('r-phone').value.trim();
+  const otp=['r1','r2','r3','r4','r5','r6'].map(id=>document.getElementById(id).value).join('');
+  if(otp.length!==6){showErr('6-digit OTP poora daalo');return;}
+  const btn=document.querySelector('#reg-s3 .btn-primary');
+  btn.disabled=true;btn.textContent='Register ho raha hai...';
+  const fullData={
+    full_name:document.getElementById('r-owner').value.trim(),
+    shop_name:document.getElementById('r-shop').value.trim(),
+    phone:'+91'+phone,
+    email:document.getElementById('r-email').value.trim(),
+    room_no:document.getElementById('r-room').value.trim(),
+    road:document.getElementById('r-road').value.trim(),
+    city:document.getElementById('r-city').value.trim(),
+    district:document.getElementById('r-dist').value.trim(),
+    state:document.getElementById('r-state').value,
+    pincode:document.getElementById('r-pin').value.trim(),
+    latitude:mapLat||null,longitude:mapLng||null,
+    role:'retailer',is_verified:true,is_suspended:false,strikes:0
+  };
+  if(RT_TEST[phone]){
+    if(otp!==RT_TEST[phone]){btn.disabled=false;btn.textContent='✅ Register & Login';showErr('❌ OTP galat. Test: '+RT_TEST[phone]);return;}
+    btn.disabled=false;btn.textContent='✅ Register & Login';
+    toast('🎉 Registration ho gaya!');
+    setTimeout(()=>window.location.href='retailer-catalog.html',1000);
+    return;
+  }
+  const{data,error}=await sb.auth.verifyOtp({phone:'+91'+phone,token:otp,type:'sms'});
+  btn.disabled=false;btn.textContent='✅ Register & Login';
+  if(error){showErr('❌ OTP galat ya expire');return;}
+  if(data.user) await sb.from('mpm_users').upsert({id:data.user.id,...fullData});
+  toast('🎉 Registration ho gaya!');
+  setTimeout(()=>window.location.href='retailer-catalog.html',1000);
+}
+
+// Check if already logged in
+(async()=>{
+  const{data:{session}}=await sb.auth.getSession();
+  if(session?.user){
+    const{data:p}=await sb.from('mpm_users').select('role').eq('id',session.user.id).single();
+    if(p?.role==='retailer') window.location.href='retailer-catalog.html';
+  }
+})();
+</script>
+</body>
+</html>
