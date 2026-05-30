@@ -21,6 +21,7 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--tx);min-h
 #screen-auth{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;}
 #screen-main{display:none;min-height:100vh;padding:24px 20px 80px;}
 #screen-add-product{display:none;min-height:100vh;padding:24px 20px 80px;}
+#screen-orders{display:none;min-height:100vh;padding:24px 20px 80px;}
 
 /* ── ROLE SELECTOR ── */
 .role-selector{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
@@ -203,18 +204,41 @@ textarea.form-input{resize:vertical;min-height:80px;}
 .ht-offline{background:rgba(244,180,32,0.12);color:var(--am);}
 .ht-online{background:rgba(61,187,120,0.12);color:var(--gr);}
 
+.ofilter-ws{padding:7px 14px;background:var(--bg2);border:1px solid var(--bd2);border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all 0.2s;}
+.ofilter-ws.active{background:var(--or);border-color:var(--or);color:#fff;}
+.order-ws-card{background:var(--bg2);border:1px solid var(--bd2);border-radius:14px;padding:14px;margin-bottom:10px;}
+.order-ws-card.pending{border-left:3px solid var(--am);}
+.order-ws-card.confirmed{border-left:3px solid var(--gr);}
+.order-ws-card.delivered{border-left:3px solid #3DBB78;}
+.order-ws-card.rejected{border-left:3px solid var(--re);}
+.order-ws-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;}
+.order-ws-name{font-size:13px;font-weight:800;}
+.order-ws-badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:8px;}
+.ob-pending{background:rgba(244,180,32,0.15);color:var(--am);}
+.ob-confirmed{background:rgba(61,187,120,0.12);color:var(--gr);}
+.ob-delivered{background:rgba(61,187,120,0.15);color:#3DBB78;}
+.ob-rejected{background:rgba(224,85,85,0.1);color:var(--re);}
+.order-ws-detail{font-size:12px;color:var(--tx2);line-height:1.9;margin-bottom:10px;}
+.order-ws-actions{display:flex;gap:8px;}
+.oa-btn{flex:1;padding:9px;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans';}
+.oa-accept{background:rgba(61,187,120,0.15);color:var(--gr);border:1px solid rgba(61,187,120,0.3);}
+.oa-accept:hover{background:var(--gr);color:#fff;}
+.oa-deliver{background:rgba(61,187,120,0.2);color:var(--gr);border:1px solid rgba(61,187,120,0.4);}
+.oa-deliver:hover{background:var(--gr);color:#fff;}
+.oa-reject{background:rgba(224,85,85,0.1);color:var(--re);border:1px solid rgba(224,85,85,0.25);}
+.oa-reject:hover{background:var(--re);color:#fff;}
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#1C1C1C;border:1px solid var(--bd2);border-radius:12px;padding:12px 20px;font-size:13px;font-weight:600;color:var(--tx);z-index:9999;transition:transform 0.3s;white-space:nowrap;}
 .toast.show{transform:translateX(-50%) translateY(0);}
 </style>
 </head>
 <body>
-<div style="background:#111;border-bottom:1px solid rgba(244,123,32,0.2);padding:6px 16px;font-size:11px;font-weight:700;color:#F47B20;letter-spacing:0.08em;text-align:center;font-family:'DM Sans',sans-serif;">📁 wholesaler-index.html — Wholesaler Panel — Mobile Part Mitra</div>
+
 
 <!-- ════ SCREEN: AUTH ════ -->
 <div id="screen-auth">
 <div class="auth-box">
   <div class="auth-logo">
-    <img src="../shared/images/MPM_Logo.png" alt="MPM">
+    <img src="../shared/images/New-MPM-Logo.png" onerror="this.src='../shared/images/MPM_Logo.png'" alt="MPM">
     <div class="auth-logo-name">Mobile Part Mitra</div>
     <div class="auth-logo-sub">🏪 Wholesaler Panel</div>
   </div>
@@ -415,7 +439,7 @@ textarea.form-input{resize:vertical;min-height:80px;}
 <div class="wrap">
   <div class="hdr">
     <div class="hdr-left">
-      <div class="logo-box"><img src="../shared/images/MPM_Logo.png" alt="MPM"></div>
+      <div class="logo-box"><img src="../shared/images/New-MPM-Logo.png" onerror="this.src='../shared/images/MPM_Logo.png'" alt="MPM"></div>
       <div>
         <div class="hdr-title" id="dash-shop-name">Wholesaler Dashboard</div>
         <div class="hdr-sub" id="dash-city">Mobile Part Mitra</div>
@@ -446,6 +470,18 @@ textarea.form-input{resize:vertical;min-height:80px;}
     </div>
   </button>
 
+  <!-- Orders Button -->
+  <button type="button" onclick="showOrdersScreen()" style="width:100%;display:flex;align-items:center;justify-content:space-between;background:var(--bg2);border:1.5px solid var(--bd2);border-radius:14px;padding:14px 16px;color:var(--tx);cursor:pointer;font-family:'DM Sans';margin-bottom:16px;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--orB)'" onmouseout="this.style.borderColor='var(--bd2)'">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <span style="font-size:22px;">📦</span>
+      <div style="text-align:left;"><div style="font-size:14px;font-weight:700;">Retailer Orders</div><div style="font-size:11px;color:var(--tx3);">Pending orders dekho aur manage karo</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span id="pending-orders-badge" style="display:none;background:var(--re);color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;">0</span>
+      <span style="color:var(--tx3);font-size:18px;">›</span>
+    </div>
+  </button>
+
   <div class="section-title">Aapke Products</div>
   <div id="products-container">
     <div class="empty-state"><div class="empty-icon">📦</div><div class="empty-title">Abhi koi product nahi</div><div style="font-size:12px;">Shop approve hone ke baad pehla part add karo</div></div>
@@ -460,6 +496,26 @@ textarea.form-input{resize:vertical;min-height:80px;}
       <div>📧 <span id="info-email">—</span></div>
       <div>📍 <span id="info-addr">—</span></div>
     </div>
+  </div>
+</div>
+</div>
+
+<!-- ════ SCREEN: ORDERS ════ -->
+<div id="screen-orders">
+<div class="wrap">
+  <div class="page-hdr">
+    <div class="back-btn" onclick="showDashboard()">←</div>
+    <div><div class="page-title">📦 Retailer Orders</div><div class="page-sub">Accept, reject, ya deliver karo</div></div>
+  </div>
+  <div style="display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;padding-bottom:4px;">
+    <div class="ofilter-ws active" id="owf-all" onclick="filterWsOrders('all')">Sab</div>
+    <div class="ofilter-ws" id="owf-pending" onclick="filterWsOrders('pending')">⏳ Pending</div>
+    <div class="ofilter-ws" id="owf-confirmed" onclick="filterWsOrders('confirmed')">✅ Confirmed</div>
+    <div class="ofilter-ws" id="owf-delivered" onclick="filterWsOrders('delivered')">📦 Delivered</div>
+    <div class="ofilter-ws" id="owf-rejected" onclick="filterWsOrders('rejected')">❌ Rejected</div>
+  </div>
+  <div id="ws-orders-list">
+    <div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">Koi order nahi</div><div style="font-size:12px;">Retailers ke orders yahan dikhenge</div></div>
   </div>
 </div>
 </div>
@@ -665,6 +721,7 @@ let currentUser    = null;
 let currentProfile = null;
 const WS_TEST_PHONES = { '9999999992':'123456', '9999999993':'123456' };
 let selectedRole   = '';
+let allWsOrders=[], wsOrderFilter='all';
 let mapLat=null, mapLng=null, locationConfirmed=false;
 let selectedCat='', selectedBrand='';
 const slotPhotos=[null,null,null,null];
@@ -962,16 +1019,25 @@ async function verifyRegisterOTP(){
 
   const{data,error}=await sb.auth.verifyOtp({phone:'+91'+phone,token:otp,type:'sms'});
   btn.disabled=false;btn.textContent='✅ Register & Login';
-  if(error){showErr('❌ OTP galat ya expire');return;}
-  if(data.user) await sb.from('mpm_users').upsert({id:data.user.id,...fullData});
+  if(error){showErr('❌ OTP Error: '+error.message);return;}
+  if(!data.user){showErr('❌ Auth failed — dobara try karo');return;}
+
+  // Save profile with full error handling
+  const payload={id:data.user.id,...fullData};
+  const{error:upsertErr}=await sb.from('mpm_users').upsert(payload,{onConflict:'id'});
+  if(upsertErr){
+    const{error:insertErr}=await sb.from('mpm_users').insert(payload);
+    if(insertErr){showErr('❌ Profile save nahi hua: '+insertErr.message+' (Code: '+insertErr.code+')');return;}
+  }
 
   // Role-based redirect
   if(selectedRole==='retailer'){
     await sb.auth.signOut();
-    showInfo('✅ Retailer registration ho gaya! Ab retailer-catalog.html pe login karo.');
+    showInfo('✅ Retailer registration ho gaya! Ab retailer/index.html pe login karo.');
     return;
   }
-  const{data:profile}=await sb.from('mpm_users').select('*').eq('id',data.user.id).single();
+  const{data:profile,error:profileErr}=await sb.from('mpm_users').select('*').eq('id',data.user.id).single();
+  if(profileErr||!profile){showErr('❌ Profile load nahi hua: '+(profileErr?.message||'unknown'));return;}
   await loadDashboard(data.user,profile);
 }
 
@@ -1064,6 +1130,7 @@ async function loadDashboard(user,profile){
   }
   toast('✅ Login ho gaya!');
   await loadProducts();
+  loadPendingOrdersBadge();
 }
 
 // ── LOAD PRODUCTS ──
@@ -1235,6 +1302,7 @@ function showAddProduct(){
 }
 function showDashboard(){
   document.getElementById('screen-add-product').style.display='none';
+  document.getElementById('screen-orders').style.display='none';
   document.getElementById('screen-main').style.display='block';
 }
 function setApProgress(step){[1,2,3].forEach(i=>{const el=document.getElementById('ap'+i);el.className='ap-step'+(i===step?' active':i<step?' done':'');});}
@@ -1353,11 +1421,81 @@ async function submitProduct(){
   }catch(err){btn.disabled=false;btn.textContent='🚀 Live Karo!';showApErr('❌ '+err.message);}
 }
 
+// ── ORDERS SCREEN ──
+async function loadPendingOrdersBadge(){
+  if(!currentUser)return;
+  const isTest=currentUser.id.startsWith('test-ws-');
+  if(isTest){document.getElementById('pending-orders-badge').textContent='1';document.getElementById('pending-orders-badge').style.display='inline';return;}
+  const{data}=await sb.from('mpm_orders').select('id').eq('wholesaler_id',currentUser.id).eq('status','pending');
+  const count=(data||[]).length;
+  const badge=document.getElementById('pending-orders-badge');
+  if(count>0){badge.textContent=count;badge.style.display='inline';}else badge.style.display='none';
+}
+
+function showOrdersScreen(){
+  document.getElementById('screen-main').style.display='none';
+  document.getElementById('screen-orders').style.display='block';
+  loadWsOrders();
+}
+
+async function loadWsOrders(){
+  const list=document.getElementById('ws-orders-list');
+  list.innerHTML='<div style="text-align:center;padding:30px;color:var(--tx3);">Loading...</div>';
+  const isTest=currentUser.id.startsWith('test-ws-');
+  if(isTest){
+    allWsOrders=[
+      {id:'o1',item_name:'Samsung A52 Display',quantity:2,price_per_unit:850,total_amount:1700,status:'pending',ordered_at:new Date().toISOString(),retailer_name:'Sharma Mobile',retailer_phone:'+91 9876543210',note:'Urgent chahiye'},
+      {id:'o2',item_name:'Redmi Note 12 Battery',quantity:5,price_per_unit:350,total_amount:1750,status:'confirmed',ordered_at:new Date(Date.now()-86400000).toISOString(),retailer_name:'Gupta Electronics',retailer_phone:'+91 9812345678',note:null},
+    ];
+    renderWsOrders();updatePendingBadge();return;
+  }
+  const{data,error}=await sb.from('mpm_orders').select('*').eq('wholesaler_id',currentUser.id).order('ordered_at',{ascending:false});
+  if(error){list.innerHTML='<div style="text-align:center;padding:20px;color:var(--re);">❌ Orders load nahi hue</div>';return;}
+  allWsOrders=data||[];renderWsOrders();updatePendingBadge();
+}
+
+function filterWsOrders(f){
+  wsOrderFilter=f;
+  ['all','pending','confirmed','delivered','rejected'].forEach(t=>document.getElementById('owf-'+t).classList.toggle('active',t===f));
+  renderWsOrders();
+}
+
+function updatePendingBadge(){
+  const count=allWsOrders.filter(o=>o.status==='pending').length;
+  const badge=document.getElementById('pending-orders-badge');
+  if(count>0){badge.textContent=count;badge.style.display='inline';}else badge.style.display='none';
+}
+
+function renderWsOrders(){
+  const list=document.getElementById('ws-orders-list');
+  const filtered=wsOrderFilter==='all'?allWsOrders:allWsOrders.filter(o=>o.status===wsOrderFilter);
+  if(!filtered.length){list.innerHTML='<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">Koi order nahi</div></div>';return;}
+  list.innerHTML=filtered.map(o=>{
+    const bc={pending:'ob-pending',confirmed:'ob-confirmed',delivered:'ob-delivered',rejected:'ob-rejected'}[o.status]||'ob-pending';
+    const sl={pending:'⏳ Pending',confirmed:'✅ Confirmed',delivered:'📦 Delivered',rejected:'❌ Rejected'}[o.status]||o.status;
+    const date=new Date(o.ordered_at).toLocaleDateString('hi-IN',{day:'2-digit',month:'short',year:'numeric'});
+    let actions='';
+    if(o.status==='pending')actions=`<div class="order-ws-actions"><button class="oa-btn oa-accept" onclick="updateOrderStatus('${o.id}','confirmed')">✅ Accept</button><button class="oa-btn oa-reject" onclick="updateOrderStatus('${o.id}','rejected')">❌ Reject</button></div>`;
+    else if(o.status==='confirmed')actions=`<div class="order-ws-actions"><button class="oa-btn oa-deliver" onclick="updateOrderStatus('${o.id}','delivered')">📦 Delivered Mark Karo</button></div>`;
+    return`<div class="order-ws-card ${o.status}"><div class="order-ws-top"><div class="order-ws-name">📦 ${o.item_name||'Part'}</div><span class="order-ws-badge ${bc}">${sl}</span></div><div class="order-ws-detail"><div>🏪 ${o.retailer_name||'Retailer'} · 📱 ${o.retailer_phone||'—'}</div><div>🔢 Qty: <strong>${o.quantity}</strong> · 💰 ₹${o.price_per_unit}/unit · <strong>Total: ₹${o.total_amount}</strong></div><div>📅 ${date}${o.note?' · 📝 '+o.note:''}</div></div>${actions}</div>`;
+  }).join('');
+}
+
+async function updateOrderStatus(orderId,newStatus){
+  const isTest=currentUser.id.startsWith('test-ws-');
+  if(isTest){const o=allWsOrders.find(x=>x.id===orderId);if(o)o.status=newStatus;toast(newStatus==='confirmed'?'✅ Accept!':newStatus==='delivered'?'📦 Delivered!':'❌ Rejected');renderWsOrders();updatePendingBadge();return;}
+  const{error}=await sb.from('mpm_orders').update({status:newStatus,updated_at:new Date().toISOString()}).eq('id',orderId);
+  if(error){toast('❌ Update nahi hua');return;}
+  toast(newStatus==='confirmed'?'✅ Order accept!':newStatus==='delivered'?'📦 Delivered!':'❌ Rejected');
+  await loadWsOrders();
+}
+
 // ── LOGOUT ──
 async function logout(){
   await sb.auth.signOut();currentUser=null;currentProfile=null;
   document.getElementById('screen-main').style.display='none';
   document.getElementById('screen-add-product').style.display='none';
+  document.getElementById('screen-orders').style.display='none';
   document.getElementById('screen-auth').style.display='flex';
   resetLoginStep();
   ['reg-s1','reg-s2','reg-s3'].forEach(id=>document.getElementById(id).style.display='none');
